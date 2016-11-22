@@ -29,12 +29,8 @@ ALLOWED_HOSTS = []
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'syntinel',
-        'USER': 'syntinel',
-        'PASSWORD': 'syntinel',
-        'HOST': 'localhost',
-        'PORT': '3306',
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': 'syntinel_dev_database',
         }
     }
 
@@ -47,6 +43,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'syntinel'
 ]
 
 MIDDLEWARE = [
