@@ -36,10 +36,6 @@ class Suite(models.Model):
 
 class Script(models.Model):
 
-    # Path to script stored on the filesystem. This is to avoid varchar
-    # limits in our database (e.g. 65k in mysql).
-    # path = models.CharField(max_length=2 ** 16)
-
     # Absolute path to the static scripts directory.
     scripts = path.join(settings.BASE_DIR, 'syntinel', 'static', 'scripts')
 
