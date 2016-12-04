@@ -1,3 +1,6 @@
+from os import path
+
+from django.conf import settings
 from django.db import models
 
 
@@ -34,4 +37,18 @@ class Script(models.Model):
 
     # Path to script stored on the filesystem. This is to avoid varchar
     # limits in our database (e.g. 65k in mysql).
-    content = models.CharField(max_length=2 ** 16)
+    path = models.CharField(max_length=2 ** 16)
+
+    # Absolute path to the static scripts directory.
+    scripts = path.join(settings.BASE_DIR, 'syntinel', 'static', 'scripts')
+
+    def __init__(self, *args, **kwargs):
+        self._unsaved_content = None
+        if args and not kwargs:
+            super(Script, self).__init__(*args, **kwargs)
+        else:
+            self._unsaved_content = kwargs.get('content')
+            super(Script, self).__init__(*args, {})
+
+    def save(self):
+        pass
