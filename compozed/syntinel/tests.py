@@ -4,7 +4,6 @@ from django.test import TestCase
 from django.test import Client
 
 from .api.v1.models import Docker
-from .api.v1.serializers import DockerSerializer
 
 client = Client()
 
@@ -14,6 +13,8 @@ class DockerTestCase(TestCase):
     def setUp(self):
         Docker.objects.create(name='JUnit', platform='RHEL7')
         Docker.objects.create(name='Selenium', platform='Ubuntu')
+        Docker.objects.create(name='Integration', platform='CoreOS')
+        Docker.objects.create(name='Smoke', platform='CoreOS')
 
     def test_docker_get_by_platform(self):
         rhel = Docker.objects.get(platform='RHEL7')
@@ -30,6 +31,10 @@ class DockerTestCase(TestCase):
     def test_docker_get_all(self):
         objs = Docker.objects.all()
         self.assertGreater(len(objs), 0)
+
+    def test_docker_filter(self):
+        objs = Docker.objects.filter(platform='CoreOS')
+        self.assertGreater(len(objs), 1)
 
     def test_docker_client_post(self):
         response = client.post(
@@ -83,3 +88,14 @@ class DockerTestCase(TestCase):
             pass
         else:
             raise AssertionError('Failed to delete Docker object.')
+
+    def test_docker_client_all(self):
+        response = client.get('/api/v1/docker/all')
+        self.assertEqual(response.status_code, 200)
+        dockers = json.loads(response.content.decode())
+        self.assertEqual(len(Docker.objects.all()), len(dockers))
+        for docker in dockers:
+            db_obj = Docker.objects.get(id=docker['id'])
+            self.assertEqual(db_obj.id, docker['id'])
+            self.assertEqual(db_obj.name, docker['name'])
+            self.assertEqual(db_obj.platform, docker['platform'])
