@@ -1,10 +1,8 @@
 package tests
 
 import (
-	"os"
 	"syntinel_executor/process"
 	"syntinel_executor/structures"
-	"syscall"
 	"testing"
 )
 
@@ -81,10 +79,8 @@ func TestQueueLen(t *testing.T) {
 func TestProcess(t *testing.T) {
 	command := "echo"
 	args := "hello"
-	result := make(chan process.WorkResult, 1)
-	killSignal := make(chan os.Signal, 1)
-	defer close(killSignal)
-	proc := process.NewProcess(result, killSignal, command, args)
+	proc, result, cancel := process.NewProcess(command, args)
+	defer close(cancel)
 	proc.Start()
 	output := <-result
 	if output.Output != args {
@@ -96,14 +92,10 @@ func TestProcess(t *testing.T) {
 func TestProcessSignal(t *testing.T) {
 	command := "python"
 	args := "/tmp/lol.py"
-	result := make(chan process.WorkResult, 1)
-	killSignal := make(chan os.Signal, 1)
-	defer close(killSignal)
-	proc := process.NewProcess(result, killSignal, command, args)
+	proc, result, cancel := process.NewProcess(command, args)
+	defer close(cancel)
 	proc.Start()
-	if _, ok := <-result; ok {
-		killSignal <- syscall.SIGKILL
-	}
+	cancel <- 1
 	output := <-result
 	if output.Err == nil {
 		t.Errorf("No error on SIGKILL")

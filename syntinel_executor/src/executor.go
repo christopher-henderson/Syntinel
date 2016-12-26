@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"syntinel_executor/process"
+	"syscall"
 )
 
 // func ls(args string) {
@@ -25,10 +26,11 @@ import (
 func main() {
 	result := make(chan process.WorkResult, 1)
 	killSignal := make(chan os.Signal, 1)
-	command := "echo"
-	arg := "hello"
+	command := "python"
+	arg := "/tmp/lol.py"
 	proc := process.NewProcess(result, killSignal, command, arg)
 	proc.Start()
+	killSignal <- syscall.SIGKILL
 	output := <-result
 	fmt.Println("Out is", output.Output)
 	fmt.Println("Err is", output.Err)
