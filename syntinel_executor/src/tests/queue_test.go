@@ -1,7 +1,6 @@
 package tests
 
 import (
-	"syntinel_executor/process"
 	"syntinel_executor/structures"
 	"testing"
 )
@@ -73,31 +72,5 @@ func TestQueueLen(t *testing.T) {
 	q.Pop()
 	if len := q.Len(); len != 0 {
 		t.Errorf("Expected 0 element in the queue, got %v", len)
-	}
-}
-
-func TestProcess(t *testing.T) {
-	command := "echo"
-	args := "hello"
-	proc, result, cancel := process.NewProcess(command, args)
-	defer close(cancel)
-	proc.Start()
-	output := <-result
-	if output.Output != args {
-		t.Errorf("Expected %v, got %v", args, output.Output)
-		t.Errorf("Error is %v", output.Err)
-	}
-}
-
-func TestProcessSignal(t *testing.T) {
-	command := "python"
-	args := "/tmp/lol.py"
-	proc, result, cancel := process.NewProcess(command, args)
-	defer close(cancel)
-	proc.Start()
-	cancel <- 1
-	output := <-result
-	if output.Err == nil {
-		t.Errorf("No error on SIGKILL")
 	}
 }

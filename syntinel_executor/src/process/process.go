@@ -1,26 +1,24 @@
 package process
 
 import (
+	"log"
 	"os/exec"
 	"strings"
-	"time"
 )
-
-// WorkResult is a PODO that holds the error, if any, as well as the output
-// of a command executed via a process.Process execution.
-type WorkResult struct {
-	Err    error
-	Output string
-}
 
 // The Process type lightly wraps the exec.Cmd type. Its intent is for a
 // situations where you would want a long running background process that
 // can also be cancelled at any time.
 type Process struct {
-	proc               *exec.Cmd
+	// Underlying process.
+	proc *exec.Cmd
+	// Channels used for sending the process results and receiving a kill signal.
 	resultMailbox      chan<- *WorkResult
 	cancellationSignal <-chan uint8
-	done               chan *WorkResult
+	// Internally used by awaitOutput to send results to selectResultOrDie
+	done chan *WorkResult
+	// Internally used to signal completion of the process.
+	completed bool
 }
 
 // NewProcess returns a new process.(*Process). The returned process is not
@@ -45,7 +43,7 @@ func NewProcess(command string, args ...string) (*Process, <-chan *WorkResult, c
 	resultMailbox := make(chan *WorkResult, 1)
 	cancellationSignal := make(chan uint8, 1)
 	done := make(chan *WorkResult)
-	process := &Process{exec.Command(command, args...), resultMailbox, cancellationSignal, done}
+	process := &Process{exec.Command(command, args...), resultMailbox, cancellationSignal, done, false}
 	return process, resultMailbox, cancellationSignal
 }
 
@@ -53,6 +51,23 @@ func NewProcess(command string, args ...string) (*Process, <-chan *WorkResult, c
 func (p *Process) Start() {
 	go p.awaitOutput()
 	go p.selectResultOrDie()
+	for p.proc.Process == nil && !p.completed {
+		// Wait for either the process to spin up successfully or for it
+		// to instantly die for whatever reason (usually a bad invocation).
+		//
+		// If p.proc.Process is not nil, then the process is up and running.
+		// If p.completed then it instantly died somehow (probably).
+		//
+		// This is crucial for protecting against panics on illegal access to
+		// the process. The goroutines will fall through which means without this,
+		// then it is possible for the caller to cause a panic by immediately
+		// killing the process. If they do, then:
+		//
+		// 1. If the process has not started up then p.proc.Process will be nil,
+		//		causin a panic in p.selectResultOrDie()
+		// 2. If the process has already died then attempts to kill it will also
+		//		panic.
+	}
 }
 
 // awaitOutput waits for the process to complete, whether it be successfully or
@@ -61,6 +76,7 @@ func (p *Process) Start() {
 // communicated to the selectResultOrDie method via the 'done' channel.
 func (p *Process) awaitOutput() {
 	output, err := p.proc.CombinedOutput()
+	log.Println("Received output from process.")
 	p.done <- &WorkResult{err, strings.TrimSpace(string(output))}
 }
 
@@ -71,30 +87,21 @@ func (p *Process) awaitOutput() {
 // channel is read and the (assumed to be) failed process.(*WorkResult) is
 // placed into the result channel.
 func (p *Process) selectResultOrDie() {
-	time.Sleep(time.Second * 1)
-	// @TODO Make more rigorous.
-	//
-	// If this sleep looks like code smell, well that's because it reeks. In testing,
-	// if the process is killed IMMEDIATELY after starting, then we can get a
-	// panic while in os.(*Process).Kill. Now, killing a proc immediately after
-	// beginning it is going to be incredibly rare, but a panic is unacceptable.
-	// This one second sleep stopped any panics in testing.
-	//
-	// Since this sleep is at the beginning of this long running goroutine,
-	// it is uncommon for requests to be delayed. The only people who will
-	// notice are those whose command finishes in under one second or those who
-	// try to kill the process in less than one second after starting it.
 	defer p.cleanup()
 	var result *WorkResult
 	select {
 	case result = <-p.done:
 	case <-p.cancellationSignal:
+		log.Println("Received kill signal.")
 		// Not portable to Windows.
 		p.proc.Process.Kill()
+		log.Println("Process killed.")
 		// Process termination will cause p.proc.CombinedOutput() to return.
 		result = <-p.done
 	}
 	p.resultMailbox <- result
+	log.Println("Process completed.")
+	p.completed = true
 }
 
 // Closes the channels that the process.Process is responsible for.
