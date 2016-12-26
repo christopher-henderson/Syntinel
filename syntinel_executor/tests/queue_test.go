@@ -6,7 +6,6 @@ import (
 	"syntinel_executor/structures"
 	"syscall"
 	"testing"
-	"time"
 )
 
 func TestQueuePush(t *testing.T) {
@@ -102,10 +101,9 @@ func TestProcessSignal(t *testing.T) {
 	defer close(killSignal)
 	proc := process.NewProcess(result, killSignal, command, args)
 	proc.Start()
-	// t.Errorf("PID: %v", proc.PID())
-	// @TODO troubleshoot this panic
-	time.Sleep(time.Second * 3)
-	killSignal <- syscall.SIGKILL
+	if _, ok := <-result; ok {
+		killSignal <- syscall.SIGKILL
+	}
 	output := <-result
 	if output.Err == nil {
 		t.Errorf("No error on SIGKILL")
