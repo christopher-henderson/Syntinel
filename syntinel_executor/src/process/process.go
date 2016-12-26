@@ -10,15 +10,11 @@ import (
 // situations where you would want a long running background process that
 // can also be cancelled at any time.
 type Process struct {
-	// Underlying process.
-	proc *exec.Cmd
-	// Channels used for sending the process results and receiving a kill signal.
+	proc               *exec.Cmd
 	resultMailbox      chan<- *WorkResult
 	cancellationSignal <-chan uint8
-	// Internally used by awaitOutput to send results to selectResultOrDie
-	done chan *WorkResult
-	// Internally used to signal completion of the process.
-	completed bool
+	done               chan *WorkResult
+	completed          bool
 }
 
 // NewProcess returns a new process.(*Process). The returned process is not
