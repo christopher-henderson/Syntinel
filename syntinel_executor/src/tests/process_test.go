@@ -161,7 +161,7 @@ func TestProcessMemoryLeak2(t *testing.T) {
 	m1m2Difference := math.Abs(float64(m1Allocs - m2Allocs))
 	m1m3Difference := math.Abs(float64(m1Allocs - m3Allocs))
 	m2m3Difference := math.Abs(float64(m2Allocs - m3Allocs))
-	// This is stating a tolernace of 2kb to allow for variance in the
+	// This is stating a tolernace of 3kB to allow for variance in the
 	// runtime. This may or may not be reasonable.
 	tolerance := 3000.0
 	if m1m2Difference > tolerance || m1m3Difference > tolerance || m2m3Difference > tolerance {
