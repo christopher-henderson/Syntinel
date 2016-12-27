@@ -171,8 +171,4 @@ func TestProcessMemoryLeak2(t *testing.T) {
 			"3: %v\n", m1Allocs, m2Allocs, m3Allocs)
 		t.Errorf("The differences are %v, %v, and %v", m1m2Difference, m1m3Difference, m2m3Difference)
 	}
-	// t.Logf("Mallocs: %v, Frees: %v", mallocs, frees)
-	// if mallocs > frees {
-	// 	t.Errorf("Possible memory leak. In the course of this test there %v mallocs, but only %v frees", mallocs, frees)
-	// }
 }
