@@ -1,7 +1,7 @@
 package tests
 
 import (
-	"syntinel_executor/structures"
+	"syntinel_executor/utils/structures"
 	"testing"
 )
 

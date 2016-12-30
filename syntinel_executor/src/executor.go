@@ -1,22 +1,25 @@
 package main
 
 import (
-	"gorilla/mux"
 	"net/http"
-	"syntinel_executor/handlers"
+	"syntinel_executor/controller"
+
+	"github.com/gorilla/mux"
 )
 
 func main() {
-	router = mux.NewRouter()
-  router.HandleFunc("/test/{id:d\+}", handlers.RegisterTest).Methods("POST")
-  router.HandleFunc("/test/{id:d\+}", handlers.DeleteTest).Methods("DELETE")
-  router.HandleFunc("/test/{id:d\+}", handlers.UpdateTest).Methods("PATCH")
-  router.HandleFunc("/docker", handlers.RegisterDocker).Methods("POST")
-  router.HandleFunc("/docker", handlers.DeleteDocker).Methods("DELETE")
-  router.HandleFunc("/docker", handlers.UpdateDocker).Methods("PATCH")
-	router.HandleFunc("/test/run/{id:d\+}", handlers.RunTest).Methods("POST")
-  router.HandleFunc("/test/run/{id:d\+}", handlers.Killest).Methods("DELETE")
-  router.HandleFunc("/test/run/{id:d\+}", handlers.QueryTest).Methods("GET")
+	router := mux.NewRouter()
+	// Makes, e.g., /test/1 and /test/1/ properly resolve to the same handler.
+	router.StrictSlash(true)
+	router.HandleFunc("/test/{id:\\d+}", controller.RegisterTest).Methods("POST")
+	router.HandleFunc("/test/{id:\\d+}", controller.DeleteTest).Methods("DELETE")
+	router.HandleFunc("/test/{id:\\d+}", controller.UpdateTest).Methods("PATCH")
+	router.HandleFunc("/docker/{id:\\d+}", controller.RegisterDocker).Methods("POST")
+	router.HandleFunc("/docker/{id:\\d+}", controller.DeleteDocker).Methods("DELETE")
+	router.HandleFunc("/docker/{id:\\d+}", controller.UpdateDocker).Methods("PATCH")
+	router.HandleFunc("/test/run/{id:\\d+}", controller.RunTest).Methods("POST")
+	router.HandleFunc("/test/run/{id:\\d+}", controller.KillTest).Methods("DELETE")
+	router.HandleFunc("/test/run/{id:\\d+}", controller.QueryTest).Methods("GET")
 	http.Handle("/", router)
 	http.ListenAndServe(":8000", nil)
 }
