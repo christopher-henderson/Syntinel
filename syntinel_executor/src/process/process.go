@@ -96,8 +96,10 @@ func (p *Process) selectResultOrDie() {
 		result = <-p.done
 	}
 	p.resultMailbox <- result
-	log.Println("Process completed.")
+	// This assignment MUST come after placing the result in the mailbox.
+	// It is the guarantee
 	p.completed = true
+	log.Println("Process completed.")
 }
 
 // Closes the channels that the process.Process is responsible for.

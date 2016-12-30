@@ -172,3 +172,25 @@ func TestProcessMemoryLeak2(t *testing.T) {
 		t.Errorf("The differences are %v, %v, and %v", m1m2Difference, m1m3Difference, m2m3Difference)
 	}
 }
+
+func TestMemoryLeak3(t *testing.T) {
+	command := "echo"
+	args := "hello"
+	proc, result, cancel := process.NewProcess(command, args)
+	proc.Start()
+	<-result
+	close(cancel)
+	startingMemory := &runtime.MemStats{}
+	runtime.ReadMemStats(startingMemory)
+	for i := 0; i < 100; i++ {
+		proc, result, cancel = process.NewProcess(command, args)
+		proc.Start()
+		<-result
+		close(cancel)
+	}
+	runtime.GC()
+	endingMemory := &runtime.MemStats{}
+	runtime.ReadMemStats(endingMemory)
+	t.Log(startingMemory.Alloc)
+	t.Log(endingMemory.Alloc)
+}
