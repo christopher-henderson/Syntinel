@@ -11,7 +11,8 @@ import (
 
 func KillTest(w http.ResponseWriter, r *http.Request) {
 	payload := &Payload{nil, nil}
-	defer WriteJsonResponse(w, payload, http.StatusAccepted)
+	status := http.StatusAccepted
+	defer WriteJsonResponse(w, payload, status)
 	variables := mux.Vars(r)
 	id := utils.AtoI(variables["id"])
 	payload.Error = service.TestService.Kill(id)
@@ -19,7 +20,8 @@ func KillTest(w http.ResponseWriter, r *http.Request) {
 
 func RunTest(w http.ResponseWriter, r *http.Request) {
 	payload := &Payload{nil, nil}
-	defer WriteJsonResponse(w, payload, http.StatusAccepted)
+	status := http.StatusAccepted
+	defer WriteJsonResponse(w, payload, status)
 	variables := mux.Vars(r)
 	id := utils.AtoI(variables["id"])
 	payload.Error = service.TestService.Run(id)
@@ -27,7 +29,8 @@ func RunTest(w http.ResponseWriter, r *http.Request) {
 
 func QueryTest(w http.ResponseWriter, r *http.Request) {
 	payload := &Payload{nil, nil}
-	defer WriteJsonResponse(w, payload, http.StatusOK)
+	status := http.StatusOK
+	defer WriteJsonResponse(w, payload, status)
 	variables := mux.Vars(r)
 	id := utils.AtoI(variables["id"])
 	payload.Data, payload.Error = service.TestService.Query(id)
@@ -39,7 +42,8 @@ func RegisterTest(w http.ResponseWriter, r *http.Request) {
 
 func DeleteTest(w http.ResponseWriter, r *http.Request) {
 	payload := &Payload{nil, nil}
-	defer WriteJsonResponse(w, payload, http.StatusNoContent)
+	status := http.StatusNoContent
+	defer WriteJsonResponse(w, payload, status)
 	variables := mux.Vars(r)
 	id := utils.AtoI(variables["id"])
 	payload.Data, payload.Error = service.TestService.Query(id)
