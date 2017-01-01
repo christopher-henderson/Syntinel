@@ -20,6 +20,8 @@ func (t *testService) Query(id int) (interface{}, error) {
 }
 
 func (t *testService) Delete(id int) error {
+	script := DAO.Script{id}
+	script.Delete()
 	return nil
 }
 

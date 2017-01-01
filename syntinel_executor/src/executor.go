@@ -14,7 +14,7 @@ func main() {
 	router.StrictSlash(true)
 	router.HandleFunc("/test/{id:\\d+}", controller.RegisterTest).Methods("POST")
 	router.HandleFunc("/test/{id:\\d+}", controller.DeleteTest).Methods("DELETE")
-	router.HandleFunc("/test/{id:\\d+}", controller.UpdateTest).Methods("PATCH")
+	router.HandleFunc("/test/{id:\\d+}", controller.RegisterTest).Methods("PATCH")
 	router.HandleFunc("/docker/{id:\\d+}", controller.RegisterDocker).Methods("POST")
 	router.HandleFunc("/docker/{id:\\d+}", controller.DeleteDocker).Methods("DELETE")
 	router.HandleFunc("/docker/{id:\\d+}", controller.UpdateDocker).Methods("PATCH")

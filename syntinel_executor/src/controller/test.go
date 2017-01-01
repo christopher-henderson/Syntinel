@@ -62,9 +62,5 @@ func DeleteTest(w http.ResponseWriter, r *http.Request) {
 	defer WriteJsonResponse(w, payload, status)
 	variables := mux.Vars(r)
 	id := utils.AtoI(variables["id"])
-	payload.Data, payload.Error = service.TestService.Query(id)
-}
-
-func UpdateTest(w http.ResponseWriter, r *http.Request) {
-	// @TODO
+	payload.Error = service.TestService.Delete(id)
 }

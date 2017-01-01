@@ -8,7 +8,7 @@ import (
 func AtoI(str string) int {
 	integer, err := strconv.Atoi(str)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalln(err)
 	}
 	return integer
 }
