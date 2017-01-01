@@ -1,5 +1,7 @@
 package service
 
+import "syntinel_executor/DAO"
+
 var TestService = testService{}
 
 type testService struct {
@@ -18,5 +20,11 @@ func (t *testService) Query(id int) (interface{}, error) {
 }
 
 func (t *testService) Delete(id int) error {
+	return nil
+}
+
+func (t *testService) Register(id int, body []byte) error {
+	script := DAO.Script{id}
+	script.Save(body)
 	return nil
 }

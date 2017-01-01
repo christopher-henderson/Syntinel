@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"io/ioutil"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -37,7 +38,22 @@ func QueryTest(w http.ResponseWriter, r *http.Request) {
 }
 
 func RegisterTest(w http.ResponseWriter, r *http.Request) {
-	// @TODO
+	payload := &Payload{nil, nil}
+	status := http.StatusCreated
+	defer WriteJsonResponse(w, payload, status)
+	variables := mux.Vars(r)
+	id := utils.AtoI(variables["id"])
+	body, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		status = http.StatusServiceUnavailable
+		return
+	}
+	err = service.TestService.Register(id, body)
+	payload.Data = string(body)
+	payload.Error = err
+	if err != nil {
+		status = http.StatusServiceUnavailable
+	}
 }
 
 func DeleteTest(w http.ResponseWriter, r *http.Request) {
