@@ -1,6 +1,7 @@
 package main
 
 import (
+	"log"
 	"net/http"
 	"syntinel_executor/controller"
 
@@ -21,5 +22,8 @@ func main() {
 	router.HandleFunc("/test/run/{id:\\d+}", controller.KillTest).Methods("DELETE")
 	router.HandleFunc("/test/run/{id:\\d+}", controller.QueryTest).Methods("GET")
 	http.Handle("/", router)
-	http.ListenAndServe(":8000", nil)
+	if err := http.ListenAndServe(":8000", nil); err != nil {
+		log.Fatalln(err)
+	}
+	log.Println("Exiting")
 }

@@ -23,16 +23,16 @@ func abspath() string {
 		string(os.PathSeparator)
 }
 
-func copy(a string, b string) error {
-	if _, err := os.Stat(a); err != nil {
+func copy(source string, destination string) error {
+	if _, err := os.Stat(source); err != nil {
 		return nil
 	}
-	src, err := os.Open(a)
+	src, err := os.Open(source)
 	if err != nil {
 		return err
 	}
 	defer src.Close()
-	dst, err := os.Create(a)
+	dst, err := os.Create(destination)
 	if err != nil {
 		return err
 	}
