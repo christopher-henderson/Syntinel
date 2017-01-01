@@ -75,7 +75,7 @@ func (s *Script) Save(content []byte) {
 	if err := ioutil.WriteFile(path, content, 0770); err != nil {
 		log.Fatal(err)
 	}
-	// if err := remove(tmpPath); err != nil {
-	// 	log.Fatal(err)
-	// }
+	if err := remove(tmpPath); err != nil {
+		log.Fatal(err)
+	}
 }
