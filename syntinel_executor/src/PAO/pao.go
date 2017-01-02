@@ -5,7 +5,7 @@ import "log"
 var paoRun chan int = make(chan int)
 var paoKill chan int = make(chan int)
 
-var cancelMap map[int]*TestQueue = make(map[int]*TestQueue)
+var testQueueMap map[int]*TestQueue = make(map[int]*TestQueue)
 
 func StartPAO() {
 	go dispatch()
@@ -21,26 +21,30 @@ func Run(id int) {
 
 func run(id int) {
 	log.Println("Running ", id)
-	test, ok := cancelMap[id]
+	test, ok := testQueueMap[id]
 	if !ok {
 		// @TODO make the information passing jive.
 		test = NewTestQueue(200, id)
-		cancelMap[id] = test
+		testQueueMap[id] = test
 	}
-	test.Run()
+	go test.Run()
 }
 
 func Kill(id int) {
 	log.Println("Received kill request in PAO.")
-	paoKill <- id
+	select {
+	case paoKill <- id:
+	default:
+	}
 }
 
 func kill(id int) {
-	if test, ok := cancelMap[id]; ok {
-		log.Println("Found killable process.")
-		test.Kill()
+	if test, ok := testQueueMap[id]; ok {
+		log.Println("Attempt to kill ", id)
+		go test.Kill()
+	} else {
+		log.Println("No killable process found.")
 	}
-	log.Println("No killable process found.")
 }
 
 func dispatch() {

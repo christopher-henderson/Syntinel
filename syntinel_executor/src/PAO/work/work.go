@@ -40,9 +40,9 @@ func (w *Work) awaitOutput(function func() (*process.Process, <-chan *process.Wo
 		log.Println("Received finished result in work.(*Work).awaitOuput")
 		if workResult.Err != nil {
 			log.Println(workResult.Err)
-			log.Println(workResult.Output)
 			return false
 		}
+		log.Println(workResult.Output)
 		return true
 	}
 }
@@ -67,7 +67,8 @@ func (w *Work) scpScript() (*process.Process, <-chan *process.WorkResult, chan<-
 }
 
 func (w *Work) RunTest() (*process.Process, <-chan *process.WorkResult, chan<- uint8) {
-	return process.NewProcess("echo", "hello world from RunTest")
+	args := []string{"-c", "from time import sleep;print('...thinking');sleep(30);print('AH HA!')"}
+	return process.NewProcess("python", args...)
 }
 
 func (w *Work) destroyDocker() {

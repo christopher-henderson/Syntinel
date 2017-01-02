@@ -23,6 +23,7 @@ func (t *testService) Run(id int) error {
 }
 
 func (t *testService) Kill(id int) error {
+	PAO.Kill(id)
 	return nil
 }
 

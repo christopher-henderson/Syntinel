@@ -9,6 +9,8 @@ import (
 )
 
 func main() {
+	defer log.Println("Exiting")
+	log.SetFlags(log.LstdFlags | log.Lshortfile)
 	router := mux.NewRouter()
 	// Makes, e.g., /test/1 and /test/1/ properly resolve to the same handler.
 	router.StrictSlash(true)
@@ -25,5 +27,4 @@ func main() {
 	if err := http.ListenAndServe(":8000", nil); err != nil {
 		log.Fatalln(err)
 	}
-	log.Println("Exiting")
 }
