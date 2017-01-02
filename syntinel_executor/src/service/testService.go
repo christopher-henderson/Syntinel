@@ -7,11 +7,11 @@ var TestService = testService{}
 type testService struct {
 }
 
-func (t *testService) Kill(id int) error {
-	return nil
+func (t *testService) Run(id int) error {
+	process := PAO.
 }
 
-func (t *testService) Run(id int) error {
+func (t *testService) Kill(id int) error {
 	return nil
 }
 
