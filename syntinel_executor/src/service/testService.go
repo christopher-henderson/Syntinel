@@ -1,14 +1,25 @@
 package service
 
-import "syntinel_executor/DAO"
+import (
+	"syntinel_executor/DAO"
+	"syntinel_executor/PAO"
+)
 
-var TestService = testService{}
+var ts = &testService{}
+
+var GetTestService func() *testService = func() func() *testService {
+	PAO.StartPAO()
+	return func() *testService {
+		return ts
+	}
+}()
 
 type testService struct {
 }
 
 func (t *testService) Run(id int) error {
-	process := PAO.
+	PAO.Run(id)
+	return nil
 }
 
 func (t *testService) Kill(id int) error {

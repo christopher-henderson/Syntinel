@@ -16,7 +16,7 @@ func KillTest(w http.ResponseWriter, r *http.Request) {
 	defer WriteJsonResponse(w, payload, status)
 	variables := mux.Vars(r)
 	id := utils.AtoI(variables["id"])
-	payload.Error = service.TestService.Kill(id)
+	payload.Error = service.GetTestService().Kill(id)
 }
 
 func RunTest(w http.ResponseWriter, r *http.Request) {
@@ -25,7 +25,7 @@ func RunTest(w http.ResponseWriter, r *http.Request) {
 	defer WriteJsonResponse(w, payload, status)
 	variables := mux.Vars(r)
 	id := utils.AtoI(variables["id"])
-	payload.Error = service.TestService.Run(id)
+	payload.Error = service.GetTestService().Run(id)
 }
 
 func QueryTest(w http.ResponseWriter, r *http.Request) {
@@ -34,7 +34,7 @@ func QueryTest(w http.ResponseWriter, r *http.Request) {
 	defer WriteJsonResponse(w, payload, status)
 	variables := mux.Vars(r)
 	id := utils.AtoI(variables["id"])
-	payload.Data, payload.Error = service.TestService.Query(id)
+	payload.Data, payload.Error = service.GetTestService().Query(id)
 }
 
 func RegisterTest(w http.ResponseWriter, r *http.Request) {
@@ -48,7 +48,7 @@ func RegisterTest(w http.ResponseWriter, r *http.Request) {
 		status = http.StatusServiceUnavailable
 		return
 	}
-	err = service.TestService.Register(id, body)
+	err = service.GetTestService().Register(id, body)
 	payload.Data = string(body)
 	payload.Error = err
 	if err != nil {
@@ -62,5 +62,5 @@ func DeleteTest(w http.ResponseWriter, r *http.Request) {
 	defer WriteJsonResponse(w, payload, status)
 	variables := mux.Vars(r)
 	id := utils.AtoI(variables["id"])
-	payload.Error = service.TestService.Delete(id)
+	payload.Error = service.GetTestService().Delete(id)
 }
