@@ -1,7 +1,6 @@
 package process
 
 import (
-	"log"
 	"os/exec"
 	"strings"
 )
@@ -72,7 +71,6 @@ func (p *Process) Start() {
 // communicated to the selectResultOrDie method via the 'done' channel.
 func (p *Process) awaitOutput() {
 	output, err := p.proc.CombinedOutput()
-	log.Println("Received output from process.")
 	p.done <- &WorkResult{err, strings.TrimSpace(string(output))}
 }
 
@@ -88,10 +86,8 @@ func (p *Process) selectResultOrDie() {
 	select {
 	case result = <-p.done:
 	case <-p.cancellationSignal:
-		log.Println("Received kill signal.")
 		// Not portable to Windows.
 		p.proc.Process.Kill()
-		log.Println("Process killed.")
 		// Process termination will cause p.proc.CombinedOutput() to return.
 		result = <-p.done
 	}
@@ -99,7 +95,6 @@ func (p *Process) selectResultOrDie() {
 	// This assignment MUST come after placing the result in the mailbox.
 	// It is the guarantee
 	p.completed = true
-	log.Println("Process completed.")
 }
 
 // Closes the channels that the process.Process is responsible for.

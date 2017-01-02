@@ -38,11 +38,11 @@ func (w *Work) awaitOutput(function func() (*process.Process, <-chan *process.Wo
 		return false
 	case workResult := <-result:
 		log.Println("Received finished result in work.(*Work).awaitOuput")
+		log.Println(workResult.Err)
+		log.Println(workResult.Output)
 		if workResult.Err != nil {
-			log.Println(workResult.Err)
 			return false
 		}
-		log.Println(workResult.Output)
 		return true
 	}
 }
@@ -67,7 +67,7 @@ func (w *Work) scpScript() (*process.Process, <-chan *process.WorkResult, chan<-
 }
 
 func (w *Work) RunTest() (*process.Process, <-chan *process.WorkResult, chan<- uint8) {
-	args := []string{"-c", "from time import sleep;print('...thinking');sleep(30);print('AH HA!')"}
+	args := []string{"-c", "from time import sleep;print('...thinking');sleep(5);print('AH HA!');raise Exception('wut happun')"}
 	return process.NewProcess("python", args...)
 }
 
