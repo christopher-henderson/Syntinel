@@ -30,5 +30,5 @@ func DeleteDocker(w http.ResponseWriter, r *http.Request) {
 }
 
 func UpdateDocker(w http.ResponseWriter, r *http.Request) {
-
+	RegisterDocker(w, r)
 }
