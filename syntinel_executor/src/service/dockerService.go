@@ -5,7 +5,13 @@ import (
 	"syntinel_executor/DAO"
 )
 
-var DockerService = dockerService{}
+var ds = &dockerService{}
+
+var GetDockerService func() *dockerService = func() func() *dockerService {
+	return func() *dockerService {
+		return ds
+	}
+}()
 
 type dockerService struct {
 }

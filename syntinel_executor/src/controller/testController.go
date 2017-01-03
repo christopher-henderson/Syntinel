@@ -1,8 +1,8 @@
 package controller
 
 import (
-	"io/ioutil"
 	"net/http"
+	"strconv"
 
 	"github.com/gorilla/mux"
 
@@ -43,17 +43,22 @@ func RegisterTest(w http.ResponseWriter, r *http.Request) {
 	defer WriteJsonResponse(w, payload, status)
 	variables := mux.Vars(r)
 	id := utils.AtoI(variables["id"])
-	body, err := ioutil.ReadAll(r.Body)
+	query := r.URL.Query()
+	dockerIDString := query.Get("dockerID")
+	scriptIDString := query.Get("scriptID")
+	dockerID, err := strconv.Atoi(dockerIDString)
 	if err != nil {
-		status = http.StatusServiceUnavailable
+		status = http.StatusBadRequest
+		payload.Data = "Docker ID must be an integer."
 		return
 	}
-	err = service.GetTestService().Register(id, body)
-	payload.Data = string(body)
-	payload.Error = err
+	scriptID, err := strconv.Atoi(scriptIDString)
 	if err != nil {
-		status = http.StatusServiceUnavailable
+		status = http.StatusBadRequest
+		payload.Data = "Script ID must be an integer."
+		return
 	}
+	service.GetTestService().Register(id, dockerID, scriptID)
 }
 
 func DeleteTest(w http.ResponseWriter, r *http.Request) {

@@ -17,7 +17,7 @@ func RegisterDocker(w http.ResponseWriter, r *http.Request) {
 	file, _, _ := r.FormFile("docker")
 	variables := mux.Vars(r)
 	id := utils.AtoI(variables["id"])
-	service.DockerService.Register(id, file)
+	service.GetDockerService().Register(id, file)
 }
 
 func DeleteDocker(w http.ResponseWriter, r *http.Request) {
@@ -26,7 +26,7 @@ func DeleteDocker(w http.ResponseWriter, r *http.Request) {
 	defer WriteJsonResponse(w, payload, status)
 	variables := mux.Vars(r)
 	id := utils.AtoI(variables["id"])
-	service.DockerService.Delete(id)
+	service.GetDockerService().Delete(id)
 }
 
 func UpdateDocker(w http.ResponseWriter, r *http.Request) {

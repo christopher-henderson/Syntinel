@@ -39,6 +39,10 @@ func (s *Script) Delete() {
 	}
 }
 
+func (s *Script) Path() string {
+	return abspath() + strconv.Itoa(s.ID)
+}
+
 func abspath() string {
 	path, err := filepath.Abs(filepath.Dir(os.Args[0]))
 	if err != nil {

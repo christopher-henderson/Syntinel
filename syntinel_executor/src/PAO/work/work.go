@@ -17,11 +17,13 @@ const (
 )
 
 type Work struct {
-	Cancel chan uint8
+	Cancel     chan uint8
+	dockerPath string
+	scriptPath string
 }
 
-func NewWork() *Work {
-	return &Work{make(chan uint8)}
+func NewWork(dockerPath string, scriptPath string) *Work {
+	return &Work{make(chan uint8), dockerPath, scriptPath}
 }
 
 func (w *Work) awaitOutput(function func() (*process.Process, <-chan *process.WorkResult, chan<- uint8)) bool {
@@ -59,11 +61,11 @@ func (w *Work) Run() {
 }
 
 func (w *Work) createDocker() (*process.Process, <-chan *process.WorkResult, chan<- uint8) {
-	return process.NewProcess("echo", "hello world from create Docker")
+	return process.NewProcess("echo", "hello world from "+w.dockerPath)
 }
 
 func (w *Work) scpScript() (*process.Process, <-chan *process.WorkResult, chan<- uint8) {
-	return process.NewProcess("echo", "hello world from SCP Script")
+	return process.NewProcess("echo", "hello world from "+w.scriptPath)
 }
 
 func (w *Work) RunTest() (*process.Process, <-chan *process.WorkResult, chan<- uint8) {

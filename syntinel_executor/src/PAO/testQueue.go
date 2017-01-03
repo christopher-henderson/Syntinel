@@ -3,20 +3,20 @@ package PAO
 import (
 	"log"
 	"sync"
+	"syntinel_executor/DAO"
 	"syntinel_executor/PAO/work"
 )
 
 type TestQueue struct {
-	dockerID    int
-	scriptID    int
+	testID      int
 	queue       chan *work.Work
 	running     bool
 	currentWork *work.Work
 	mutex       sync.Mutex
 }
 
-func NewTestQueue(dockerID int, scriptID int) *TestQueue {
-	t := &TestQueue{dockerID, scriptID, make(chan *work.Work), false, nil, sync.Mutex{}}
+func NewTestQueue(testID int) *TestQueue {
+	t := &TestQueue{testID, make(chan *work.Work), false, nil, sync.Mutex{}}
 	go t.consume()
 	return t
 }
@@ -48,7 +48,11 @@ func (t *TestQueue) teardown() {
 }
 
 func (t *TestQueue) Run() {
-	t.queue <- work.NewWork()
+	if test, ok := DAO.GetTest(t.testID); ok {
+		t.queue <- work.NewWork(test.DockerPath, test.ScriptPath)
+	} else {
+		log.Println("Request for non-existent test run.")
+	}
 }
 
 func (t *TestQueue) Kill() {

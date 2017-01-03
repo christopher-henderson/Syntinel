@@ -1,6 +1,7 @@
 package service
 
 import (
+	"log"
 	"syntinel_executor/DAO"
 	"syntinel_executor/PAO"
 )
@@ -32,13 +33,12 @@ func (t *testService) Query(id int) (interface{}, error) {
 }
 
 func (t *testService) Delete(id int) error {
-	script := DAO.Script{id}
-	script.Delete()
+	DAO.DeleteTest(id)
 	return nil
 }
 
-func (t *testService) Register(id int, body []byte) error {
-	script := DAO.Script{id}
-	script.Save(body)
+func (t *testService) Register(id, dockerID, scriptID int) error {
+	log.Printf("Registering test ID %v with Docker ID %v and script ID %v.\n", id, dockerID, scriptID)
+	DAO.PutTest(id, dockerID, scriptID)
 	return nil
 }

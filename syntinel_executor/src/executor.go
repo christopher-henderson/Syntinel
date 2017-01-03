@@ -17,9 +17,18 @@ func main() {
 	router.HandleFunc("/test/{id:\\d+}", controller.RegisterTest).Methods("POST")
 	router.HandleFunc("/test/{id:\\d+}", controller.DeleteTest).Methods("DELETE")
 	router.HandleFunc("/test/{id:\\d+}", controller.RegisterTest).Methods("PATCH")
+
+	// .Queries("{dockerID:\\d+}", "{scriptID:\\d+}")
+	// .Queries("{dockerID:\\d+}", "{scriptID:\\d+}")
+
+	router.HandleFunc("/script/{id:\\d+}", controller.RegisterScript).Methods("POST")
+	router.HandleFunc("/script/{id:\\d+}", controller.DeleteScript).Methods("DELETE")
+	router.HandleFunc("/script/{id:\\d+}", controller.RegisterScript).Methods("PATCH")
+
 	router.HandleFunc("/docker/{id:\\d+}", controller.RegisterDocker).Methods("POST")
 	router.HandleFunc("/docker/{id:\\d+}", controller.DeleteDocker).Methods("DELETE")
 	router.HandleFunc("/docker/{id:\\d+}", controller.UpdateDocker).Methods("PATCH")
+
 	router.HandleFunc("/test/run/{id:\\d+}", controller.RunTest).Methods("POST")
 	router.HandleFunc("/test/run/{id:\\d+}", controller.KillTest).Methods("DELETE")
 	router.HandleFunc("/test/run/{id:\\d+}", controller.QueryTest).Methods("GET")

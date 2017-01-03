@@ -24,7 +24,7 @@ func run(id int) {
 	test, ok := testQueueMap[id]
 	if !ok {
 		// @TODO make the information passing jive.
-		test = NewTestQueue(200, id)
+		test = NewTestQueue(id)
 		testQueueMap[id] = test
 	}
 	go test.Run()

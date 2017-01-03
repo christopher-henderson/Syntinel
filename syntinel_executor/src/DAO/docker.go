@@ -41,6 +41,10 @@ func (d *Docker) Delete() {
 	}
 }
 
+func (d *Docker) Path() string {
+	return absDockerPath() + strconv.Itoa(d.ID)
+}
+
 func absDockerPath() string {
 	path, err := filepath.Abs(filepath.Dir(os.Args[0]))
 	if err != nil {
