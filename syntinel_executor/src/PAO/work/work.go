@@ -69,8 +69,9 @@ func (w *Work) scpScript() (*process.Process, <-chan *process.WorkResult, chan<-
 }
 
 func (w *Work) RunTest() (*process.Process, <-chan *process.WorkResult, chan<- uint8) {
-	args := []string{"-c", "from time import sleep;print('...thinking');sleep(5);print('AH HA!');raise Exception('wut happun')"}
-	return process.NewProcess("python", args...)
+	return process.NewProcess(w.scriptPath)
+	// args := []string{"-c", "from time import sleep;print('...thinking');sleep(5);print('AH HA!');raise Exception('wut happun')"}
+	// return process.NewProcess("python", args...)
 }
 
 func (w *Work) destroyDocker() {
