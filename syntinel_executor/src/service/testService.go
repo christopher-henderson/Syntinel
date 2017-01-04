@@ -5,24 +5,21 @@ import (
 	"syntinel_executor/DAO"
 )
 
-var ts = &testService{}
-
-var GetTestService func() *testService = func() func() *testService {
-	return func() *testService {
-		return ts
-	}
-}()
+var TestService = newTestService()
 
 type testService struct {
 }
 
-func (t *testService) Delete(id int) error {
-	DAO.DeleteTest(id)
-	return nil
+func newTestService() *testService {
+	return &testService{}
 }
 
-func (t *testService) Register(id, dockerID, scriptID int) error {
+func (t *testService) Delete(id int) {
+	log.Printf("Deleting test ID %v.\n", id)
+	DAO.DeleteTest(id)
+}
+
+func (t *testService) Register(id, dockerID, scriptID int) {
 	log.Printf("Registering test ID %v with Docker ID %v and script ID %v.\n", id, dockerID, scriptID)
 	DAO.PutTest(id, dockerID, scriptID)
-	return nil
 }

@@ -3,8 +3,8 @@ package controller
 import (
 	"math"
 	"net/http"
+	"strconv"
 	"syntinel_executor/service"
-	"syntinel_executor/utils"
 
 	"github.com/gorilla/mux"
 )
@@ -16,8 +16,13 @@ func RegisterDocker(w http.ResponseWriter, r *http.Request) {
 	r.ParseMultipartForm(int64(math.Pow(10, 9)))
 	file, _, _ := r.FormFile("docker")
 	variables := mux.Vars(r)
-	id := utils.AtoI(variables["id"])
-	service.GetDockerService().Register(id, file)
+	id, err := strconv.Atoi(variables["id"])
+	if err != nil {
+		status = http.StatusBadRequest
+		payload.Data = "Bad Docker ID."
+		return
+	}
+	service.DockerService.Register(id, file)
 }
 
 func DeleteDocker(w http.ResponseWriter, r *http.Request) {
@@ -25,8 +30,13 @@ func DeleteDocker(w http.ResponseWriter, r *http.Request) {
 	status := http.StatusNoContent
 	defer WriteJsonResponse(w, payload, status)
 	variables := mux.Vars(r)
-	id := utils.AtoI(variables["id"])
-	service.GetDockerService().Delete(id)
+	id, err := strconv.Atoi(variables["id"])
+	if err != nil {
+		status = http.StatusBadRequest
+		payload.Data = "Bad Docker ID."
+		return
+	}
+	service.DockerService.Delete(id)
 }
 
 func UpdateDocker(w http.ResponseWriter, r *http.Request) {

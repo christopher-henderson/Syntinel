@@ -2,9 +2,10 @@ package controller
 
 import (
 	"io/ioutil"
+	"log"
 	"net/http"
+	"strconv"
 	"syntinel_executor/service"
-	"syntinel_executor/utils"
 
 	"github.com/gorilla/mux"
 )
@@ -14,18 +15,19 @@ func RegisterScript(w http.ResponseWriter, r *http.Request) {
 	status := http.StatusCreated
 	defer WriteJsonResponse(w, payload, status)
 	variables := mux.Vars(r)
-	id := utils.AtoI(variables["id"])
+	id, err := strconv.Atoi(variables["id"])
+	if err != nil {
+		status = http.StatusBadRequest
+		payload.Data = "Bad Script ID."
+		return
+	}
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
+		log.Println(err)
 		status = http.StatusServiceUnavailable
 		return
 	}
-	err = service.GetScriptService().Register(id, body)
-	payload.Data = string(body)
-	payload.Error = err
-	if err != nil {
-		status = http.StatusServiceUnavailable
-	}
+	service.ScriptService.Register(id, body)
 }
 
 func DeleteScript(w http.ResponseWriter, r *http.Request) {
@@ -33,8 +35,13 @@ func DeleteScript(w http.ResponseWriter, r *http.Request) {
 	status := http.StatusNoContent
 	defer WriteJsonResponse(w, payload, status)
 	variables := mux.Vars(r)
-	id := utils.AtoI(variables["id"])
-	payload.Error = service.GetScriptService().Delete(id)
+	id, err := strconv.Atoi(variables["id"])
+	if err != nil {
+		status = http.StatusBadRequest
+		payload.Data = "Bad Script ID."
+		return
+	}
+	service.ScriptService.Delete(id)
 }
 
 func UpdateScript(w http.ResponseWriter, r *http.Request) {

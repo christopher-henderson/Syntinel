@@ -5,15 +5,13 @@ import (
 	"syntinel_executor/DAO"
 )
 
-var ds = &dockerService{}
-
-var GetDockerService func() *dockerService = func() func() *dockerService {
-	return func() *dockerService {
-		return ds
-	}
-}()
+var DockerService = newDockerService()
 
 type dockerService struct {
+}
+
+func newDockerService() *dockerService {
+	return &dockerService{}
 }
 
 func (d *dockerService) Register(id int, file multipart.File) {

@@ -7,7 +7,6 @@ import (
 	"github.com/gorilla/mux"
 
 	"syntinel_executor/service"
-	"syntinel_executor/utils"
 )
 
 func RegisterTest(w http.ResponseWriter, r *http.Request) {
@@ -15,23 +14,28 @@ func RegisterTest(w http.ResponseWriter, r *http.Request) {
 	status := http.StatusCreated
 	defer WriteJsonResponse(w, payload, status)
 	variables := mux.Vars(r)
-	id := utils.AtoI(variables["id"])
+	id, err := strconv.Atoi(variables["id"])
+	if err != nil {
+		status = http.StatusBadRequest
+		payload.Data = "Bad Test ID."
+		return
+	}
 	query := r.URL.Query()
 	dockerIDString := query.Get("dockerID")
 	scriptIDString := query.Get("scriptID")
 	dockerID, err := strconv.Atoi(dockerIDString)
 	if err != nil {
 		status = http.StatusBadRequest
-		payload.Data = "Docker ID must be an integer."
+		payload.Data = "Bad Docker ID."
 		return
 	}
 	scriptID, err := strconv.Atoi(scriptIDString)
 	if err != nil {
 		status = http.StatusBadRequest
-		payload.Data = "Script ID must be an integer."
+		payload.Data = "Bad Script ID."
 		return
 	}
-	service.GetTestService().Register(id, dockerID, scriptID)
+	service.TestService.Register(id, dockerID, scriptID)
 }
 
 func DeleteTest(w http.ResponseWriter, r *http.Request) {
@@ -39,6 +43,11 @@ func DeleteTest(w http.ResponseWriter, r *http.Request) {
 	status := http.StatusNoContent
 	defer WriteJsonResponse(w, payload, status)
 	variables := mux.Vars(r)
-	id := utils.AtoI(variables["id"])
-	payload.Error = service.GetTestService().Delete(id)
+	id, err := strconv.Atoi(variables["id"])
+	if err != nil {
+		status = http.StatusBadRequest
+		payload.Data = "Bad Test ID."
+		return
+	}
+	service.TestService.Delete(id)
 }

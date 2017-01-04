@@ -15,16 +15,16 @@ func KillTest(w http.ResponseWriter, r *http.Request) {
 	testID, err := strconv.Atoi(query.Get("testID"))
 	if err != nil {
 		status = http.StatusBadRequest
-		payload.Data = "Test ID must be an integer."
+		payload.Data = "Bad test ID."
 		return
 	}
 	testRunID, err := strconv.Atoi(query.Get("testRunID"))
 	if err != nil {
 		status = http.StatusBadRequest
-		payload.Data = "Test Run ID must be an integer."
+		payload.Data = "Bad test run ID."
 		return
 	}
-	payload.Error = service.GetTestRunService().Kill(testID, testRunID)
+	service.TestRunService.Kill(testID, testRunID)
 }
 
 func RunTest(w http.ResponseWriter, r *http.Request) {
@@ -35,16 +35,16 @@ func RunTest(w http.ResponseWriter, r *http.Request) {
 	testID, err := strconv.Atoi(query.Get("testID"))
 	if err != nil {
 		status = http.StatusBadRequest
-		payload.Data = "Test ID must be an integer."
+		payload.Data = "Bad test ID."
 		return
 	}
 	testRunID, err := strconv.Atoi(query.Get("testRunID"))
 	if err != nil {
 		status = http.StatusBadRequest
-		payload.Data = "Test Run ID must be an integer."
+		payload.Data = "Bad test run ID."
 		return
 	}
-	payload.Error = service.GetTestRunService().Run(testID, testRunID)
+	service.TestRunService.Run(testID, testRunID)
 }
 
 func QueryTest(w http.ResponseWriter, r *http.Request) {
@@ -55,15 +55,15 @@ func QueryTest(w http.ResponseWriter, r *http.Request) {
 	testID, err := strconv.Atoi(query.Get("testID"))
 	if err != nil {
 		status = http.StatusBadRequest
-		payload.Data = "Test ID must be an integer."
+		payload.Data = "Bad test ID."
 		return
 	}
 	testRunID, err := strconv.Atoi(query.Get("testRunID"))
 	if err != nil {
 		status = http.StatusBadRequest
-		payload.Data = "Test Run ID must be an integer."
+		payload.Data = "Bad test run ID."
 		return
 	}
-	state := service.GetTestRunService().Query(testID, testRunID)
+	state := service.TestRunService.Query(testID, testRunID)
 	payload.Data = PAO.TestStateToString(state)
 }

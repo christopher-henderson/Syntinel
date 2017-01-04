@@ -44,6 +44,32 @@ func NewTestRunQueue(testID int) *TestRunQueue {
 	return t
 }
 
+func (t *TestRunQueue) Run(testRunID int) {
+	if test, ok := DAO.GetTest(t.testID); ok {
+		t.testRunMap.SetTestRun(testRunID, NewTestRun(testRunID, test.DockerPath, test.ScriptPath))
+		t.queue <- testRunID
+	} else {
+		log.Println("Request for non-existent test run.")
+	}
+}
+
+func (t *TestRunQueue) Kill(id int) {
+	t.mutex.Lock()
+	defer t.mutex.Unlock()
+	if t.currentWork != nil && t.currentWork.ID == id {
+		t.currentWork.Cancel <- 1
+	} else {
+		t.testRunMap.DeleteTestRun(id)
+	}
+}
+
+func (t *TestRunQueue) Query(testRunID int) int {
+	if test, ok := t.testRunMap.GetTestRun(testRunID); ok {
+		return test.Query()
+	}
+	return NotFound
+}
+
 func (t *TestRunQueue) consume() {
 	for test := range t.queue {
 		t.execute(test)
@@ -73,30 +99,4 @@ func (t *TestRunQueue) teardown() {
 	t.testRunMap.DeleteTestRun(t.currentWork.ID)
 	close(t.currentWork.Cancel)
 	t.currentWork = nil
-}
-
-func (t *TestRunQueue) Run(testRunID int) {
-	if test, ok := DAO.GetTest(t.testID); ok {
-		t.testRunMap.SetTestRun(testRunID, NewTestRun(testRunID, test.DockerPath, test.ScriptPath))
-		t.queue <- testRunID
-	} else {
-		log.Println("Request for non-existent test run.")
-	}
-}
-
-func (t *TestRunQueue) Kill(id int) {
-	t.mutex.Lock()
-	defer t.mutex.Unlock()
-	if t.currentWork != nil && t.currentWork.ID == id {
-		t.currentWork.Cancel <- 1
-	} else {
-		t.testRunMap.DeleteTestRun(id)
-	}
-}
-
-func (t *TestRunQueue) Query(testRunID int) int {
-	if test, ok := t.testRunMap.GetTestRun(testRunID); ok {
-		return test.Query()
-	}
-	return NotFound
 }
