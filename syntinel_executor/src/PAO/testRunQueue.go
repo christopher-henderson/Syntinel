@@ -93,3 +93,10 @@ func (t *TestRunQueue) Kill(id int) {
 		t.testRunMap.DeleteTestRun(id)
 	}
 }
+
+func (t *TestRunQueue) Query(testRunID int) int {
+	if test, ok := t.testRunMap.GetTestRun(testRunID); ok {
+		return test.Query()
+	}
+	return NotFound
+}

@@ -3,6 +3,7 @@ package controller
 import (
 	"net/http"
 	"strconv"
+	"syntinel_executor/PAO"
 	"syntinel_executor/service"
 )
 
@@ -63,5 +64,6 @@ func QueryTest(w http.ResponseWriter, r *http.Request) {
 		payload.Data = "Test Run ID must be an integer."
 		return
 	}
-	payload.Data, payload.Error = service.GetTestRunService().Query(testID, testRunID)
+	state := service.GetTestRunService().Query(testID, testRunID)
+	payload.Data = PAO.TestStateToString(state)
 }

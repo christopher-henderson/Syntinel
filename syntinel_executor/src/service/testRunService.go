@@ -11,6 +11,8 @@ var GetTestRunService func() *testRunService = func() func() *testRunService {
 	}
 }()
 
+var lol = testRunService{}
+
 type testRunService struct {
 }
 
@@ -24,6 +26,6 @@ func (t *testRunService) Kill(testID, testRunID int) error {
 	return nil
 }
 
-func (t *testRunService) Query(testID, testRunID int) (interface{}, error) {
-	return testID, nil
+func (t *testRunService) Query(testID, testRunID int) int {
+	return PAO.Query(testID, testRunID)
 }

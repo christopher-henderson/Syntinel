@@ -46,6 +46,13 @@ func kill(testID, testRunID int) {
 	}
 }
 
+func Query(testID, testRunID int) int {
+	if testQueue, ok := testQueueMap[testID]; ok {
+		return testQueue.Query(testRunID)
+	}
+	return NotFound
+}
+
 func dispatch() {
 	log.Println("Starting PAO request loop.")
 	for {
