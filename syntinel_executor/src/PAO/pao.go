@@ -2,46 +2,45 @@ package PAO
 
 import "log"
 
-var paoRun chan int = make(chan int)
-var paoKill chan int = make(chan int)
+var paoRun chan [2]int = make(chan [2]int)
+var paoKill chan [2]int = make(chan [2]int)
 
-var testQueueMap map[int]*TestQueue = make(map[int]*TestQueue)
+var testQueueMap map[int]*TestRunQueue = make(map[int]*TestRunQueue)
 
 func StartPAO() {
 	go dispatch()
 }
 
-func Run(id int) {
+func Run(testID, testRunID int) {
 	log.Println("Received run request in PAO.")
 	select {
-	case paoRun <- id:
+	case paoRun <- [2]int{testID, testRunID}:
 	default:
 	}
 }
 
-func run(id int) {
-	log.Println("Running ", id)
-	test, ok := testQueueMap[id]
+func run(testID, testRunID int) {
+	test, ok := testQueueMap[testID]
 	if !ok {
 		// @TODO make the information passing jive.
-		test = NewTestQueue(id)
-		testQueueMap[id] = test
+		test = NewTestRunQueue(testID)
+		testQueueMap[testID] = test
 	}
-	go test.Run()
+	go test.Run(testRunID)
 }
 
-func Kill(id int) {
+func Kill(testID, testRunID int) {
 	log.Println("Received kill request in PAO.")
 	select {
-	case paoKill <- id:
+	case paoKill <- [2]int{testID, testRunID}:
 	default:
 	}
 }
 
-func kill(id int) {
-	if test, ok := testQueueMap[id]; ok {
-		log.Println("Attempt to kill ", id)
-		go test.Kill()
+func kill(testID, testRunID int) {
+	if test, ok := testQueueMap[testID]; ok {
+		log.Println("Attempt to kill ", testID)
+		go test.Kill(testRunID)
 	} else {
 		log.Println("No killable process found.")
 	}
@@ -51,12 +50,12 @@ func dispatch() {
 	log.Println("Starting PAO request loop.")
 	for {
 		select {
-		case id := <-paoRun:
+		case IDs := <-paoRun:
 			log.Println("Received run request in dispatcher.")
-			run(id)
-		case id := <-paoKill:
+			run(IDs[0], IDs[1])
+		case IDs := <-paoKill:
 			log.Println("Received kill request in dispatcher.")
-			kill(id)
+			kill(IDs[0], IDs[1])
 		}
 	}
 }

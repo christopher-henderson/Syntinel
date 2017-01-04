@@ -10,33 +10,6 @@ import (
 	"syntinel_executor/utils"
 )
 
-func KillTest(w http.ResponseWriter, r *http.Request) {
-	payload := &Payload{nil, nil}
-	status := http.StatusAccepted
-	defer WriteJsonResponse(w, payload, status)
-	variables := mux.Vars(r)
-	id := utils.AtoI(variables["id"])
-	payload.Error = service.GetTestService().Kill(id)
-}
-
-func RunTest(w http.ResponseWriter, r *http.Request) {
-	payload := &Payload{nil, nil}
-	status := http.StatusAccepted
-	defer WriteJsonResponse(w, payload, status)
-	variables := mux.Vars(r)
-	id := utils.AtoI(variables["id"])
-	payload.Error = service.GetTestService().Run(id)
-}
-
-func QueryTest(w http.ResponseWriter, r *http.Request) {
-	payload := &Payload{nil, nil}
-	status := http.StatusOK
-	defer WriteJsonResponse(w, payload, status)
-	variables := mux.Vars(r)
-	id := utils.AtoI(variables["id"])
-	payload.Data, payload.Error = service.GetTestService().Query(id)
-}
-
 func RegisterTest(w http.ResponseWriter, r *http.Request) {
 	payload := &Payload{nil, nil}
 	status := http.StatusCreated
