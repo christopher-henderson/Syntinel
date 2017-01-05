@@ -12,21 +12,10 @@ func StartPAO() {
 }
 
 func Run(testID, testRunID int) {
-	log.Println("Received run request in PAO.")
 	select {
 	case paoRun <- [2]int{testID, testRunID}:
 	default:
 	}
-}
-
-func run(testID, testRunID int) {
-	test, ok := testQueueMap[testID]
-	if !ok {
-		// @TODO make the information passing jive.
-		test = NewTestRunQueue(testID)
-		testQueueMap[testID] = test
-	}
-	go test.Run(testRunID)
 }
 
 func Kill(testID, testRunID int) {
@@ -34,15 +23,6 @@ func Kill(testID, testRunID int) {
 	select {
 	case paoKill <- [2]int{testID, testRunID}:
 	default:
-	}
-}
-
-func kill(testID, testRunID int) {
-	if test, ok := testQueueMap[testID]; ok {
-		log.Println("Attempt to kill ", testID)
-		go test.Kill(testRunID)
-	} else {
-		log.Println("No killable process found.")
 	}
 }
 
@@ -64,5 +44,27 @@ func dispatch() {
 			log.Println("Received kill request in dispatcher.")
 			kill(IDs[0], IDs[1])
 		}
+	}
+}
+
+func run(testID, testRunID int) {
+	testQueue, ok := testQueueMap[testID]
+	if !ok {
+		testQueue = NewTestRunQueue(testID)
+		testQueueMap[testID] = testQueue
+	}
+	if testQueue.Query(testRunID) == NotFound {
+		go testQueue.Run(testRunID)
+	} else {
+		log.Println("Receieved an attempt to replay the same test ID. ID = ", testRunID)
+	}
+}
+
+func kill(testID, testRunID int) {
+	if test, ok := testQueueMap[testID]; ok {
+		log.Println("Attempt to kill ", testID)
+		go test.Kill(testRunID)
+	} else {
+		log.Println("No killable process found.")
 	}
 }

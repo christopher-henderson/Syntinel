@@ -45,11 +45,15 @@ func NewTestRunQueue(testID int) *TestRunQueue {
 }
 
 func (t *TestRunQueue) Run(testRunID int) {
-	if test, ok := DAO.GetTest(t.testID); ok {
+	if _, ok := t.testRunMap.GetTestRun(testRunID); ok {
+		log.Println("Received attempt to execute test that is already queued.")
+		return
+	}
+	if test, ok := DAO.GetTest(t.testID); !ok {
+		log.Println("Request for non-existent test run.")
+	} else {
 		t.testRunMap.SetTestRun(testRunID, NewTestRun(testRunID, test.DockerPath, test.ScriptPath))
 		t.queue <- testRunID
-	} else {
-		log.Println("Request for non-existent test run.")
 	}
 }
 

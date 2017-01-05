@@ -22,7 +22,7 @@ func RegisterDocker(w http.ResponseWriter, r *http.Request) {
 		payload.Data = "Bad Docker ID."
 		return
 	}
-	service.DockerService.Register(id, file)
+	go service.DockerService.Register(id, file)
 }
 
 func DeleteDocker(w http.ResponseWriter, r *http.Request) {
