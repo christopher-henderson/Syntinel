@@ -24,7 +24,9 @@ func RegisterDocker(w http.ResponseWriter, r *http.Request) {
 	// and dump the whole thing to a temporary file on disk". Which is convenient
 	// because we want to get this out of memory and onto the file system
 	// as fast as possible. Once in the temp file we can link it the original.
-	r.ParseMultipartForm(0)
+	if err = r.ParseMultipartForm(0); err != nil {
+		log.Fatalln(err)
+	}
 	defer r.MultipartForm.RemoveAll()
 	data, header, err := r.FormFile("docker")
 	if err != nil {
