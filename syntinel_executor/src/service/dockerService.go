@@ -1,7 +1,7 @@
 package service
 
 import (
-	"mime/multipart"
+	"io"
 	"syntinel_executor/DAO"
 )
 
@@ -14,13 +14,13 @@ func newDockerService() *dockerService {
 	return &dockerService{}
 }
 
-func (d *dockerService) Register(id int, file multipart.File) {
+func (d *dockerService) Register(id int, data io.Reader) {
 	docker := &DAO.Docker{id}
-	docker.Save(file)
+	docker.Save(data)
 }
 
-func (d *dockerService) Update(id int, file multipart.File) {
-	d.Register(id, file)
+func (d *dockerService) Update(id int, data io.Reader) {
+	d.Register(id, data)
 }
 
 func (d *dockerService) Delete(id int) {

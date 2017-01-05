@@ -1,9 +1,8 @@
 package DAO
 
 import (
-	"io/ioutil"
+	"io"
 	"log"
-	"mime/multipart"
 	"os"
 	"path/filepath"
 	"strconv"
@@ -13,20 +12,18 @@ type Docker struct {
 	ID int
 }
 
-func (d *Docker) Save(file multipart.File) {
+func (d *Docker) Save(data io.Reader) {
 	id := strconv.Itoa(d.ID)
 	absolutePath := absDockerPath()
 	path := absolutePath + id
 	tmpPath := absolutePath + "." + id
 	defer cleanup(path, tmpPath)
-	if err := copy(path, tmpPath); err != nil {
-		log.Fatalln(err)
-	}
-	data, err := ioutil.ReadAll(file)
+	dst, err := os.Create(path)
 	if err != nil {
 		log.Fatalln(err)
 	}
-	if err := ioutil.WriteFile(path, data, 0770); err != nil {
+	defer dst.Close()
+	if _, err := io.Copy(dst, data); err != nil {
 		log.Fatalln(err)
 	}
 	if err := remove(tmpPath); err != nil {
