@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"log"
 	"net/http"
 	"strconv"
 	"syntinel_executor/service"
@@ -24,9 +25,20 @@ func RegisterDocker(w http.ResponseWriter, r *http.Request) {
 	// because we want to get this out of memory and onto the file system
 	// as fast as possible. Once in the temp file we can link it the original.
 	r.ParseMultipartForm(0)
-	data, header, _ := r.FormFile("docker")
+	defer r.MultipartForm.RemoveAll()
+	data, header, err := r.FormFile("docker")
+	if err != nil {
+		log.Println(err)
+		status = http.StatusBadRequest
+		payload.Error = err
+		return
+	}
 	defer data.Close()
-	f, _ := header.Open()
+	f, err := header.Open()
+	if err != nil {
+		// This error would be OUR fault. Therefore a 500.
+		log.Fatalln(err)
+	}
 	defer f.Close()
 	service.DockerService.Register(id, f)
 }

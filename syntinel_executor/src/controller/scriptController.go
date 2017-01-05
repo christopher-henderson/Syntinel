@@ -23,9 +23,7 @@ func RegisterScript(w http.ResponseWriter, r *http.Request) {
 	}
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
-		log.Println(err)
-		status = http.StatusServiceUnavailable
-		return
+		log.Fatalln(err)
 	}
 	service.ScriptService.Register(id, body)
 }
