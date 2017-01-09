@@ -4,6 +4,7 @@ import (
 	"log"
 	"sync"
 	"syntinel_executor/PAO/process"
+	"syntinel_executor/ResultServer"
 )
 
 type TestRun struct {
@@ -24,14 +25,17 @@ func (t *TestRun) Run() {
 	defer t.destroyDocker()
 	defer t.setState(Done)
 	if result := t.awaitOutput(t.createDocker); result.Err != nil {
+		ResultServer.SendResult(result)
 		log.Fatalln(result.Err)
 	}
 	if result := t.awaitOutput(t.scpScript); result.Err != nil {
+		ResultServer.SendResult(result)
 		log.Fatalln(result.Err)
 	}
 	result := t.awaitOutput(t.runTest)
-	// ResultServer.Post(t.ID, result)
 	log.Println(result)
+	ResultServer.SendResult(result)
+	// ResultServer.Post(t.ID, result)
 }
 
 func (t *TestRun) Query() int {
