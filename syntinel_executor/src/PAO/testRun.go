@@ -22,19 +22,21 @@ func NewTestRun(id int, dockerPath string, scriptPath string) *TestRun {
 
 func (t *TestRun) Run() {
 	t.setState(Starting)
+	finalResult := &ResultServer.FinalResult{t.ID, nil}
 	defer t.destroyDocker()
 	defer t.setState(Done)
+	defer ResultServer.SendResult(finalResult)
 	if result := t.awaitOutput(t.createDocker); result.Err != nil {
-		ResultServer.SendResult(result)
+		finalResult.Result = result
 		log.Fatalln(result.Err)
 	}
 	if result := t.awaitOutput(t.scpScript); result.Err != nil {
-		ResultServer.SendResult(result)
+		finalResult.Result = result
 		log.Fatalln(result.Err)
 	}
 	result := t.awaitOutput(t.runTest)
+	finalResult.Result = result
 	log.Println(result)
-	ResultServer.SendResult(result)
 	// ResultServer.Post(t.ID, result)
 }
 

@@ -7,29 +7,34 @@ import (
 	"time"
 )
 
+type FinalResult struct {
+	ID     int
+	Result *process.TestRunResult
+}
+
 const maxBackoff = 20
 
 var rs = newResultServer()
 
 type resultServer struct {
-	in      chan *process.TestRunResult
-	retry   chan *process.TestRunResult
+	in      chan *FinalResult
+	retry   chan *FinalResult
 	mutex   sync.Mutex
 	backoff int
 }
 
 func newResultServer() *resultServer {
-	rs := &resultServer{make(chan *process.TestRunResult), make(chan *process.TestRunResult), sync.Mutex{}, 0}
+	rs := &resultServer{make(chan *FinalResult), make(chan *FinalResult), sync.Mutex{}, 0}
 	go rs.ListenForResults()
 	go rs.ListenForRetries()
 	return rs
 }
 
-func SendResult(result *process.TestRunResult) {
+func SendResult(result *FinalResult) {
 	rs.SendResult(result)
 }
 
-func (rs *resultServer) SendResult(result *process.TestRunResult) {
+func (rs *resultServer) SendResult(result *FinalResult) {
 	select {
 	default:
 		rs.in <- result
@@ -49,8 +54,8 @@ func (rs *resultServer) ListenForRetries() {
 	}
 }
 
-func (rs *resultServer) handle(result *process.TestRunResult) {
-	log.Println("The Result Server got the following result: ", result)
+func (rs *resultServer) handle(result *FinalResult) {
+	log.Println("The Result Server got the following result: ", result.Result.Output)
 	succeeded := true
 	if !succeeded {
 		rs.mutex.Lock()
@@ -70,6 +75,6 @@ func (rs *resultServer) handle(result *process.TestRunResult) {
 	}
 }
 
-func (rs *resultServer) enqueue(result *process.TestRunResult) {
+func (rs *resultServer) enqueue(result *FinalResult) {
 
 }
