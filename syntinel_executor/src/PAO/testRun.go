@@ -13,11 +13,11 @@ type TestRun struct {
 	state      int
 	dockerPath string
 	scriptPath string
-	mutex      sync.Mutex
+	mutex      sync.RWMutex
 }
 
 func NewTestRun(id int, dockerPath string, scriptPath string) *TestRun {
-	return &TestRun{id, make(chan uint8), Queued, dockerPath, scriptPath, sync.Mutex{}}
+	return &TestRun{id, make(chan uint8), Queued, dockerPath, scriptPath, sync.RWMutex{}}
 }
 
 func (t *TestRun) Run() {
@@ -28,16 +28,14 @@ func (t *TestRun) Run() {
 	defer ResultServer.SendResult(finalResult)
 	if result := t.awaitOutput(t.createDocker); result.Err != nil {
 		finalResult.Result = result
-		log.Fatalln(result.Err)
+		return
 	}
 	if result := t.awaitOutput(t.scpScript); result.Err != nil {
 		finalResult.Result = result
-		log.Fatalln(result.Err)
+		return
 	}
 	result := t.awaitOutput(t.runTest)
 	finalResult.Result = result
-	log.Println(result)
-	// ResultServer.Post(t.ID, result)
 }
 
 func (t *TestRun) Query() int {
@@ -84,8 +82,8 @@ func (t *TestRun) setState(state int) {
 }
 
 func (t *TestRun) getState() int {
-	t.mutex.Lock()
-	defer t.mutex.Unlock()
+	t.mutex.RLock()
+	defer t.mutex.RUnlock()
 	return t.state
 }
 
@@ -96,11 +94,11 @@ func (w *TestRun) awaitOutput(function func() (*process.Process, <-chan *process
 	proc.Start()
 	select {
 	case <-w.Cancel:
-		log.Println("Received kill request in TestRun.(*TestRun).awaitOuput")
+		log.Println("Received kill request.")
 		cancel <- 1
 		testRunResult = <-result
 	case testRunResult = <-result:
-		log.Println("Received finished result in TestRun.(*TestRun).awaitOuput")
+		log.Println("Received finished result.")
 	}
 	return testRunResult
 }

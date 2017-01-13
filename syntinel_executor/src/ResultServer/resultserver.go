@@ -55,7 +55,7 @@ func (rs *resultServer) ListenForRetries() {
 }
 
 func (rs *resultServer) handle(result *FinalResult) {
-	log.Println("The Result Server got the following result: ", result.Result.Output)
+	log.Println("The Result Server got the following result: ", result.Result.Output, result.Result.Err)
 	succeeded := true
 	if !succeeded {
 		rs.mutex.Lock()

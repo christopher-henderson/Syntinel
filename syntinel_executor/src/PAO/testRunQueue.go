@@ -8,12 +8,12 @@ import (
 
 type ThreadSafeMapIntTestRun struct {
 	m map[int]*TestRun
-	sync.Mutex
+	sync.RWMutex
 }
 
 func (m *ThreadSafeMapIntTestRun) GetTestRun(id int) (*TestRun, bool) {
-	m.Lock()
-	defer m.Unlock()
+	m.RLock()
+	defer m.RUnlock()
 	testRun, ok := m.m[id]
 	return testRun, ok
 }
@@ -34,12 +34,12 @@ type TestRunQueue struct {
 	testID      int
 	queue       chan int
 	currentWork *TestRun
-	mutex       sync.Mutex
+	mutex       sync.RWMutex
 	testRunMap  ThreadSafeMapIntTestRun
 }
 
 func NewTestRunQueue(testID int) *TestRunQueue {
-	t := &TestRunQueue{testID, make(chan int), nil, sync.Mutex{}, ThreadSafeMapIntTestRun{make(map[int]*TestRun), sync.Mutex{}}}
+	t := &TestRunQueue{testID, make(chan int), nil, sync.RWMutex{}, ThreadSafeMapIntTestRun{make(map[int]*TestRun), sync.RWMutex{}}}
 	go t.consume()
 	return t
 }
@@ -68,6 +68,8 @@ func (t *TestRunQueue) Kill(id int) {
 }
 
 func (t *TestRunQueue) Query(testRunID int) int {
+	t.mutex.RLock()
+	defer t.mutex.RUnlock()
 	if test, ok := t.testRunMap.GetTestRun(testRunID); ok {
 		return test.Query()
 	}

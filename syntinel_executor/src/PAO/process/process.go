@@ -1,6 +1,7 @@
 package process
 
 import (
+	"log"
 	"os/exec"
 	"strings"
 )
@@ -94,7 +95,9 @@ func (p *Process) selectResultOrDie() {
 	case result = <-p.done:
 	case <-p.cancellationSignal:
 		// Not portable to Windows.
-		p.proc.Process.Kill()
+		if err := p.proc.Process.Kill(); err != nil {
+			log.Println(err)
+		}
 		// Process termination will cause p.proc.CombinedOutput() to return.
 		result = <-p.done
 	}
