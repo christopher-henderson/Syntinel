@@ -1,9 +1,22 @@
 import json
+import os
 
 from django.test import TestCase
 from django.test import Client
 
-from .api.v1.models import Docker
+from .api.v1.models import Docker, Script
+
+# !!!!!!!!!!!!!!
+# Do NOT delete this. This tells the Script entity to save testing scripts
+# to /tmp rather than the ACTUAL test script directory. If you delete this,
+# then tests WILL overwrite real data.
+# !!!!!!!!!!!!!!
+try:
+    os.mkdir('/tmp/scripts')
+except Exception:
+    pass
+Script.scripts = '/tmp/scripts'
+#######################
 
 client = Client()
 
@@ -99,3 +112,96 @@ class DockerTestCase(TestCase):
             self.assertEqual(db_obj.id, docker['id'])
             self.assertEqual(db_obj.name, docker['name'])
             self.assertEqual(db_obj.platform, docker['platform'])
+
+
+class ScriptTestCase(TestCase):
+
+    def setUp(self):
+        s1 = Script.objects.create()
+        s1.content = '#/usr/bin/env python'
+        s2 = Script.objects.create()
+        s2.content = '#/usr/bin/env bash'
+
+    def test_script_client_post(self):
+        script = 'echo "Hello World."'
+        response = client.post('/api/v1/script/', data={'content': script})
+        self.assertEqual(response.status_code, 201)
+        obj = json.loads(response.content.decode())
+        self.assertEqual(obj['content'], script)
+        db_obj = Script.objects.get(id=obj['id'])
+        self.assertEqual(obj['content'], db_obj.content)
+
+    def test_script_client_get(self):
+        script = 'echo "Hello World."'
+        response = client.post('/api/v1/script/', data={'content': script})
+        self.assertEqual(response.status_code, 201)
+        obj = json.loads(response.content.decode())
+
+        response = client.get('/api/v1/script/{ID}'.format(ID=obj['id']))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(obj['content'], script)
+        db_obj = Script.objects.get(id=obj['id'])
+        self.assertEqual(obj['content'], db_obj.content)
+
+    def test_script_client_patch(self):
+        script = 'echo "Hello World."'
+        response = client.post('/api/v1/script/', data={'content': script})
+        self.assertEqual(response.status_code, 201)
+        obj = json.loads(response.content.decode())
+
+        new_script = 'javac lotsOfWords.java'
+        response = client.patch(
+            '/api/v1/script/{ID}'.format(ID=obj['id']),
+            data=json.dumps({'content': new_script}),
+            content_type='application/json')
+        self.assertEqual(response.status_code, 200)
+        new_obj = json.loads(response.content.decode())
+        self.assertEqual(new_obj['content'], new_script)
+        db_obj = Script.objects.get(id=new_obj['id'])
+        self.assertEqual(new_obj['content'], db_obj.content)
+
+    def test_script_client_put(self):
+        script = 'echo "Hello World."'
+        response = client.post('/api/v1/script/', data={'content': script})
+        self.assertEqual(response.status_code, 201)
+        obj = json.loads(response.content.decode())
+
+        new_script = 'javac lotsOfWords.java'
+        response = client.put(
+            '/api/v1/script/{ID}'.format(ID=obj['id']),
+            data=json.dumps({'content': new_script}),
+            content_type='application/json')
+        self.assertEqual(response.status_code, 200)
+        new_obj = json.loads(response.content.decode())
+        self.assertEqual(new_obj['content'], new_script)
+        db_obj = Script.objects.get(id=new_obj['id'])
+        self.assertEqual(new_obj['content'], db_obj.content)
+
+    def test_script_client_delete(self):
+        script = 'echo "Hello World."'
+        response = client.post('/api/v1/script/', data={'content': script})
+        self.assertEqual(response.status_code, 201)
+        obj = json.loads(response.content.decode())
+
+        response = client.delete('/api/v1/script/{ID}'.format(ID=obj['id']))
+        self.assertEqual(response.status_code, 204)
+        try:
+            Script.objects.get(id=obj['id'])
+        except Exception:
+            # This is what we want.
+            pass
+        else:
+            raise AssertionError("Failed to delete script entity from the DB.")
+        try:
+            with open(os.path.join(Script.scripts, str(obj['id'])), 'r') as s:
+                pass
+        except:
+            pass
+        else:
+            raise AssertionError('Failed to delete script from the FS.')
+
+    def test_script_client_all(self):
+        response = client.get('/api/v1/script/all')
+        self.assertEqual(response.status_code, 200)
+        objs = json.loads(response.content.decode())
+        self.assertGreater(len(objs), 1)
