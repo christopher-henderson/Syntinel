@@ -52,7 +52,7 @@ func (t *TestRunQueue) Run(testRunID int) {
 	if test, ok := DAO.GetTest(t.testID); !ok {
 		log.Println("Request for non-existent test run.")
 	} else {
-		t.testRunMap.SetTestRun(testRunID, NewTestRun(testRunID, test.DockerPath, test.ScriptPath))
+		t.testRunMap.SetTestRun(testRunID, NewTestRun(t.testID, testRunID, test.DockerPath, test.ScriptPath))
 		t.queue <- testRunID
 	}
 }
