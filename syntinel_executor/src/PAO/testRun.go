@@ -73,7 +73,7 @@ func (t *TestRun) Query() int {
 	return t.getState()
 }
 
-func (t *TestRun) buildDockerImage() (*process.Process, <-chan *process.TestRunResult, chan<- uint8) {
+func (t *TestRun) buildDockerImage() *process.Process {
 	if err := os.MkdirAll(t.DockerBuildDirectory(), os.ModeDir); err != nil {
 		log.Fatalln(err)
 	}
@@ -91,13 +91,13 @@ func (t *TestRun) buildDockerImage() (*process.Process, <-chan *process.TestRunR
 	return process.NewProcess(command, args...)
 }
 
-func (t *TestRun) runDockerImage() (*process.Process, <-chan *process.TestRunResult, chan<- uint8) {
+func (t *TestRun) runDockerImage() *process.Process {
 	command := "docker"
 	args := []string{"run", "--rm", t.ImageName()}
 	return process.NewProcess(command, args...)
 }
 
-func (t *TestRun) createDocker() (*process.Process, <-chan *process.TestRunResult, chan<- uint8) {
+func (t *TestRun) createDocker() *process.Process {
 	t.setState(StartingDocker)
 	defer t.setState(DockerStarted)
 	command := "docker"
@@ -107,7 +107,7 @@ func (t *TestRun) createDocker() (*process.Process, <-chan *process.TestRunResul
 	// return process.NewProcess("echo", "hello world from "+t.dockerPath)
 }
 
-func (t *TestRun) startDocker() (*process.Process, <-chan *process.TestRunResult, chan<- uint8) {
+func (t *TestRun) startDocker() *process.Process {
 	t.setState(StartingDocker)
 	defer t.setState(DockerStarted)
 	command := "docker"
@@ -117,7 +117,7 @@ func (t *TestRun) startDocker() (*process.Process, <-chan *process.TestRunResult
 	// return process.NewProcess("echo", "hello world from "+t.dockerPath)
 }
 
-func (t *TestRun) scpScript() (*process.Process, <-chan *process.TestRunResult, chan<- uint8) {
+func (t *TestRun) scpScript() *process.Process {
 	t.setState(SendingScripts)
 	defer t.setState(ScriptsSent)
 	command := "docker"
@@ -125,7 +125,7 @@ func (t *TestRun) scpScript() (*process.Process, <-chan *process.TestRunResult, 
 	return process.NewProcess(command, args...)
 }
 
-func (t *TestRun) runTest() (*process.Process, <-chan *process.TestRunResult, chan<- uint8) {
+func (t *TestRun) runTest() *process.Process {
 	t.setState(ExecutingScripts)
 	defer t.setState(ResultsReceived)
 	command := "docker"
@@ -141,10 +141,9 @@ func (t *TestRun) destroyDocker() {
 	defer t.setState(DockerDestroyed)
 	command := "docker"
 	args := []string{"rm", "ab"}
-	proc, result, cancel := process.NewProcess(command, args...)
-	defer close(cancel)
+	proc := process.NewProcess(command, args...)
 	proc.Start()
-	<-result
+	proc.Wait()
 }
 
 func (t *TestRun) setState(state int) {
@@ -159,15 +158,18 @@ func (t *TestRun) getState() int {
 	return t.state
 }
 
-func (w *TestRun) awaitOutput(function func() (*process.Process, <-chan *process.TestRunResult, chan<- uint8)) *process.TestRunResult {
-	proc, result, cancel := function()
+func (w *TestRun) awaitOutput(function func() *process.Process) *process.TestRunResult {
+	proc := function()
 	var testRunResult *process.TestRunResult
-	defer close(cancel)
+	result := make(chan *process.TestRunResult)
 	proc.Start()
+	go func() {
+		result <- proc.Wait()
+	}()
 	select {
 	case <-w.Cancel:
 		log.Println("Received kill request.")
-		cancel <- 1
+		proc.Kill()
 		testRunResult = <-result
 	case testRunResult = <-result:
 		log.Println("Received finished result.")

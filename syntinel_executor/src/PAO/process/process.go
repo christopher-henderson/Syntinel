@@ -57,15 +57,17 @@ func NewProcess(command string, args ...string) *Process {
 // Start execution of the process.
 func (p *Process) Start() {
 	stdout, _ := p.proc.StdoutPipe()
+	stderr, _ := p.proc.StderrPipe()
 	if err := p.proc.Start(); err != nil {
 		defer p.cleanup()
 		p.Lock()
 		p.completed = true
 		p.Unlock()
-		p.resultMailbox <- &TestRunResult{err, ""}
+		er, _ := ioutil.ReadAll(stderr)
+		p.resultMailbox <- &TestRunResult{err, string(er)}
 		return
 	}
-	go p.awaitOutput(stdout)
+	go p.awaitOutput(stdout, stderr)
 	go p.selectResultOrDie()
 }
 
@@ -87,8 +89,10 @@ func (p *Process) Kill() {
 // by failure. The combined output of the process' stdout and stderr, as well
 // as any error, is used to construct a process.(*TestRunResult) which is then
 // communicated to the selectResultOrDie method via the 'done' channel.
-func (p *Process) awaitOutput(stdout io.ReadCloser) {
-	output, _ := ioutil.ReadAll(stdout)
+func (p *Process) awaitOutput(stdout io.ReadCloser, stderr io.ReadCloser) {
+	out, _ := ioutil.ReadAll(stdout)
+	stder, _ := ioutil.ReadAll(stderr)
+	output := string(out) + string(stder)
 	err := p.proc.Wait()
 	p.done <- &TestRunResult{err, strings.TrimSpace(string(output))}
 }
