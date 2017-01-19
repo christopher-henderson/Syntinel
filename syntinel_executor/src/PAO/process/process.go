@@ -60,9 +60,6 @@ func (p *Process) Start() {
 	stderr, _ := p.proc.StderrPipe()
 	if err := p.proc.Start(); err != nil {
 		defer p.cleanup()
-		p.Lock()
-		p.completed = true
-		p.Unlock()
 		er, _ := ioutil.ReadAll(stderr)
 		p.resultMailbox <- &TestRunResult{err, string(er)}
 		return
@@ -124,6 +121,9 @@ func (p *Process) selectResultOrDie() {
 
 // Closes the channels that the process.Process is responsible for.
 func (p *Process) cleanup() {
+	p.Lock()
+	p.completed = true
+	p.Unlock()
 	close(p.done)
 	close(p.resultMailbox)
 	close(p.cancellationSignal)
