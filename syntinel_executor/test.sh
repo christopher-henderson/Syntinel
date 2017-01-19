@@ -21,6 +21,31 @@ curl -X POST http://192.168.1.2:8000/test/3?dockerID=1\&scriptID=1
 curl -X POST http://192.168.1.2:8000/test/run?testID=3\&testRunID=2
 curl -X POST http://192.168.1.2:8000/test/run?testID=3\&testRunID=3
 curl -X POST http://192.168.1.2:8000/test/run?testID=3\&testRunID=4
+
+curl -X POST http://192.168.1.2:8000/test/4?dockerID=1\&scriptID=1
+curl -X POST http://192.168.1.2:8000/test/run?testID=4\&testRunID=2
+curl -X POST http://192.168.1.2:8000/test/run?testID=4\&testRunID=3
+curl -X POST http://192.168.1.2:8000/test/run?testID=4\&testRunID=4
+
+curl -X POST http://192.168.1.2:8000/test/5?dockerID=1\&scriptID=1
+curl -X POST http://192.168.1.2:8000/test/run?testID=5\&testRunID=2
+curl -X POST http://192.168.1.2:8000/test/run?testID=5\&testRunID=3
+curl -X POST http://192.168.1.2:8000/test/run?testID=5\&testRunID=4
+
+curl -X POST http://192.168.1.2:8000/test/6?dockerID=1\&scriptID=1
+curl -X POST http://192.168.1.2:8000/test/run?testID=6\&testRunID=2
+curl -X POST http://192.168.1.2:8000/test/run?testID=6\&testRunID=3
+curl -X POST http://192.168.1.2:8000/test/run?testID=6\&testRunID=4
+
+curl -X POST http://192.168.1.2:8000/test/7?dockerID=1\&scriptID=1
+curl -X POST http://192.168.1.2:8000/test/run?testID=7\&testRunID=2
+curl -X POST http://192.168.1.2:8000/test/run?testID=7\&testRunID=3
+curl -X POST http://192.168.1.2:8000/test/run?testID=7\&testRunID=4
+
+curl -X POST http://192.168.1.2:8000/test/8?dockerID=1\&scriptID=1
+curl -X POST http://192.168.1.2:8000/test/run?testID=8\&testRunID=2
+curl -X POST http://192.168.1.2:8000/test/run?testID=8\&testRunID=3
+curl -X POST http://192.168.1.2:8000/test/run?testID=8\&testRunID=4
 # sleep 2s
 # curl -X DELETE http://localhost:8000/test/run?testID=1\&testRunID=2
 # curl -X GET http://localhost:8000/test/run?testID=1\&testRunID=2

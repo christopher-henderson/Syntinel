@@ -45,22 +45,6 @@ func (t *TestRun) Run() {
 	// defer t.destroyDocker()
 	defer t.setState(Done)
 	defer ResultServer.SendResult(finalResult)
-	// if result := t.awaitOutput(t.createDocker); result.Err != nil {
-	// 	log.Println(result.Err)
-	// 	finalResult.Result = result
-	// 	return
-	// }
-	// if result := t.awaitOutput(t.startDocker); result.Err != nil {
-	// 	log.Println(result.Err)
-	// 	finalResult.Result = result
-	// 	return
-	// }
-	// if result := t.awaitOutput(t.scpScript); result.Err != nil {
-	// 	log.Println(result.Err)
-	// 	finalResult.Result = result
-	// 	return
-	// }
-	// result := t.awaitOutput(t.runTest)
 	if result := t.awaitOutput(t.buildDockerImage); result.Err != nil {
 		log.Println(result.Err)
 		finalResult.Result = result
@@ -74,20 +58,24 @@ func (t *TestRun) Query() int {
 }
 
 func (t *TestRun) buildDockerImage() *process.Process {
+	t.setState(MakingBuildDirectory)
 	if err := os.MkdirAll(t.DockerBuildDirectory(), os.ModeDir); err != nil {
+		t.setState(Failed)
 		log.Fatalln(err)
 	}
-	// if err := os.Chdir(t.DockerBuildDirectory()); err != nil {
-	// 	log.Fatalln(err)
-	// }
+	t.setState(CopyingScript)
 	if err := copy(t.scriptPath, t.DockerBuildDirectory()+string(os.PathSeparator)+"script.sh"); err != nil {
+		t.setState(Failed)
 		log.Fatalln(err)
 	}
+	t.setState(CopyingDockerfile)
 	if err := copy(t.dockerPath, t.DockerBuildDirectory()+string(os.PathSeparator)+"Dockerfile"); err != nil {
+		t.setState(Failed)
 		log.Fatalln(err)
 	}
 	command := "docker"
 	args := []string{"build", "-t", t.ImageName(), "--force-rm", t.DockerBuildDirectory()}
+	t.setState(BuildingImage)
 	return process.NewProcess(command, args...)
 }
 
@@ -95,55 +83,6 @@ func (t *TestRun) runDockerImage() *process.Process {
 	command := "docker"
 	args := []string{"run", "--rm", t.ImageName()}
 	return process.NewProcess(command, args...)
-}
-
-func (t *TestRun) createDocker() *process.Process {
-	t.setState(StartingDocker)
-	defer t.setState(DockerStarted)
-	command := "docker"
-	// args := []string{"build", "-t", 50, "--force-rm", "."}
-	args := []string{"-c", "from time import sleep;print('...thinking');sleep(15);print('Docker started!')"}
-	return process.NewProcess(command, args...)
-	// return process.NewProcess("echo", "hello world from "+t.dockerPath)
-}
-
-func (t *TestRun) startDocker() *process.Process {
-	t.setState(StartingDocker)
-	defer t.setState(DockerStarted)
-	command := "docker"
-	args := []string{"start", "ab"}
-	// args := []string{"-c", "from time import sleep;print('...thinking');sleep(15);print('Docker started!')"}
-	return process.NewProcess(command, args...)
-	// return process.NewProcess("echo", "hello world from "+t.dockerPath)
-}
-
-func (t *TestRun) scpScript() *process.Process {
-	t.setState(SendingScripts)
-	defer t.setState(ScriptsSent)
-	command := "docker"
-	args := []string{"cp", t.scriptPath, "ab"}
-	return process.NewProcess(command, args...)
-}
-
-func (t *TestRun) runTest() *process.Process {
-	t.setState(ExecutingScripts)
-	defer t.setState(ResultsReceived)
-	command := "docker"
-	args := []string{"exec", "ab"}
-	return process.NewProcess(command, args...)
-	// return process.NewProcess(t.scriptPath)
-	// args := []string{"-c", "from time import sleep;print('...thinking');sleep(5);print('AH HA!');raise Exception('wut happun')"}
-	// return process.NewProcess("python", args...)
-}
-
-func (t *TestRun) destroyDocker() {
-	t.setState(DestroyingDocker)
-	defer t.setState(DockerDestroyed)
-	command := "docker"
-	args := []string{"rm", "ab"}
-	proc := process.NewProcess(command, args...)
-	proc.Start()
-	proc.Wait()
 }
 
 func (t *TestRun) setState(state int) {
@@ -162,6 +101,7 @@ func (w *TestRun) awaitOutput(function func() *process.Process) *process.TestRun
 	proc := function()
 	var testRunResult *process.TestRunResult
 	result := make(chan *process.TestRunResult)
+	defer close(result)
 	proc.Start()
 	go func() {
 		result <- proc.Wait()
