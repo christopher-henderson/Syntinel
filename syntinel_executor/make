@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+rm -rf dist
+mkdir -p dist/assets/build
+mkdir -p dist/assets/scripts
+mkdir -p dist/assets/dockers
+go build -v -i -o dist/executor -race src/executor.go
