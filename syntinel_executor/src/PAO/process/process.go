@@ -1,9 +1,12 @@
 package process
 
 import (
+	"io"
+	"io/ioutil"
 	"log"
 	"os/exec"
 	"strings"
+	"sync"
 )
 
 // TestRun is a PODO that holds the error, if any, as well as the output
@@ -18,10 +21,11 @@ type TestRunResult struct {
 // can also be cancelled at any time.
 type Process struct {
 	proc               *exec.Cmd
-	resultMailbox      chan<- *TestRunResult
-	cancellationSignal <-chan uint8
+	resultMailbox      chan *TestRunResult
+	cancellationSignal chan uint8
 	done               chan *TestRunResult
 	completed          bool
+	sync.RWMutex
 }
 
 // NewProcess returns a new process.(*Process). The returned process is not
@@ -42,34 +46,40 @@ type Process struct {
 // value over this channel will send a SIGKILL to the process. After the
 // process has been killed, the result can again be found in the above
 // result channel. This channel MUST be closed by the caller.
-func NewProcess(command string, args ...string) (*Process, <-chan *TestRunResult, chan<- uint8) {
+func NewProcess(command string, args ...string) *Process {
 	resultMailbox := make(chan *TestRunResult, 1)
 	cancellationSignal := make(chan uint8, 1)
 	done := make(chan *TestRunResult)
-	process := &Process{exec.Command(command, args...), resultMailbox, cancellationSignal, done, false}
-	return process, resultMailbox, cancellationSignal
+	process := &Process{exec.Command(command, args...), resultMailbox, cancellationSignal, done, false, sync.RWMutex{}}
+	return process
 }
 
 // Start execution of the process.
 func (p *Process) Start() {
-	go p.awaitOutput()
+	stdout, _ := p.proc.StdoutPipe()
+	if err := p.proc.Start(); err != nil {
+		defer p.cleanup()
+		p.Lock()
+		p.completed = true
+		p.Unlock()
+		p.resultMailbox <- &TestRunResult{err, ""}
+		return
+	}
+	go p.awaitOutput(stdout)
 	go p.selectResultOrDie()
-	for p.proc.Process == nil && !p.completed {
-		// Wait for either the process to spin up successfully or for it
-		// to instantly die for whatever reason (usually a bad invocation).
-		//
-		// If p.proc.Process is not nil, then the process is up and running.
-		// If p.completed then it instantly died somehow (probably).
-		//
-		// This is crucial for protecting against panics on illegal access to
-		// the process. The goroutines will fall through which means without this,
-		// then it is possible for the caller to cause a panic by immediately
-		// killing the process. If they do, then:
-		//
-		// 1. If the process has not started up then p.proc.Process will be nil,
-		//		causin a panic in p.selectResultOrDie()
-		// 2. If the process has already died then attempts to kill it will also
-		//		panic.
+}
+
+func (p *Process) Wait() *TestRunResult {
+	return <-p.resultMailbox
+}
+
+func (p *Process) Kill() {
+	p.RLock()
+	if !p.completed {
+		p.RUnlock()
+		p.cancellationSignal <- 1
+	} else {
+		p.RUnlock()
 	}
 }
 
@@ -77,8 +87,9 @@ func (p *Process) Start() {
 // by failure. The combined output of the process' stdout and stderr, as well
 // as any error, is used to construct a process.(*TestRunResult) which is then
 // communicated to the selectResultOrDie method via the 'done' channel.
-func (p *Process) awaitOutput() {
-	output, err := p.proc.CombinedOutput()
+func (p *Process) awaitOutput(stdout io.ReadCloser) {
+	output, _ := ioutil.ReadAll(stdout)
+	err := p.proc.Wait()
 	p.done <- &TestRunResult{err, strings.TrimSpace(string(output))}
 }
 
@@ -104,11 +115,12 @@ func (p *Process) selectResultOrDie() {
 	p.resultMailbox <- result
 	// This assignment MUST come after placing the result in the mailbox.
 	// It is the guarantee
-	p.completed = true
+	// p.completed = true
 }
 
 // Closes the channels that the process.Process is responsible for.
 func (p *Process) cleanup() {
 	close(p.done)
 	close(p.resultMailbox)
+	close(p.cancellationSignal)
 }
