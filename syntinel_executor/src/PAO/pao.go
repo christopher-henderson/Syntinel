@@ -5,7 +5,7 @@ import "log"
 var paoRun chan [2]int = make(chan [2]int)
 var paoKill chan [2]int = make(chan [2]int)
 
-var testQueueMap map[int]*TestRunQueue = make(map[int]*TestRunQueue)
+var testQueueMap map[int]*TestRunner = make(map[int]*TestRunner)
 
 func StartPAO() {
 	go dispatch()
@@ -50,7 +50,7 @@ func dispatch() {
 func run(testID, testRunID int) {
 	testQueue, ok := testQueueMap[testID]
 	if !ok {
-		testQueue = NewTestRunQueue(testID)
+		testQueue = NewTestRunner(testID)
 		testQueueMap[testID] = testQueue
 	}
 	if testQueue.Query(testRunID) == NotFound {
