@@ -75,11 +75,9 @@ func (p *Process) Wait() *TestRunResult {
 func (p *Process) Kill() {
 	p.RLock()
 	if !p.completed {
-		p.RUnlock()
 		p.cancellationSignal <- 1
-	} else {
-		p.RUnlock()
 	}
+	p.RUnlock()
 }
 
 // awaitOutput waits for the process to complete, whether it be successfully or
