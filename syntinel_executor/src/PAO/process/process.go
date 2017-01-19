@@ -24,8 +24,10 @@ type Process struct {
 	resultMailbox      chan *TestRunResult
 	cancellationSignal chan uint8
 	done               chan *TestRunResult
-	completed          bool
-	sync.RWMutex
+
+	// Access to completed MUST capture the lock.
+	completed bool
+	mutex     sync.RWMutex
 }
 
 // NewProcess returns a new process.(*Process). The returned process is not
@@ -68,16 +70,26 @@ func (p *Process) Start() {
 	go p.selectResultOrDie()
 }
 
+// Wait synchronously waits for the output of the process.
 func (p *Process) Wait() *TestRunResult {
 	return <-p.resultMailbox
 }
 
+// Kill sends a kill signal to the process. If the process has already completed,
+// then Kill is a no-op.
 func (p *Process) Kill() {
-	p.RLock()
+	// Locks are necessary. If p.cleanup is the only funcion that both:
+	//  1. closes p.cancellationSignal
+	//  2. Sets p.complete
+	// There, p.complete is a proxy for "p.cancellationSignal is closed"
+	//
+	// There is no error returned on this one since either way the desired effect
+	// has occurred (either we killed or it's already dead).
+	p.mutex.RLock()
 	if !p.completed {
 		p.cancellationSignal <- 1
 	}
-	p.RUnlock()
+	p.mutex.RUnlock()
 }
 
 // awaitOutput waits for the process to complete, whether it be successfully or
@@ -105,6 +117,10 @@ func (p *Process) selectResultOrDie() {
 	case result = <-p.done:
 	case <-p.cancellationSignal:
 		// Not portable to Windows.
+		// If the process completes the moment before this is called, then
+		// the returned error will simply say "Process already finished".
+		// Which, if it finished, then awaitOutput will be putting the result
+		// in p.done soon anyways.
 		if err := p.proc.Process.Kill(); err != nil {
 			log.Println(err)
 		}
@@ -112,16 +128,13 @@ func (p *Process) selectResultOrDie() {
 		result = <-p.done
 	}
 	p.resultMailbox <- result
-	// This assignment MUST come after placing the result in the mailbox.
-	// It is the guarantee
-	// p.completed = true
 }
 
 // Closes the channels that the process.Process is responsible for.
 func (p *Process) cleanup() {
-	p.Lock()
+	p.mutex.Lock()
 	p.completed = true
-	p.Unlock()
+	p.mutex.Unlock()
 	close(p.done)
 	close(p.resultMailbox)
 	close(p.cancellationSignal)
