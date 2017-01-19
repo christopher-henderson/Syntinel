@@ -1,6 +1,7 @@
 syntinel_executor/src/assets/scripts/*
 syntinel_executor/src/assets/dockers/*
 syntinel_executor/src/executor$
+syntinel_executor/dist
 db.sqlite3
 
 # Byte-compiled / optimized / DLL files
