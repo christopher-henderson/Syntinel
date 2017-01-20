@@ -8,13 +8,6 @@ import (
 	"sync"
 )
 
-// TestRun is a PODO that holds the error, if any, as well as the output
-// of a command executed via a process.Process execution.
-type TestRunResult struct {
-	Err    error
-	Output string
-}
-
 // The Process type lightly wraps the exec.Cmd type. Its intent is for a
 // situations where you would want a long running background process that
 // can also be cancelled at any time.
@@ -23,6 +16,7 @@ type Process struct {
 	resultMailbox      chan error
 	cancellationSignal chan uint8
 	done               chan error
+	started            bool
 
 	outputReader    *io.PipeReader
 	outputWriter    *io.PipeWriter
@@ -36,44 +30,43 @@ type Process struct {
 // NewProcess returns a new process.(*Process). The returned process is not
 // executing at this point. In order to begin the process, call the process'
 // Start method.
-//
-// A unidirectional, receive only, channel of process.(*TestRunResult) and a
-// unidirectional, send only, channel of unint8 are returned.
-//
-// The first, receive only, channel is the result channel. That is, upon
-// completion of the command (either due to success or failure) this channel
-// will be populated with a process.(*TestRunResult) with information about the
-// the process. This is a buffered channel of size one, and such MUST be
-// received from only once as the process will close it immediately upon
-// completion.
-//
-// The second, send only, channel is the kill signal channel. Sending any
-// value over this channel will send a SIGKILL to the process. After the
-// process has been killed, the result can again be found in the above
-// result channel. This channel MUST be closed by the caller.
 func NewProcess(command string, args ...string) *Process {
-	resultMailbox := make(chan error, 1)
-	cancellationSignal := make(chan uint8, 1)
-	done := make(chan error)
-	process := &Process{exec.Command(command, args...), resultMailbox, cancellationSignal, done, &io.PipeReader{}, &io.PipeWriter{}, false, false, sync.RWMutex{}}
+	process := &Process{
+		exec.Command(command, args...),
+		make(chan error, 1),
+		make(chan uint8, 1),
+		make(chan error, 1),
+		false,
+		&io.PipeReader{},
+		&io.PipeWriter{},
+		false,
+		false,
+		sync.RWMutex{}}
 	return process
 }
 
 // OutputStream Sets stdout and stderr and returns a *bufio.Scanner
-// If the combined stdout and stderr.
+// of the combined stdout and stderr.
+//
+// Calling this method twice will result will result in a panic.
+// Calling this method after calling Start() will result in a panic.
 func (p *Process) OutputStream() *bufio.Scanner {
-	if !p.outputStreamSet {
-		p.outputReader, p.outputWriter = io.Pipe()
-		p.proc.Stderr = p.outputWriter
-		p.proc.Stdout = p.outputWriter
-		p.outputStreamSet = true
-		return bufio.NewScanner(p.outputReader)
+	if p.outputStreamSet {
+		panic("process.(*Process).OutputStream was called twice.")
 	}
-	panic("asds")
+	if p.started {
+		panic("process.(*Process).OutputStream called after the process was started..")
+	}
+	p.outputReader, p.outputWriter = io.Pipe()
+	p.proc.Stderr = p.outputWriter
+	p.proc.Stdout = p.outputWriter
+	p.outputStreamSet = true
+	return bufio.NewScanner(p.outputReader)
 }
 
 // Start execution of the process.
 func (p *Process) Start() {
+	p.started = true
 	if err := p.proc.Start(); err != nil {
 		defer p.cleanup()
 		p.resultMailbox <- err

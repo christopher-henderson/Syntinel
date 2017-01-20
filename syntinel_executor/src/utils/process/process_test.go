@@ -1,11 +1,10 @@
-package tests
+package process
 
 import (
 	"bufio"
 	"log"
 	"math"
 	"runtime"
-	"syntinel_executor/PAO/process"
 	"testing"
 	"time"
 	"unsafe"
@@ -21,7 +20,7 @@ func LogScanner(scanner *bufio.Scanner) {
 func TestProcess(t *testing.T) {
 	command := "echo"
 	args := "hello"
-	proc := process.NewProcess(command, args)
+	proc := NewProcess(command, args)
 	stdout := proc.OutputStream()
 	proc.Start()
 	var stdoutResult []byte
@@ -42,7 +41,7 @@ func TestProcess(t *testing.T) {
 func TestProcessKill(t *testing.T) {
 	command := "python"
 	args := []string{"-c", "while True: pass"}
-	proc := process.NewProcess(command, args...)
+	proc := NewProcess(command, args...)
 	go LogScanner(proc.OutputStream())
 	proc.Start()
 	proc.Kill()
@@ -54,7 +53,7 @@ func TestProcessKill(t *testing.T) {
 func TestProcessBadInvocation(t *testing.T) {
 	command := "totallynotacommandecho"
 	args := "hello"
-	proc := process.NewProcess(command, args)
+	proc := NewProcess(command, args)
 	go LogScanner(proc.OutputStream())
 	proc.Start()
 	proc.Kill()
@@ -66,7 +65,7 @@ func TestProcessBadInvocation(t *testing.T) {
 func TestRetrieveStderr(t *testing.T) {
 	command := "python"
 	args := []string{"-c", "from sys import stderr;print('Printing to stderr.', file=stderr);raise Exception('also this')"}
-	proc := process.NewProcess(command, args...)
+	proc := NewProcess(command, args...)
 	go LogScanner(proc.OutputStream())
 	proc.Start()
 	proc.Wait()
@@ -75,7 +74,7 @@ func TestRetrieveStderr(t *testing.T) {
 func TestProcessBadInvocationKill(t *testing.T) {
 	command := "totallynotacommandecho"
 	args := "hello"
-	proc := process.NewProcess(command, args)
+	proc := NewProcess(command, args)
 	go LogScanner(proc.OutputStream())
 	proc.Start()
 	proc.Kill()
@@ -102,18 +101,45 @@ func TestProcessBadInvocationKill(t *testing.T) {
 func TestProcessRace(t *testing.T) {
 	command := "python"
 	args := []string{"-c", "from time import sleep;sleep(.01);print('Done.')"}
-	proc := process.NewProcess(command, args...)
+	proc := NewProcess(command, args...)
 	proc.Start()
 	time.Sleep(time.Millisecond * 33)
 	proc.Kill()
 	proc.Wait()
 }
 
+func TestProcessOutstreamCalledTwice(t *testing.T) {
+	command := "python"
+	args := []string{"-c", "from time import sleep;sleep(.01);print('Done.')"}
+	proc := NewProcess(command, args...)
+	defer func() {
+		if err := recover(); err == nil {
+			t.Errorf("No panic occured when calling OutputStream a second time.")
+		}
+	}()
+	proc.OutputStream()
+	proc.OutputStream()
+}
+
+func TestProcessOutstreamCalledAfterStart(t *testing.T) {
+	command := "python"
+	args := []string{"-c", "from time import sleep;sleep(.01);print('Done.')"}
+	proc := NewProcess(command, args...)
+	defer func() {
+		if err := recover(); err == nil {
+			t.Errorf("No panic occured when calling OutputStream a second time.")
+		}
+		proc.Wait()
+	}()
+	proc.Start()
+	proc.OutputStream()
+}
+
 func TestProcessGoroutineLeak(t *testing.T) {
 	startingGoroutines := runtime.NumGoroutine()
 	command := "echo"
 	args := "hello"
-	proc := process.NewProcess(command, args)
+	proc := NewProcess(command, args)
 	proc.Start()
 	proc.Wait()
 	// Give the goroutines a moment to shutdown. If you don't, then every
@@ -130,7 +156,7 @@ func TestProcessMemoryLeak(t *testing.T) {
 	runtime.ReadMemStats(m1)
 	command := "echo"
 	args := "hello"
-	proc := process.NewProcess(command, args)
+	proc := NewProcess(command, args)
 	proc.Start()
 	proc.Wait()
 	runtime.GC()
@@ -150,21 +176,21 @@ func TestProcessMemoryLeak2(t *testing.T) {
 	command := "echo"
 	args := "hello"
 
-	proc := process.NewProcess(command, args)
+	proc := NewProcess(command, args)
 	proc.Start()
 	proc.Wait()
 	runtime.GC()
 	m1 := &runtime.MemStats{}
 	runtime.ReadMemStats(m1)
 
-	proc = process.NewProcess(command, args)
+	proc = NewProcess(command, args)
 	proc.Start()
 	proc.Wait()
 	runtime.GC()
 	m2 := &runtime.MemStats{}
 	runtime.ReadMemStats(m2)
 
-	proc = process.NewProcess(command, args)
+	proc = NewProcess(command, args)
 	proc.Start()
 	proc.Wait()
 	runtime.GC()
@@ -192,13 +218,13 @@ func TestProcessMemoryLeak2(t *testing.T) {
 func TestMemoryLeak3(t *testing.T) {
 	command := "echo"
 	args := "hello"
-	proc := process.NewProcess(command, args)
+	proc := NewProcess(command, args)
 	proc.Start()
 	proc.Wait()
 	startingMemory := &runtime.MemStats{}
 	runtime.ReadMemStats(startingMemory)
 	for i := 0; i < 100; i++ {
-		proc = process.NewProcess(command, args)
+		proc = NewProcess(command, args)
 		proc.Start()
 		proc.Wait()
 	}

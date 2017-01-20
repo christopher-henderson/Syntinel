@@ -6,9 +6,9 @@ import (
 	"os"
 	"strconv"
 	"sync"
-	"syntinel_executor/PAO/process"
 	"syntinel_executor/ResultServer"
 	"syntinel_executor/utils"
+	"syntinel_executor/utils/process"
 )
 
 type TestRun struct {
