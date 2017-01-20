@@ -18,7 +18,7 @@ func (d *Docker) Save(content []byte) {
 	tmp := d.tmpPath()
 	defer func() {
 		if err := recover(); err != nil {
-			// If there was an error, attempt to move the original (not 'tmp')
+			// If there was an error, attempt to move the original (now called 'tmp')
 			// back to where it was.
 			utils.FileCopy(tmp, path)
 			utils.FileRemove(tmp)
