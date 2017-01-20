@@ -1,9 +1,6 @@
 package service
 
-import (
-	"io"
-	"syntinel_executor/DAO"
-)
+import "syntinel_executor/DAO"
 
 var DockerService = newDockerService()
 
@@ -14,13 +11,13 @@ func newDockerService() *dockerService {
 	return &dockerService{}
 }
 
-func (d *dockerService) Register(id int, data io.Reader) {
+func (d *dockerService) Register(id int, body []byte) {
 	docker := &DAO.Docker{id}
-	docker.Save(data)
+	docker.Save(body)
 }
 
-func (d *dockerService) Update(id int, data io.Reader) {
-	d.Register(id, data)
+func (d *dockerService) Update(id int, body []byte) {
+	d.Register(id, body)
 }
 
 func (d *dockerService) Delete(id int) {

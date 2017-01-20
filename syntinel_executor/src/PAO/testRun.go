@@ -1,14 +1,14 @@
 package PAO
 
 import (
-	"io"
+	"fmt"
 	"log"
 	"os"
-	"path/filepath"
 	"strconv"
 	"sync"
 	"syntinel_executor/PAO/process"
 	"syntinel_executor/ResultServer"
+	"syntinel_executor/utils"
 )
 
 type TestRun struct {
@@ -30,13 +30,7 @@ func (t *TestRun) ImageName() string {
 }
 
 func (t *TestRun) DockerBuildDirectory() string {
-	path, err := filepath.Abs(filepath.Dir(os.Args[0]))
-	if err != nil {
-		log.Fatalln(err)
-	}
-	log.Println(path)
-	return path + string(os.PathSeparator) + "assets" +
-		string(os.PathSeparator) + "build" + string(os.PathSeparator) + t.ImageName()
+	return fmt.Sprintf("%v%v%v", utils.BuildDirectory(), t.ImageName(), string(os.PathSeparator))
 }
 
 func (t *TestRun) Run() {
@@ -64,12 +58,12 @@ func (t *TestRun) buildDockerImage() *process.Process {
 		log.Fatalln(err)
 	}
 	t.setState(CopyingScript)
-	if err := copy(t.scriptPath, t.DockerBuildDirectory()+string(os.PathSeparator)+"script.sh"); err != nil {
+	if err := utils.FileCopy(t.scriptPath, t.DockerBuildDirectory()+"script.sh"); err != nil {
 		t.setState(Failed)
 		log.Fatalln(err)
 	}
 	t.setState(CopyingDockerfile)
-	if err := copy(t.dockerPath, t.DockerBuildDirectory()+string(os.PathSeparator)+"Dockerfile"); err != nil {
+	if err := utils.FileCopy(t.dockerPath, t.DockerBuildDirectory()+"Dockerfile"); err != nil {
 		t.setState(Failed)
 		log.Fatalln(err)
 	}
@@ -115,25 +109,4 @@ func (w *TestRun) awaitOutput(function func() *process.Process) *process.TestRun
 		log.Println("Received finished result.")
 	}
 	return testRunResult
-}
-
-func copy(source string, destination string) error {
-	if _, err := os.Stat(source); err != nil {
-		return nil
-	}
-	src, err := os.Open(source)
-	if err != nil {
-		return err
-	}
-	defer src.Close()
-	dst, err := os.Create(destination)
-	if err != nil {
-		return err
-	}
-	defer dst.Close()
-	_, err = io.Copy(dst, src)
-	if err != nil {
-		return err
-	}
-	return nil
 }

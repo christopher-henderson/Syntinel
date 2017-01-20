@@ -35,11 +35,11 @@ var projectRoot = func() (path string) {
 	return path
 }()
 var scripts = func() string {
-	return fmt.Sprintf("%v%v%v%v%v", projectRoot, os.PathSeparator, "assets", os.PathSeparator, "script")
+	return fmt.Sprintf("%v%v%v%v%v%v", projectRoot, string(os.PathSeparator), "assets", string(os.PathSeparator), "scripts", string(os.PathSeparator))
 }()
 var build = func() string {
-	return fmt.Sprintf("%v%v%v%v%v", projectRoot, os.PathSeparator, "assets", os.PathSeparator, "build")
+	return fmt.Sprintf("%v%v%v%v%v%v", projectRoot, string(os.PathSeparator), "assets", string(os.PathSeparator), "build", string(os.PathSeparator))
 }()
 var dockerfiles = func() string {
-	return fmt.Sprintf("%v%v%v%v%v", projectRoot, os.PathSeparator, "assets", os.PathSeparator, "dockerfiles")
+	return fmt.Sprintf("%v%v%v%v%v%v", projectRoot, string(os.PathSeparator), "assets", string(os.PathSeparator), "dockers", string(os.PathSeparator))
 }()

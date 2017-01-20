@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
-	"os"
 	"strconv"
 	"syntinel_executor/utils"
 )
@@ -51,10 +50,10 @@ func (s *Script) Delete() {
 
 // Path returns the absolute path of the script on the filesystem.
 func (s *Script) Path() string {
-	return fmt.Sprintf("%v%v%v", utils.ScriptDirectory(), os.PathSeparator, strconv.Itoa(s.ID))
+	return fmt.Sprintf("%v%v", utils.ScriptDirectory(), strconv.Itoa(s.ID))
 }
 
 // tmpPath returns what Path does, but as a hidden file.
 func (s *Script) tmpPath() string {
-	return fmt.Sprintf("%v%v.%v", utils.ScriptDirectory(), os.PathSeparator, strconv.Itoa(s.ID))
+	return fmt.Sprintf("%v.%v", utils.ScriptDirectory(), strconv.Itoa(s.ID))
 }

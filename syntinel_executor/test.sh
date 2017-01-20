@@ -6,7 +6,15 @@
 
 curl -X POST http://192.168.1.2:8000/script/1 -d "#!/usr/bin/env bash
 git clone https://github.com/christopher-henderson/TestTheTester.git && cd TestTheTester/GoBeInGoodHands && go test . -v -cover"
-curl -X POST http://192.168.1.2:8000/docker/1 -F "docker=@/Users/chris/Documents/ASU/Syntinel/syntinel_executor/Dockerfile"
+curl -X POST http://192.168.1.2:8000/docker/1 -d "
+FROM docker.io/centos
+
+MAINTAINER Christopher Henderson
+
+RUN yum install -y go git wget
+COPY script.sh \$HOME/script.sh
+CMD chmod +x script.sh && ./script.sh
+"
 curl -X POST http://192.168.1.2:8000/test/1?dockerID=1\&scriptID=1
 curl -X POST http://192.168.1.2:8000/test/run?testID=1\&testRunID=2
 curl -X POST http://192.168.1.2:8000/test/run?testID=1\&testRunID=3

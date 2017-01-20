@@ -1,10 +1,10 @@
 package DAO
 
 import (
-	"io"
+	"fmt"
+	"io/ioutil"
 	"log"
 	"os"
-	"path/filepath"
 	"strconv"
 	"syntinel_executor/utils"
 )
@@ -13,50 +13,46 @@ type Docker struct {
 	ID int
 }
 
-func (d *Docker) Save(data io.Reader) {
-	id := strconv.Itoa(d.ID)
-	absolutePath := absDockerPath()
-	path := absolutePath + id
-	tmpPath := absolutePath + "." + id
+func (d *Docker) Save(content []byte) {
+	path := d.Path()
+	tmp := d.tmpPath()
 	defer func() {
 		if err := recover(); err != nil {
 			// If there was an error, attempt to move the original (not 'tmp')
 			// back to where it was.
-			utils.FileCopy(tmpPath, path)
-			utils.FileRemove(tmpPath)
+			utils.FileCopy(tmp, path)
+			utils.FileRemove(tmp)
 			panic(err)
 		}
 	}()
-	dst, err := os.Create(path)
-	if err != nil {
+	// Copy the current Dockerfile to a temporary file.
+	if err := utils.FileCopy(path, tmp); err != nil {
+		log.Println(err)
+	}
+	// Copy the incoming Dockerfile to its final destination.
+	if err := ioutil.WriteFile(path, content, 0770); err != nil {
+		// This write was critical.
 		log.Fatalln(err)
 	}
-	defer dst.Close()
-	if _, err := io.Copy(dst, data); err != nil {
-		log.Fatalln(err)
-	}
-	if err := utils.FileRemove(tmpPath); err != nil {
-		log.Fatalln(err)
+	// Remove the temporary file.
+	if err := utils.FileRemove(tmp); err != nil {
+		log.Println(err)
 	}
 }
 
+// Delete deletes the Dockerfile from the filesystem.
 func (d *Docker) Delete() {
-	path := absDockerPath() + strconv.Itoa(d.ID)
-	if err := utils.FileRemove(path); err != nil {
-		log.Fatalln(err)
+	if err := utils.FileRemove(d.Path()); err != nil {
+		log.Println(err)
 	}
 }
 
+// Path returns the absolute Dockerfile of the script on the filesystem.
 func (d *Docker) Path() string {
-	return absDockerPath() + strconv.Itoa(d.ID)
+	return fmt.Sprintf("%v%v%v", utils.DockerFileDirectory(), string(os.PathSeparator), strconv.Itoa(d.ID))
 }
 
-func absDockerPath() string {
-	path, err := filepath.Abs(filepath.Dir(os.Args[0]))
-	if err != nil {
-		log.Fatalln(err)
-	}
-	return path + string(os.PathSeparator) + "assets" +
-		string(os.PathSeparator) + "dockers" +
-		string(os.PathSeparator)
+// tmpPath returns what Path does, but as a hidden file.
+func (d *Docker) tmpPath() string {
+	return fmt.Sprintf("%v%v.%v", utils.DockerFileDirectory(), string(os.PathSeparator), strconv.Itoa(d.ID))
 }
