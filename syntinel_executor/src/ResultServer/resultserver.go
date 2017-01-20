@@ -1,6 +1,8 @@
 package ResultServer
 
 import (
+	"bufio"
+	"fmt"
 	"log"
 	"sync"
 	"syntinel_executor/PAO/process"
@@ -28,6 +30,14 @@ func newResultServer() *resultServer {
 	go rs.ListenForResults()
 	go rs.ListenForRetries()
 	return rs
+}
+
+func Stream(ID int, stdout *bufio.Scanner) {
+	go func() {
+		for stdout.Scan() {
+			log.Println(fmt.Sprintf("STDOUT ID %v: %v", ID, string(stdout.Bytes())))
+		}
+	}()
 }
 
 func SendResult(result *FinalResult) {

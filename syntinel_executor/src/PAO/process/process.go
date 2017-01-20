@@ -1,11 +1,10 @@
 package process
 
 import (
+	"bufio"
 	"io"
-	"io/ioutil"
 	"log"
 	"os/exec"
-	"strings"
 	"sync"
 )
 
@@ -21,9 +20,13 @@ type TestRunResult struct {
 // can also be cancelled at any time.
 type Process struct {
 	proc               *exec.Cmd
-	resultMailbox      chan *TestRunResult
+	resultMailbox      chan error
 	cancellationSignal chan uint8
-	done               chan *TestRunResult
+	done               chan error
+
+	outputReader    *io.PipeReader
+	outputWriter    *io.PipeWriter
+	outputStreamSet bool
 
 	// Access to completed MUST capture the lock.
 	completed bool
@@ -49,29 +52,39 @@ type Process struct {
 // process has been killed, the result can again be found in the above
 // result channel. This channel MUST be closed by the caller.
 func NewProcess(command string, args ...string) *Process {
-	resultMailbox := make(chan *TestRunResult, 1)
+	resultMailbox := make(chan error, 1)
 	cancellationSignal := make(chan uint8, 1)
-	done := make(chan *TestRunResult)
-	process := &Process{exec.Command(command, args...), resultMailbox, cancellationSignal, done, false, sync.RWMutex{}}
+	done := make(chan error)
+	process := &Process{exec.Command(command, args...), resultMailbox, cancellationSignal, done, &io.PipeReader{}, &io.PipeWriter{}, false, false, sync.RWMutex{}}
 	return process
+}
+
+// OutputStream Sets stdout and stderr and returns a *bufio.Scanner
+// If the combined stdout and stderr.
+func (p *Process) OutputStream() *bufio.Scanner {
+	if !p.outputStreamSet {
+		p.outputReader, p.outputWriter = io.Pipe()
+		p.proc.Stderr = p.outputWriter
+		p.proc.Stdout = p.outputWriter
+		p.outputStreamSet = true
+		return bufio.NewScanner(p.outputReader)
+	}
+	panic("asds")
 }
 
 // Start execution of the process.
 func (p *Process) Start() {
-	stdout, _ := p.proc.StdoutPipe()
-	stderr, _ := p.proc.StderrPipe()
 	if err := p.proc.Start(); err != nil {
 		defer p.cleanup()
-		er, _ := ioutil.ReadAll(stderr)
-		p.resultMailbox <- &TestRunResult{err, string(er)}
-		return
+		p.resultMailbox <- err
+	} else {
+		go p.awaitOutput()
+		go p.selectResultOrDie()
 	}
-	go p.awaitOutput(stdout, stderr)
-	go p.selectResultOrDie()
 }
 
 // Wait synchronously waits for the output of the process.
-func (p *Process) Wait() *TestRunResult {
+func (p *Process) Wait() error {
 	return <-p.resultMailbox
 }
 
@@ -96,12 +109,8 @@ func (p *Process) Kill() {
 // by failure. The combined output of the process' stdout and stderr, as well
 // as any error, is used to construct a process.(*TestRunResult) which is then
 // communicated to the selectResultOrDie method via the 'done' channel.
-func (p *Process) awaitOutput(stdout io.ReadCloser, stderr io.ReadCloser) {
-	out, _ := ioutil.ReadAll(stdout)
-	stder, _ := ioutil.ReadAll(stderr)
-	output := string(out) + string(stder)
-	err := p.proc.Wait()
-	p.done <- &TestRunResult{err, strings.TrimSpace(string(output))}
+func (p *Process) awaitOutput() {
+	p.done <- p.proc.Wait()
 }
 
 // Selects on either the result channel or the kill channel. If the result
@@ -112,7 +121,7 @@ func (p *Process) awaitOutput(stdout io.ReadCloser, stderr io.ReadCloser) {
 // placed into the result channel.
 func (p *Process) selectResultOrDie() {
 	defer p.cleanup()
-	var result *TestRunResult
+	var result error
 	select {
 	case result = <-p.done:
 	case <-p.cancellationSignal:
@@ -135,6 +144,10 @@ func (p *Process) cleanup() {
 	p.mutex.Lock()
 	p.completed = true
 	p.mutex.Unlock()
+	if p.outputStreamSet {
+		p.outputReader.Close()
+		p.outputWriter.Close()
+	}
 	close(p.done)
 	close(p.resultMailbox)
 	close(p.cancellationSignal)

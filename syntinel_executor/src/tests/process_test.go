@@ -1,6 +1,8 @@
 package tests
 
 import (
+	"bufio"
+	"log"
 	"math"
 	"runtime"
 	"syntinel_executor/PAO/process"
@@ -9,15 +11,31 @@ import (
 	"unsafe"
 )
 
+func LogScanner(scanner *bufio.Scanner) {
+	for scanner.Scan() {
+		log.Print(string(scanner.Bytes()))
+	}
+	log.Print("\n")
+}
+
 func TestProcess(t *testing.T) {
 	command := "echo"
 	args := "hello"
 	proc := process.NewProcess(command, args)
+	stdout := proc.OutputStream()
 	proc.Start()
-	output := proc.Wait()
-	if output.Output != args {
-		t.Errorf("Expected %v, got %v", args, output.Output)
-		t.Errorf("Error is %v", output.Err)
+	var stdoutResult []byte
+	go func() {
+		for stdout.Scan() {
+			bytes := stdout.Bytes()
+			stdoutResult = append(stdoutResult, bytes...)
+		}
+		if string(stdoutResult) != args {
+			t.Errorf("Stdout is wrong, expected %v got %v", args, string(stdoutResult))
+		}
+	}()
+	if err := proc.Wait(); err != nil {
+		t.Errorf("Unexpected error occured: %v", err)
 	}
 }
 
@@ -25,10 +43,10 @@ func TestProcessKill(t *testing.T) {
 	command := "python"
 	args := []string{"-c", "while True: pass"}
 	proc := process.NewProcess(command, args...)
+	go LogScanner(proc.OutputStream())
 	proc.Start()
 	proc.Kill()
-	output := proc.Wait()
-	if output.Err == nil {
+	if err := proc.Wait(); err == nil {
 		t.Errorf("No error on SIGKILL")
 	}
 }
@@ -37,21 +55,31 @@ func TestProcessBadInvocation(t *testing.T) {
 	command := "totallynotacommandecho"
 	args := "hello"
 	proc := process.NewProcess(command, args)
+	go LogScanner(proc.OutputStream())
 	proc.Start()
-	output := proc.Wait()
-	if output.Err == nil {
+	proc.Kill()
+	if err := proc.Wait(); err == nil {
 		t.Errorf("No error on bad invocation.")
 	}
+}
+
+func TestRetrieveStderr(t *testing.T) {
+	command := "python"
+	args := []string{"-c", "from sys import stderr;print('Printing to stderr.', file=stderr);raise Exception('also this')"}
+	proc := process.NewProcess(command, args...)
+	go LogScanner(proc.OutputStream())
+	proc.Start()
+	proc.Wait()
 }
 
 func TestProcessBadInvocationKill(t *testing.T) {
 	command := "totallynotacommandecho"
 	args := "hello"
 	proc := process.NewProcess(command, args)
+	go LogScanner(proc.OutputStream())
 	proc.Start()
 	proc.Kill()
-	output := proc.Wait()
-	if output.Err == nil {
+	if err := proc.Wait(); err == nil {
 		t.Errorf("No error on bad invocation.")
 	}
 }
@@ -78,9 +106,7 @@ func TestProcessRace(t *testing.T) {
 	proc.Start()
 	time.Sleep(time.Millisecond * 33)
 	proc.Kill()
-	output := proc.Wait()
-	t.Log(output.Err)
-	t.Log(output.Output)
+	proc.Wait()
 }
 
 func TestProcessGoroutineLeak(t *testing.T) {

@@ -35,16 +35,17 @@ func (t *TestRun) DockerBuildDirectory() string {
 
 func (t *TestRun) Run() {
 	t.setState(Starting)
-	finalResult := &ResultServer.FinalResult{t.ID, nil}
+	// finalResult := &ResultServer.FinalResult{t.ID, nil}
 	// defer t.destroyDocker()
 	defer t.setState(Done)
-	defer ResultServer.SendResult(finalResult)
-	if result := t.awaitOutput(t.buildDockerImage); result.Err != nil {
-		log.Println(result.Err)
-		finalResult.Result = result
+	// defer ResultServer.SendResult(finalResult)
+	if err := t.awaitOutput(t.buildDockerImage); err != nil {
+		log.Println(err)
+		// finalResult.Result = result
 		return
 	}
-	finalResult.Result = t.awaitOutput(t.runDockerImage)
+	t.awaitOutput(t.runDockerImage)
+	// finalResult.Result =
 }
 
 func (t *TestRun) Query() int {
@@ -91,11 +92,12 @@ func (t *TestRun) getState() int {
 	return t.state
 }
 
-func (w *TestRun) awaitOutput(function func() *process.Process) *process.TestRunResult {
+func (w *TestRun) awaitOutput(function func() *process.Process) error {
 	proc := function()
-	var testRunResult *process.TestRunResult
-	result := make(chan *process.TestRunResult)
+	var testRunResult error
+	result := make(chan error)
 	defer close(result)
+	ResultServer.Stream(w.ID, proc.OutputStream())
 	proc.Start()
 	go func() {
 		result <- proc.Wait()
