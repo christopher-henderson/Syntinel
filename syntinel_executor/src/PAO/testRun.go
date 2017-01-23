@@ -26,7 +26,7 @@ func NewTestRun(testID int, id int, dockerPath string, scriptPath string) *TestR
 }
 
 func (t *TestRun) ImageName() string {
-	return fmt.Sprintf("%v%v", utils.ContainerPrefix, strconv.Itoa(t.ID))
+	return fmt.Sprintf("%v%v", ContainerPrefix, strconv.Itoa(t.ID))
 }
 
 func (t *TestRun) DockerBuildDirectory() string {
@@ -54,41 +54,41 @@ func (t *TestRun) buildDockerImage() *process.Process {
 		log.Fatalln(err)
 	}
 	t.setState(CopyingScript)
-	if err := utils.FileCopy(t.scriptPath, t.DockerBuildDirectory()+utils.DockerScriptName); err != nil {
+	if err := utils.FileCopy(t.scriptPath, t.DockerBuildDirectory()+DockerScriptName); err != nil {
 		t.setState(Failed)
 		log.Fatalln(err)
 	}
 	t.setState(CopyingDockerfile)
-	if err := utils.FileCopy(t.dockerPath, t.DockerBuildDirectory()+utils.DockerFile); err != nil {
+	if err := utils.FileCopy(t.dockerPath, t.DockerBuildDirectory()+DockerFile); err != nil {
 		t.setState(Failed)
 		log.Fatalln(err)
 	}
 	args := []string{
-		utils.DockerBuild,        // Build image
-		utils.DockerBuildTag,     // Define the image tag.
+		DockerBuild,              // Build image
+		DockerBuildTag,           // Define the image tag.
 		t.ImageName(),            // Using the tag built by "ImageName"
-		utils.DockerBuildForceRM, // Delete the temporary container.
+		DockerBuildForceRM,       // Delete the temporary container.
 		t.DockerBuildDirectory()} // Build in this directory.
 	t.setState(BuildingImage)
-	return process.NewProcess(utils.DockerCommand, args...)
+	return process.NewProcess(DockerCommand, args...)
 }
 
 func (t *TestRun) runDockerImage() *process.Process {
 	defer t.deleteContainer()
 	args := []string{
-		utils.DockerRun,     // Run image
-		utils.DockerRunRM,   // Delete after completed.
-		utils.DockerRunName, // Name the container.
-		t.ImageName(),       // Name of the container.
-		t.ImageName()}       // Name of the image to run
-	return process.NewProcess(utils.DockerCommand, args...)
+		DockerRun,     // Run image
+		DockerRunRM,   // Delete after completed.
+		DockerRunName, // Name the container.
+		t.ImageName(), // Name of the container.
+		t.ImageName()} // Name of the image to run
+	return process.NewProcess(DockerCommand, args...)
 }
 
 func (t *TestRun) deleteContainer() {
-	argsStop := []string{utils.DockerStop, t.ImageName()}
-	argsDelete := []string{utils.DockerRM, t.ImageName()}
-	process.NewProcess(utils.DockerCommand, argsStop...).Start().Wait()
-	process.NewProcess(utils.DockerCommand, argsDelete...).Start().Wait()
+	argsStop := []string{DockerStop, t.ImageName()}
+	argsDelete := []string{DockerRM, t.ImageName()}
+	process.NewProcess(DockerCommand, argsStop...).Start().Wait()
+	process.NewProcess(DockerCommand, argsDelete...).Start().Wait()
 }
 
 func (t *TestRun) setState(state int) {
