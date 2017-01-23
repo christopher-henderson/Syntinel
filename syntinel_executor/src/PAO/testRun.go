@@ -35,17 +35,12 @@ func (t *TestRun) DockerBuildDirectory() string {
 
 func (t *TestRun) Run() {
 	t.setState(Starting)
-	// finalResult := &ResultServer.FinalResult{t.ID, nil}
-	// defer t.destroyDocker()
 	defer t.setState(Done)
-	// defer ResultServer.SendResult(finalResult)
 	if err := t.awaitOutput(t.buildDockerImage); err != nil {
 		log.Println(err)
-		// finalResult.Result = result
 		return
 	}
 	t.awaitOutput(t.runDockerImage)
-	// finalResult.Result =
 }
 
 func (t *TestRun) Query() int {
