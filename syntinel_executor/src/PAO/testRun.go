@@ -77,7 +77,7 @@ func (t *TestRun) buildDockerImage() *process.Process {
 func (t *TestRun) runDockerImage() *process.Process {
 	defer t.deleteContainer()
 	command := "docker"
-	args := []string{"run", "--rm", t.ImageName(), "--name", t.ImageName()}
+	args := []string{"run", "--rm", "--name", t.ImageName(), t.ImageName()}
 	return process.NewProcess(command, args...)
 }
 

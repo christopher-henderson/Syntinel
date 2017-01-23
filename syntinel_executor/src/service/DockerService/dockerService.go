@@ -2,15 +2,6 @@ package service
 
 import "syntinel_executor/DAO"
 
-var DockerService = newDockerService()
-
-type dockerService struct {
-}
-
-func newDockerService() *dockerService {
-	return &dockerService{}
-}
-
 func (d *dockerService) Register(id int, body []byte) {
 	docker := &DAO.Docker{id}
 	docker.Save(body)
