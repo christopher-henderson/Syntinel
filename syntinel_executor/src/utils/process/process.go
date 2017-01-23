@@ -65,7 +65,7 @@ func (p *Process) OutputStream() *bufio.Scanner {
 }
 
 // Start execution of the process.
-func (p *Process) Start() {
+func (p *Process) Start() *Process {
 	p.started = true
 	if err := p.proc.Start(); err != nil {
 		defer p.cleanup()
@@ -74,6 +74,7 @@ func (p *Process) Start() {
 		go p.awaitOutput()
 		go p.selectResultOrDie()
 	}
+	return p
 }
 
 // Wait synchronously waits for the output of the process.

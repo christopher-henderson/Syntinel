@@ -20,6 +20,8 @@ curl -X POST http://192.168.1.2:8000/test/run?testID=1\&testRunID=2
 curl -X POST http://192.168.1.2:8000/test/run?testID=1\&testRunID=3
 curl -X POST http://192.168.1.2:8000/test/run?testID=1\&testRunID=4
 
+curl -X DELETE http://192.168.1.2:8000/test/run?testID=1\&testRunID=2
+
 # curl -X POST http://192.168.1.2:8000/test/2?dockerID=1\&scriptID=1
 # curl -X POST http://192.168.1.2:8000/test/run?testID=2\&testRunID=2
 # curl -X POST http://192.168.1.2:8000/test/run?testID=2\&testRunID=3

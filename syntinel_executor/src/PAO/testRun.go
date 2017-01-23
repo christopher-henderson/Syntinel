@@ -75,9 +75,18 @@ func (t *TestRun) buildDockerImage() *process.Process {
 }
 
 func (t *TestRun) runDockerImage() *process.Process {
+	defer t.deleteContainer()
 	command := "docker"
-	args := []string{"run", "--rm", t.ImageName()}
+	args := []string{"run", "--rm", t.ImageName(), "--name", t.ImageName()}
 	return process.NewProcess(command, args...)
+}
+
+func (t *TestRun) deleteContainer() {
+	command := "docker"
+	argsStop := []string{"stop", t.ImageName()}
+	argsDelete := []string{"rm", t.ImageName()}
+	process.NewProcess(command, argsStop...).Start().Wait()
+	process.NewProcess(command, argsDelete...).Start().Wait()
 }
 
 func (t *TestRun) setState(state int) {
@@ -92,18 +101,18 @@ func (t *TestRun) getState() int {
 	return t.state
 }
 
-func (w *TestRun) awaitOutput(function func() *process.Process) error {
+func (t *TestRun) awaitOutput(function func() *process.Process) error {
 	proc := function()
 	var testRunResult error
 	result := make(chan error)
 	defer close(result)
-	ResultServer.Stream(w.ID, proc.OutputStream())
+	ResultServer.Stream(t.ID, proc.OutputStream())
 	proc.Start()
 	go func() {
 		result <- proc.Wait()
 	}()
 	select {
-	case <-w.Cancel:
+	case <-t.Cancel:
 		log.Println("Received kill request.")
 		proc.Kill()
 		testRunResult = <-result
