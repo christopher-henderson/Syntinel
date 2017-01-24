@@ -1,12 +1,11 @@
 package DAO
 
 import (
-	"io"
+	"fmt"
 	"io/ioutil"
 	"log"
-	"os"
-	"path/filepath"
 	"strconv"
+	"syntinel_executor/utils"
 )
 
 // The Script type keeps the primary key of the script on the remote master
@@ -16,78 +15,45 @@ type Script struct {
 }
 
 func (s *Script) Save(content []byte) {
-	id := strconv.Itoa(s.ID)
-	absolutePath := abspath()
-	path := absolutePath + id
-	tmpPath := absolutePath + "." + id
-	defer cleanup(path, tmpPath)
-	if err := copy(path, tmpPath); err != nil {
-		log.Fatalln(err)
+	path := s.Path()
+	tmp := s.tmpPath()
+	defer func() {
+		if err := recover(); err != nil {
+			// If there was an error, attempt to move the original (now called 'tmp')
+			// back to where it was.
+			utils.FileCopy(tmp, path)
+			utils.FileRemove(tmp)
+			panic(err)
+		}
+	}()
+	// Copy the current script to a temporary file.
+	if err := utils.FileCopy(path, tmp); err != nil {
+		log.Println(err)
 	}
+	// Copy the incoming script to its final destination.
 	if err := ioutil.WriteFile(path, content, 0770); err != nil {
+		// This write was critical.
 		log.Fatalln(err)
 	}
-	if err := remove(tmpPath); err != nil {
-		log.Fatalln(err)
+	// Remove the temporary file.
+	if err := utils.FileRemove(tmp); err != nil {
+		log.Println(err)
 	}
 }
 
+// Delete deletes the script from the filesystem.
 func (s *Script) Delete() {
-	path := abspath() + strconv.Itoa(s.ID)
-	if err := remove(path); err != nil {
-		log.Fatalln(err)
+	if err := utils.FileRemove(s.Path()); err != nil {
+		log.Println(err)
 	}
 }
 
+// Path returns the absolute path of the script on the filesystem.
 func (s *Script) Path() string {
-	return abspath() + strconv.Itoa(s.ID)
+	return fmt.Sprintf("%v%v", utils.ScriptDirectory(), strconv.Itoa(s.ID))
 }
 
-func abspath() string {
-	path, err := filepath.Abs(filepath.Dir(os.Args[0]))
-	if err != nil {
-		log.Fatalln(err)
-	}
-	return path + string(os.PathSeparator) + "assets" +
-		string(os.PathSeparator) + "scripts" +
-		string(os.PathSeparator)
-}
-
-func copy(source string, destination string) error {
-	if _, err := os.Stat(source); err != nil {
-		return nil
-	}
-	src, err := os.Open(source)
-	if err != nil {
-		return err
-	}
-	defer src.Close()
-	dst, err := os.Create(destination)
-	if err != nil {
-		return err
-	}
-	defer dst.Close()
-	_, err = io.Copy(dst, src)
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
-func remove(path string) error {
-	if _, err := os.Stat(path); err != nil {
-		return nil
-	}
-	if err := os.Remove(path); err != nil {
-		return err
-	}
-	return nil
-}
-
-func cleanup(path string, tmp string) {
-	if err := recover(); err != nil {
-		copy(tmp, path)
-		remove(tmp)
-		panic(err)
-	}
+// tmpPath returns what Path does, but as a hidden file.
+func (s *Script) tmpPath() string {
+	return fmt.Sprintf("%v.%v", utils.ScriptDirectory(), strconv.Itoa(s.ID))
 }

@@ -1,9 +1,12 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
+	"runtime"
 	"syntinel_executor/controller"
+	"time"
 
 	"github.com/gorilla/mux"
 )
@@ -31,6 +34,12 @@ func main() {
 	router.HandleFunc("/docker/{id:\\d+}", controller.UpdateDocker).Methods("PATCH")
 
 	http.Handle("/", router)
+	go func() {
+		for {
+			time.Sleep(time.Second * 5)
+			log.Println(fmt.Sprintf("Number of Goroutines: %v", runtime.NumGoroutine()))
+		}
+	}()
 	if err := http.ListenAndServe(":8000", nil); err != nil {
 		log.Fatalln(err)
 	}

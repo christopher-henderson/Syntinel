@@ -5,15 +5,6 @@ import (
 	"syntinel_executor/DAO"
 )
 
-var TestService = newTestService()
-
-type testService struct {
-}
-
-func newTestService() *testService {
-	return &testService{}
-}
-
 func (t *testService) Delete(id int) {
 	log.Printf("Deleting test ID %v.\n", id)
 	DAO.DeleteTest(id)

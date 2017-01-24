@@ -1,36 +1,51 @@
-package tests
+package process
 
 import (
+	"bufio"
+	"log"
 	"math"
 	"runtime"
-	"syntinel_executor/PAO/process"
 	"testing"
 	"time"
 	"unsafe"
 )
 
+func LogScanner(scanner *bufio.Scanner) {
+	for scanner.Scan() {
+		log.Print(string(scanner.Bytes()))
+	}
+	log.Print("\n")
+}
+
 func TestProcess(t *testing.T) {
 	command := "echo"
 	args := "hello"
-	proc, result, cancel := process.NewProcess(command, args)
-	defer close(cancel)
+	proc := NewProcess(command, args)
+	stdout := proc.OutputStream()
 	proc.Start()
-	output := <-result
-	if output.Output != args {
-		t.Errorf("Expected %v, got %v", args, output.Output)
-		t.Errorf("Error is %v", output.Err)
+	var stdoutResult []byte
+	go func() {
+		for stdout.Scan() {
+			bytes := stdout.Bytes()
+			stdoutResult = append(stdoutResult, bytes...)
+		}
+		if string(stdoutResult) != args {
+			t.Errorf("Stdout is wrong, expected %v got %v", args, string(stdoutResult))
+		}
+	}()
+	if err := proc.Wait(); err != nil {
+		t.Errorf("Unexpected error occured: %v", err)
 	}
 }
 
 func TestProcessKill(t *testing.T) {
 	command := "python"
 	args := []string{"-c", "while True: pass"}
-	proc, result, cancel := process.NewProcess(command, args...)
-	defer close(cancel)
+	proc := NewProcess(command, args...)
+	go LogScanner(proc.OutputStream())
 	proc.Start()
-	cancel <- 1
-	output := <-result
-	if output.Err == nil {
+	proc.Kill()
+	if err := proc.Wait(); err == nil {
 		t.Errorf("No error on SIGKILL")
 	}
 }
@@ -38,24 +53,32 @@ func TestProcessKill(t *testing.T) {
 func TestProcessBadInvocation(t *testing.T) {
 	command := "totallynotacommandecho"
 	args := "hello"
-	proc, result, cancel := process.NewProcess(command, args)
-	defer close(cancel)
+	proc := NewProcess(command, args)
+	go LogScanner(proc.OutputStream())
 	proc.Start()
-	output := <-result
-	if output.Err == nil {
+	proc.Kill()
+	if err := proc.Wait(); err == nil {
 		t.Errorf("No error on bad invocation.")
 	}
+}
+
+func TestRetrieveStderr(t *testing.T) {
+	command := "python"
+	args := []string{"-c", "from sys import stderr;print('Printing to stderr.', file=stderr);raise Exception('also this')"}
+	proc := NewProcess(command, args...)
+	go LogScanner(proc.OutputStream())
+	proc.Start()
+	proc.Wait()
 }
 
 func TestProcessBadInvocationKill(t *testing.T) {
 	command := "totallynotacommandecho"
 	args := "hello"
-	proc, result, cancel := process.NewProcess(command, args)
-	defer close(cancel)
+	proc := NewProcess(command, args)
+	go LogScanner(proc.OutputStream())
 	proc.Start()
-	cancel <- 1
-	output := <-result
-	if output.Err == nil {
+	proc.Kill()
+	if err := proc.Wait(); err == nil {
 		t.Errorf("No error on bad invocation.")
 	}
 }
@@ -78,24 +101,47 @@ func TestProcessBadInvocationKill(t *testing.T) {
 func TestProcessRace(t *testing.T) {
 	command := "python"
 	args := []string{"-c", "from time import sleep;sleep(.01);print('Done.')"}
-	proc, result, cancel := process.NewProcess(command, args...)
-	defer close(cancel)
+	proc := NewProcess(command, args...)
 	proc.Start()
 	time.Sleep(time.Millisecond * 33)
-	cancel <- 1
-	output := <-result
-	t.Log(output.Err)
-	t.Log(output.Output)
+	proc.Kill()
+	proc.Wait()
+}
+
+func TestProcessOutstreamCalledTwice(t *testing.T) {
+	command := "python"
+	args := []string{"-c", "from time import sleep;sleep(.01);print('Done.')"}
+	proc := NewProcess(command, args...)
+	defer func() {
+		if err := recover(); err == nil {
+			t.Errorf("No panic occured when calling OutputStream a second time.")
+		}
+	}()
+	proc.OutputStream()
+	proc.OutputStream()
+}
+
+func TestProcessOutstreamCalledAfterStart(t *testing.T) {
+	command := "python"
+	args := []string{"-c", "from time import sleep;sleep(.01);print('Done.')"}
+	proc := NewProcess(command, args...)
+	defer func() {
+		if err := recover(); err == nil {
+			t.Errorf("No panic occured when calling OutputStream a second time.")
+		}
+		proc.Wait()
+	}()
+	proc.Start()
+	proc.OutputStream()
 }
 
 func TestProcessGoroutineLeak(t *testing.T) {
 	startingGoroutines := runtime.NumGoroutine()
 	command := "echo"
 	args := "hello"
-	proc, result, cancel := process.NewProcess(command, args)
-	defer close(cancel)
+	proc := NewProcess(command, args)
 	proc.Start()
-	<-result
+	proc.Wait()
 	// Give the goroutines a moment to shutdown. If you don't, then every
 	// so often you'll see a 2 != 3 error.
 	time.Sleep(time.Millisecond * 100)
@@ -110,10 +156,9 @@ func TestProcessMemoryLeak(t *testing.T) {
 	runtime.ReadMemStats(m1)
 	command := "echo"
 	args := "hello"
-	proc, result, cancel := process.NewProcess(command, args)
-	defer close(cancel)
+	proc := NewProcess(command, args)
 	proc.Start()
-	<-result
+	proc.Wait()
 	runtime.GC()
 	m2 := &runtime.MemStats{}
 	runtime.ReadMemStats(m2)
@@ -131,26 +176,23 @@ func TestProcessMemoryLeak2(t *testing.T) {
 	command := "echo"
 	args := "hello"
 
-	proc, result, cancel := process.NewProcess(command, args)
+	proc := NewProcess(command, args)
 	proc.Start()
-	<-result
-	close(cancel)
+	proc.Wait()
 	runtime.GC()
 	m1 := &runtime.MemStats{}
 	runtime.ReadMemStats(m1)
 
-	proc, result, cancel = process.NewProcess(command, args)
+	proc = NewProcess(command, args)
 	proc.Start()
-	<-result
-	close(cancel)
+	proc.Wait()
 	runtime.GC()
 	m2 := &runtime.MemStats{}
 	runtime.ReadMemStats(m2)
 
-	proc, result, cancel = process.NewProcess(command, args)
+	proc = NewProcess(command, args)
 	proc.Start()
-	<-result
-	close(cancel)
+	proc.Wait()
 	runtime.GC()
 	m3 := &runtime.MemStats{}
 	runtime.ReadMemStats(m3)
@@ -176,17 +218,15 @@ func TestProcessMemoryLeak2(t *testing.T) {
 func TestMemoryLeak3(t *testing.T) {
 	command := "echo"
 	args := "hello"
-	proc, result, cancel := process.NewProcess(command, args)
+	proc := NewProcess(command, args)
 	proc.Start()
-	<-result
-	close(cancel)
+	proc.Wait()
 	startingMemory := &runtime.MemStats{}
 	runtime.ReadMemStats(startingMemory)
 	for i := 0; i < 100; i++ {
-		proc, result, cancel = process.NewProcess(command, args)
+		proc = NewProcess(command, args)
 		proc.Start()
-		<-result
-		close(cancel)
+		proc.Wait()
 	}
 	runtime.GC()
 	endingMemory := &runtime.MemStats{}

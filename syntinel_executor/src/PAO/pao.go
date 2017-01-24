@@ -5,10 +5,22 @@ import "log"
 var paoRun chan [2]int = make(chan [2]int)
 var paoKill chan [2]int = make(chan [2]int)
 
-var testQueueMap map[int]*TestRunQueue = make(map[int]*TestRunQueue)
+var testQueueMap map[int]*TestRunner = make(map[int]*TestRunner)
 
 func StartPAO() {
-	go dispatch()
+	log.Println("Starting PAO request loop.")
+	go func() {
+		for {
+			select {
+			case IDs := <-paoRun:
+				log.Println("Received run request in dispatcher.")
+				run(IDs[0], IDs[1])
+			case IDs := <-paoKill:
+				log.Println("Received kill request in dispatcher.")
+				kill(IDs[0], IDs[1])
+			}
+		}
+	}()
 }
 
 func Run(testID, testRunID int) {
@@ -33,24 +45,10 @@ func Query(testID, testRunID int) int {
 	return NotFound
 }
 
-func dispatch() {
-	log.Println("Starting PAO request loop.")
-	for {
-		select {
-		case IDs := <-paoRun:
-			log.Println("Received run request in dispatcher.")
-			run(IDs[0], IDs[1])
-		case IDs := <-paoKill:
-			log.Println("Received kill request in dispatcher.")
-			kill(IDs[0], IDs[1])
-		}
-	}
-}
-
 func run(testID, testRunID int) {
 	testQueue, ok := testQueueMap[testID]
 	if !ok {
-		testQueue = NewTestRunQueue(testID)
+		testQueue = NewTestRunner(testID)
 		testQueueMap[testID] = testQueue
 	}
 	if testQueue.Query(testRunID) == NotFound {

@@ -3,18 +3,24 @@ package PAO
 import "log"
 
 const (
-	NotFound         = iota
-	Queued           = iota
-	Starting         = iota
-	StartingDocker   = iota
-	DockerStarted    = iota
-	SendingScripts   = iota
-	ScriptsSent      = iota
-	ExecutingScripts = iota
-	ResultsReceived  = iota
-	DestroyingDocker = iota
-	DockerDestroyed  = iota
-	Done             = iota
+	NotFound             = iota
+	Queued               = iota
+	MakingBuildDirectory = iota
+	CopyingDockerfile    = iota
+	CopyingScript        = iota
+	RunningTest          = iota
+	BuildingImage        = iota
+	Starting             = iota
+	StartingDocker       = iota
+	DockerStarted        = iota
+	SendingScripts       = iota
+	ScriptsSent          = iota
+	ExecutingScripts     = iota
+	ResultsReceived      = iota
+	DestroyingDocker     = iota
+	DockerDestroyed      = iota
+	Done                 = iota
+	Failed               = iota
 )
 
 var stateMap = map[int]string{

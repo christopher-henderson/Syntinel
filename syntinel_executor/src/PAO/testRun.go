@@ -1,13 +1,18 @@
 package PAO
 
 import (
+	"fmt"
 	"log"
+	"os"
+	"strconv"
 	"sync"
-	"syntinel_executor/PAO/process"
 	"syntinel_executor/ResultServer"
+	"syntinel_executor/utils"
+	"syntinel_executor/utils/process"
 )
 
 type TestRun struct {
+	testID     int
 	ID         int
 	Cancel     chan uint8
 	state      int
@@ -16,63 +21,74 @@ type TestRun struct {
 	mutex      sync.RWMutex
 }
 
-func NewTestRun(id int, dockerPath string, scriptPath string) *TestRun {
-	return &TestRun{id, make(chan uint8), Queued, dockerPath, scriptPath, sync.RWMutex{}}
+func NewTestRun(testID int, id int, dockerPath string, scriptPath string) *TestRun {
+	return &TestRun{testID, id, make(chan uint8), Queued, dockerPath, scriptPath, sync.RWMutex{}}
+}
+
+func (t *TestRun) ImageName() string {
+	return fmt.Sprintf("%v%v", ContainerPrefix, strconv.Itoa(t.ID))
+}
+
+func (t *TestRun) DockerBuildDirectory() string {
+	return fmt.Sprintf("%v%v%v", utils.BuildDirectory(), t.ImageName(), string(os.PathSeparator))
 }
 
 func (t *TestRun) Run() {
 	t.setState(Starting)
-	finalResult := &ResultServer.FinalResult{t.ID, nil}
-	defer t.destroyDocker()
 	defer t.setState(Done)
-	defer ResultServer.SendResult(finalResult)
-	if result := t.awaitOutput(t.createDocker); result.Err != nil {
-		finalResult.Result = result
+	if err := t.awaitOutput(t.buildDockerImage); err != nil {
+		log.Println(err)
 		return
 	}
-	if result := t.awaitOutput(t.scpScript); result.Err != nil {
-		finalResult.Result = result
-		return
-	}
-	result := t.awaitOutput(t.runTest)
-	finalResult.Result = result
+	t.awaitOutput(t.runDockerImage)
 }
 
 func (t *TestRun) Query() int {
 	return t.getState()
 }
 
-func (t *TestRun) createDocker() (*process.Process, <-chan *process.TestRunResult, chan<- uint8) {
-	t.setState(StartingDocker)
-	defer t.setState(DockerStarted)
-	args := []string{"-c", "from time import sleep;print('...thinking');sleep(15);print('Docker started!')"}
-	return process.NewProcess("python", args...)
-	// return process.NewProcess("echo", "hello world from "+t.dockerPath)
+func (t *TestRun) buildDockerImage() *process.Process {
+	t.setState(MakingBuildDirectory)
+	if err := os.MkdirAll(t.DockerBuildDirectory(), os.ModeDir); err != nil {
+		t.setState(Failed)
+		log.Fatalln(err)
+	}
+	t.setState(CopyingScript)
+	if err := utils.FileCopy(t.scriptPath, t.DockerBuildDirectory()+DockerScriptName); err != nil {
+		t.setState(Failed)
+		log.Fatalln(err)
+	}
+	t.setState(CopyingDockerfile)
+	if err := utils.FileCopy(t.dockerPath, t.DockerBuildDirectory()+DockerFile); err != nil {
+		t.setState(Failed)
+		log.Fatalln(err)
+	}
+	args := []string{
+		DockerBuild,              // Build image
+		DockerBuildTag,           // Define the image tag.
+		t.ImageName(),            // Using the tag built by "ImageName"
+		DockerBuildForceRM,       // Delete the temporary container.
+		t.DockerBuildDirectory()} // Build in this directory.
+	t.setState(BuildingImage)
+	return process.NewProcess(DockerCommand, args...)
 }
 
-func (t *TestRun) scpScript() (*process.Process, <-chan *process.TestRunResult, chan<- uint8) {
-	t.setState(SendingScripts)
-	defer t.setState(ScriptsSent)
-	args := []string{"-c", "from time import sleep;print('...thinking');sleep(5);print('SCP Done!')"}
-	return process.NewProcess("python", args...)
-	// return process.NewProcess("echo", "hello world from "+t.scriptPath)
+func (t *TestRun) runDockerImage() *process.Process {
+	defer t.deleteContainer()
+	args := []string{
+		DockerRun,     // Run image
+		DockerRunRM,   // Delete after completed.
+		DockerRunName, // Name the container.
+		t.ImageName(), // Name of the container.
+		t.ImageName()} // Name of the image to run
+	return process.NewProcess(DockerCommand, args...)
 }
 
-func (t *TestRun) runTest() (*process.Process, <-chan *process.TestRunResult, chan<- uint8) {
-	t.setState(ExecutingScripts)
-	defer t.setState(ResultsReceived)
-	return process.NewProcess(t.scriptPath)
-	// args := []string{"-c", "from time import sleep;print('...thinking');sleep(5);print('AH HA!');raise Exception('wut happun')"}
-	// return process.NewProcess("python", args...)
-}
-
-func (t *TestRun) destroyDocker() {
-	t.setState(DestroyingDocker)
-	defer t.setState(DockerDestroyed)
-	proc, result, cancel := process.NewProcess("echo", "hello world from Destroy Docker!")
-	defer close(cancel)
-	proc.Start()
-	<-result
+func (t *TestRun) deleteContainer() {
+	argsStop := []string{DockerStop, t.ImageName()}
+	argsDelete := []string{DockerRM, t.ImageName()}
+	process.NewProcess(DockerCommand, argsStop...).Start().Wait()
+	process.NewProcess(DockerCommand, argsDelete...).Start().Wait()
 }
 
 func (t *TestRun) setState(state int) {
@@ -87,15 +103,20 @@ func (t *TestRun) getState() int {
 	return t.state
 }
 
-func (w *TestRun) awaitOutput(function func() (*process.Process, <-chan *process.TestRunResult, chan<- uint8)) *process.TestRunResult {
-	proc, result, cancel := function()
-	var testRunResult *process.TestRunResult
-	defer close(cancel)
+func (t *TestRun) awaitOutput(function func() *process.Process) error {
+	proc := function()
+	var testRunResult error
+	result := make(chan error)
+	defer close(result)
+	ResultServer.Stream(t.ID, proc.OutputStream())
 	proc.Start()
+	go func() {
+		result <- proc.Wait()
+	}()
 	select {
-	case <-w.Cancel:
+	case <-t.Cancel:
 		log.Println("Received kill request.")
-		cancel <- 1
+		proc.Kill()
 		testRunResult = <-result
 	case testRunResult = <-result:
 		log.Println("Received finished result.")

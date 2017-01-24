@@ -2,15 +2,6 @@ package service
 
 import "syntinel_executor/DAO"
 
-var ScriptService = &scriptService{}
-
-type scriptService struct {
-}
-
-func newScriptService() *scriptService {
-	return &scriptService{}
-}
-
 func (s *scriptService) Register(id int, body []byte) {
 	script := DAO.Script{id}
 	script.Save(body)
