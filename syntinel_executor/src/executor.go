@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"runtime"
+	"syntinel_executor/PAO"
 	"syntinel_executor/controller"
 	"time"
 
@@ -13,6 +14,7 @@ import (
 
 func main() {
 	defer log.Println("Exiting")
+	PAO.StartPAO()
 	log.SetFlags(log.LstdFlags | log.Lshortfile)
 	router := mux.NewRouter()
 	// Makes, e.g., /test/1 and /test/1/ properly resolve to the same handler.

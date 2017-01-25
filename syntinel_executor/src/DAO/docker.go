@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
-	"os"
 	"strconv"
 	"syntinel_executor/utils"
 )
@@ -49,10 +48,10 @@ func (d *Docker) Delete() {
 
 // Path returns the absolute Dockerfile of the script on the filesystem.
 func (d *Docker) Path() string {
-	return fmt.Sprintf("%v%v%v", utils.DockerFileDirectory(), string(os.PathSeparator), strconv.Itoa(d.ID))
+	return fmt.Sprintf("%v%v", utils.DockerFileDirectory(), strconv.Itoa(d.ID))
 }
 
 // tmpPath returns what Path does, but as a hidden file.
 func (d *Docker) tmpPath() string {
-	return fmt.Sprintf("%v%v.%v", utils.DockerFileDirectory(), string(os.PathSeparator), strconv.Itoa(d.ID))
+	return fmt.Sprintf("%v.%v", utils.DockerFileDirectory(), strconv.Itoa(d.ID))
 }
