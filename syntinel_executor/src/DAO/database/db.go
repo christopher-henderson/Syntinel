@@ -4,6 +4,7 @@ import (
 	"crypto/sha256"
 	"database/sql"
 	"fmt"
+	"syntinel_executor/DAO/database/entities"
 	"syntinel_executor/utils"
 
 	_ "github.com/mattn/go-sqlite3"
@@ -13,24 +14,6 @@ const (
 	dbFile = "executor.sqlite3"
 	driver = "sqlite3"
 )
-
-type DockerEntity struct {
-	ID      int
-	Content string
-	Hash    string
-}
-
-type ScriptEntity struct {
-	ID      int
-	Content string
-	Hash    string
-}
-
-type TestEntity struct {
-	ID         int
-	Dockerfile int
-	Script     int
-}
 
 func InitDB() {
 	WriteDDL(DDL)
@@ -44,8 +27,8 @@ func WriteDDL(ddl string) {
 	}
 }
 
-func GetDockerfile(id int) (*DockerEntity, error) {
-	dockerfile := &DockerEntity{}
+func GetDockerfile(id int) (*entities.DockerEntity, error) {
+	dockerfile := &entities.DockerEntity{}
 	err := ExecuteTransactionalSingleRowQuery(
 		GetDockerfileStatement, []interface{}{id}, &dockerfile.ID,
 		&dockerfile.Content,
@@ -67,8 +50,8 @@ func DeleteDockerfile(id int) error {
 	return ExecuteTransactionalDDL(DeleteDockerfileStatement, id)
 }
 
-func GetScript(id int) (*ScriptEntity, error) {
-	script := &ScriptEntity{}
+func GetScript(id int) (*entities.ScriptEntity, error) {
+	script := &entities.ScriptEntity{}
 	err := ExecuteTransactionalSingleRowQuery(
 		GetScriptStatement, []interface{}{id}, &script.ID,
 		&script.Content,
@@ -90,8 +73,8 @@ func DeleteScript(id int) error {
 	return ExecuteTransactionalDDL(DeleteScriptStatement, id)
 }
 
-func GetTest(id int) (*TestEntity, error) {
-	test := &TestEntity{}
+func GetTest(id int) (*entities.TestEntity, error) {
+	test := &entities.TestEntity{}
 	err := ExecuteTransactionalSingleRowQuery(
 		GetTestStatement, []interface{}{id}, &test.ID,
 		&test.Dockerfile,
@@ -104,15 +87,15 @@ func InsertTest(id, dockerfile, script int) error {
 }
 
 func UpdateTest(id int, dockerfile, script int) error {
-	return ExecuteTransactionalDDL(UpdateTestStatement, id, dockerfile, script)
+	return ExecuteTransactionalDDL(UpdateTestStatement, dockerfile, script, id)
 }
 
 func DeleteTest(id int) error {
 	return ExecuteTransactionalDDL(DeleteTestStatement, id)
 }
 
-func GetTestRun(id int) (*TestRunEntity, error) {
-	testRun := &TestRunEntity{}
+func GetTestRun(id int) (*entities.TestRunEntity, error) {
+	testRun := &entities.TestRunEntity{}
 	err := ExecuteTransactionalSingleRowQuery(
 		GetTestRunStatement, []interface{}{id}, &testRun.ID,
 		&testRun.Test,
@@ -150,10 +133,10 @@ func ExecuteTransactionalDDL(query string, args ...interface{}) error {
 
 func ExecuteTransactionalSingleRowQuery(query string, selection []interface{}, targets ...interface{}) error {
 	transaction, err := getDB().Begin()
-	defer transaction.Commit()
 	if err != nil {
 		return err
 	}
+	defer transaction.Commit()
 	statement, err := transaction.Prepare(query)
 	if err != nil {
 		return err
@@ -175,22 +158,3 @@ var getDB = func() func() *sql.DB {
 		return db
 	}
 }()
-
-const GetScriptStatement = "SELECT ID, Content, Hash FROM Script WHERE ID=?"
-const InsertScriptStatement = "INSERT INTO Script(id, content, hash) VALUES (? ,?, ?)"
-const UpdateScriptStatement = "UPDATE Script SET Content=?, Hash=? WHERE ID=?"
-const DeleteScriptStatement = "DELETE FROM Script WHERE ID=?"
-
-const GetDockerfileStatement = "SELECT ID, Content, Hash FROM Dockerfile WHERE ID=?"
-const InsertDockerfileStatement = "INSERT INTO Dockerfile(id, content, hash) VALUES (? ,?, ?)"
-const UpdateDockerfileStatement = "UPDATE Dockerfile SET Content=?, Hash=? WHERE ID=?"
-const DeleteDockerfileStatement = "DELETE FROM Dockerfile WHERE ID=?"
-
-const GetTestStatement = "SELECT ID, dockerfile, script FROM Test WHERE ID=?"
-const InsertTestStatement = "INSERT INTO Test(id, dockerfile, script) VALUES (? ,?, ?)"
-const UpdateTestStatement = "UPDATE Test SET dockerfile=?, script=? WHERE ID=?"
-const DeleteTestStatement = "DELETE FROM Test WHERE ID=?"
-
-const GetTestRunStatement = "SELECT ID, test, environmentVariables, dockerfile, script FROM TestRun WHERE ID=?"
-const InsertTestRunStatement = "INSERT INTO TestRun(id, test, environmentVariables, dockerfile, script) VALUES (? ,?, ?, ?, ?)"
-const DeleteTestRunStatement = "DELETE FROM TestRun WHERE ID=?"
