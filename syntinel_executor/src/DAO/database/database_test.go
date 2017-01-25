@@ -4,7 +4,7 @@ import "testing"
 
 const DDL = "CREATE TABLE IF NOT EXISTS `Test` (" +
 	"	`id`	INTEGER NOT NULL UNIQUE," +
-	"	`name`	TEXT NOT NULL," +
+	"	`name`	TEXT," +
 	"	`dockerfile`	INTEGER NOT NULL," +
 	"	`script`	INTEGER NOT NULL," +
 	"	PRIMARY KEY(`id`)," +

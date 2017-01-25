@@ -4,6 +4,7 @@ import (
 	"crypto/sha256"
 	"database/sql"
 	"io/ioutil"
+	"log"
 	"os"
 
 	_ "github.com/mattn/go-sqlite3"
@@ -26,9 +27,21 @@ type ScriptEntity struct {
 	Hash    string
 }
 
+type TestEntity struct {
+	ID         int
+	Dockerfile int
+	Script     int
+}
+
+type TestRunEntity struct {
+	ID                   int
+	Test                 int
+	EnvironmentVariables string
+	Dockerfile           string
+	Script               string
+}
+
 func InitDB(file string) {
-	db := getDB()
-	defer db.Close()
 	ddl, err := os.Open(file)
 	if err != nil {
 		panic(err)
@@ -50,7 +63,8 @@ func WriteDDL(ddl string) {
 
 func GetDockerfile(id int) (*DockerEntity, error) {
 	dockerfile := &DockerEntity{}
-	err := getByID("SELECT ID, Content, Hash FROM Dockerfile WHERE ID=?", id, &dockerfile.ID,
+	err := ExecuteTransactionalSingleRowQuery(
+		SelectDockerfile, []interface{}{id}, &dockerfile.ID,
 		&dockerfile.Content,
 		&dockerfile.Hash)
 	return dockerfile, err
@@ -58,21 +72,22 @@ func GetDockerfile(id int) (*DockerEntity, error) {
 
 func InsertDockerfile(id int, content string) error {
 	hash := sha256.Sum256([]byte(content))
-	return transactionalQuery("INSERT INTO Dockerfile(id, content, hash) VALUES (? ,?, ?)", id, content, hash[:])
+	return ExecuteTransactionalDDL(InsertDockerfileStatement, id, content, hash[:])
 }
 
 func UpdateDockerfile(id int, content string) error {
 	hash := sha256.Sum256([]byte(content))
-	return transactionalQuery("UPDATE Dockerfile SET Content=?, Hash=? WHERE ID=?", content, hash[:], id)
+	return ExecuteTransactionalDDL(UpdateDockerfileStatement, content, hash[:], id)
 }
 
 func DeleteDockerfile(id int) error {
-	return transactionalQuery("DELETE FROM Dockerfile WHERE ID=?", id)
+	return ExecuteTransactionalDDL(DeleteDockerfileStatement, id)
 }
 
 func GetScript(id int) (*ScriptEntity, error) {
 	script := &ScriptEntity{}
-	err := getByID("SELECT ID, Content, Hash FROM Dockerfile WHERE ID=?", id, &script.ID,
+	err := ExecuteTransactionalSingleRowQuery(
+		SelectScript, []interface{}{id}, &script.ID,
 		&script.Content,
 		&script.Hash)
 	return script, err
@@ -80,30 +95,78 @@ func GetScript(id int) (*ScriptEntity, error) {
 
 func InsertScript(id int, content string) error {
 	hash := sha256.Sum256([]byte(content))
-	return transactionalQuery("INSERT INTO Script(id, content, hash) VALUES (? ,?, ?)", id, content, hash[:])
+	return ExecuteTransactionalDDL(InsertScriptStatement, id, content, hash[:])
 }
 
 func UpdateScript(id int, content string) error {
 	hash := sha256.Sum256([]byte(content))
-	return transactionalQuery("UPDATE Script SET Content=?, Hash=? WHERE ID=?", content, hash[:], id)
+	return ExecuteTransactionalDDL(UpdateScriptStatement, content, hash[:], id)
 }
 
-func getByID(query string, id int, args ...interface{}) error {
-	db := getDB()
-	statement, err := db.Prepare(query)
+func DeleteScript(id int) error {
+	return ExecuteTransactionalDDL(DeleteScriptStatement, id)
+}
+
+func GetTest(id int) (*TestEntity, error) {
+	test := &TestEntity{}
+	err := ExecuteTransactionalSingleRowQuery(
+		SelectTest, []interface{}{id}, &test.ID,
+		&test.Dockerfile,
+		&test.Script)
+	return test, err
+}
+
+func InsertTest(id, dockerfile, script int) error {
+	return ExecuteTransactionalDDL(InsertTestStatement, id, dockerfile, script)
+}
+
+func UpdateTest(id int, dockerfile, script int) error {
+	return ExecuteTransactionalDDL(UpdateTestStatement, id, dockerfile, script)
+}
+
+func DeleteTest(id int) error {
+	return ExecuteTransactionalDDL(DeleteTestStatement, id)
+}
+
+func GetTestRun(id int) (*TestRunEntity, error) {
+	testRun := &TestRunEntity{}
+	err := ExecuteTransactionalSingleRowQuery(
+		SelectTest, []interface{}{id}, &testRun.ID,
+		&testRun.Test,
+		&testRun.EnvironmentVariables,
+		&testRun.Dockerfile,
+		&testRun.Script)
+	return testRun, err
+}
+
+func InsertTestRun(id int, test int, environmentVariables, dockerfile, script string) error {
+	return ExecuteTransactionalDDL(InsertTestRunStatement, id, test, environmentVariables, dockerfile, script)
+}
+
+func DeleteTestRun(id int) error {
+	return ExecuteTransactionalDDL(DeleteTestRunStatement, id)
+}
+
+func ExecuteTransactionalDDL(query string, args ...interface{}) error {
+	transaction, err := getDB().Begin()
+	defer transaction.Commit()
 	if err != nil {
 		return err
 	}
-	defer statement.Close()
-	if err := statement.QueryRow(id).Scan(args...); err != nil {
+	stmt, err := transaction.Prepare(query)
+	if err != nil {
+		return err
+	}
+	defer stmt.Close()
+	if _, err := stmt.Exec(args...); err != nil {
+		transaction.Rollback()
 		return err
 	}
 	return nil
 }
 
-func transactionalQuery(query string, args ...interface{}) error {
-	db := getDB()
-	transaction, err := db.Begin()
+func ExecuteTransactionalSingleRowQuery(query string, selection []interface{}, targets ...interface{}) error {
+	transaction, err := getDB().Begin()
 	defer transaction.Commit()
 	if err != nil {
 		return err
@@ -112,11 +175,8 @@ func transactionalQuery(query string, args ...interface{}) error {
 	if err != nil {
 		return err
 	}
-	defer statement.Close()
-	if _, err := statement.Exec(args...); err != nil {
-		return err
-	}
-	if err := transaction.Commit(); err != nil {
+	row := statement.QueryRow(selection...)
+	if err := row.Scan(targets...); err != nil {
 		transaction.Rollback()
 		return err
 	}
@@ -133,24 +193,45 @@ var getDB = func() func() *sql.DB {
 	}
 }()
 
+const GetScriptStatement = "SELECT ID, Content, Hash FROM Script WHERE ID=?"
+const InsertScriptStatement = "INSERT INTO Script(id, content, hash) VALUES (? ,?, ?)"
+const UpdateScriptStatement = "UPDATE Script SET Content=?, Hash=? WHERE ID=?"
+const DeleteScriptStatement = "DELETE FROM Script WHERE ID=?"
+
+const GetDockerfileStatement = "SELECT ID, Content, Hash FROM Dockerfile WHERE ID=?"
+const InsertDockerfileStatement = "INSERT INTO Dockerfile(id, content, hash) VALUES (? ,?, ?)"
+const UpdateDockerfileStatement = "UPDATE Dockerfile SET Content=?, Hash=? WHERE ID=?"
+const DeleteDockerfileStatement = "DELETE FROM Dockerfile WHERE ID=?"
+
+const GetTestStatement = "SELECT ID, dockerfile, script FROM Test WHERE ID=?"
+const InsertTestStatement = "INSERT INTO Test(id, dockerfile, script) VALUES (? ,?, ?)"
+const UpdateTestStatement = "UPDATE Test SET dockerfile=?, script=? WHERE ID=?"
+const DeleteTestStatement = "DELETE FROM Test WHERE ID=?"
+
+const GetTestRunStatement = "SELECT ID, test, environmentVariables, dockerfile, script FROM TestRun WHERE ID=?"
+const InsertTestRunStatement = "INSERT INTO TestRun(id, test, environmentVariables, dockerfile, script) VALUES (? ,?, ?, ?, ?)"
+const DeleteTestRunStatement = "DELETE FROM TestRun WHERE ID=?"
+
 func clearDB() {
 	db := getDB()
 	rows, err := db.Query("SELECT name FROM sqlite_master WHERE type='table'")
+	defer rows.Close()
 	if err != nil {
-		panic(err)
+		log.Fatalln(err)
 	}
 	var tables []string
 	for rows.Next() {
 		var table string
 		err := rows.Scan(&table)
 		if err != nil {
-			panic(err)
+			log.Fatalln(err)
 		}
 		tables = append(tables, table)
 	}
+	rows.Close()
 	for _, table := range tables {
 		if _, err := db.Exec("DELETE FROM " + table); err != nil {
-			panic(err)
+			log.Fatalln(err)
 		}
 	}
 }
