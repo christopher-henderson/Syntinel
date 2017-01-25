@@ -42,7 +42,7 @@ func Query(testID, testRunID int) int {
 	if testQueue, ok := testQueueMap[testID]; ok {
 		return testQueue.Query(testRunID)
 	}
-	return NotFound
+	return 0
 }
 
 func run(testID, testRunID int) {
@@ -51,7 +51,7 @@ func run(testID, testRunID int) {
 		testQueue = NewTestRunner(testID)
 		testQueueMap[testID] = testQueue
 	}
-	if testQueue.Query(testRunID) == NotFound {
+	if testQueue.Query(testRunID) == 0 {
 		go testQueue.Run(testRunID)
 	} else {
 		log.Println("Receieved an attempt to replay the same test ID. ID = ", testRunID)

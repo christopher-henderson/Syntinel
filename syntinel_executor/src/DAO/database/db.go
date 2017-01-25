@@ -3,9 +3,8 @@ package database
 import (
 	"crypto/sha256"
 	"database/sql"
-	"io/ioutil"
-	"log"
-	"os"
+	"fmt"
+	"syntinel_executor/utils"
 
 	_ "github.com/mattn/go-sqlite3"
 )
@@ -33,24 +32,8 @@ type TestEntity struct {
 	Script     int
 }
 
-type TestRunEntity struct {
-	ID                   int
-	Test                 int
-	EnvironmentVariables string
-	Dockerfile           string
-	Script               string
-}
-
-func InitDB(file string) {
-	ddl, err := os.Open(file)
-	if err != nil {
-		panic(err)
-	}
-	ddlContent, err := ioutil.ReadAll(ddl)
-	if err != nil {
-		panic(err)
-	}
-	WriteDDL(string(ddlContent))
+func InitDB() {
+	WriteDDL(DDL)
 }
 
 func WriteDDL(ddl string) {
@@ -64,7 +47,7 @@ func WriteDDL(ddl string) {
 func GetDockerfile(id int) (*DockerEntity, error) {
 	dockerfile := &DockerEntity{}
 	err := ExecuteTransactionalSingleRowQuery(
-		SelectDockerfile, []interface{}{id}, &dockerfile.ID,
+		GetDockerfileStatement, []interface{}{id}, &dockerfile.ID,
 		&dockerfile.Content,
 		&dockerfile.Hash)
 	return dockerfile, err
@@ -87,7 +70,7 @@ func DeleteDockerfile(id int) error {
 func GetScript(id int) (*ScriptEntity, error) {
 	script := &ScriptEntity{}
 	err := ExecuteTransactionalSingleRowQuery(
-		SelectScript, []interface{}{id}, &script.ID,
+		GetScriptStatement, []interface{}{id}, &script.ID,
 		&script.Content,
 		&script.Hash)
 	return script, err
@@ -110,7 +93,7 @@ func DeleteScript(id int) error {
 func GetTest(id int) (*TestEntity, error) {
 	test := &TestEntity{}
 	err := ExecuteTransactionalSingleRowQuery(
-		SelectTest, []interface{}{id}, &test.ID,
+		GetTestStatement, []interface{}{id}, &test.ID,
 		&test.Dockerfile,
 		&test.Script)
 	return test, err
@@ -131,7 +114,7 @@ func DeleteTest(id int) error {
 func GetTestRun(id int) (*TestRunEntity, error) {
 	testRun := &TestRunEntity{}
 	err := ExecuteTransactionalSingleRowQuery(
-		SelectTest, []interface{}{id}, &testRun.ID,
+		GetTestRunStatement, []interface{}{id}, &testRun.ID,
 		&testRun.Test,
 		&testRun.EnvironmentVariables,
 		&testRun.Dockerfile,
@@ -184,7 +167,7 @@ func ExecuteTransactionalSingleRowQuery(query string, selection []interface{}, t
 }
 
 var getDB = func() func() *sql.DB {
-	db, err := sql.Open(driver, dbFile)
+	db, err := sql.Open(driver, fmt.Sprintf("%v%v", utils.DatabaseDirectory(), dbFile))
 	if err != nil {
 		panic(err)
 	}
@@ -211,27 +194,3 @@ const DeleteTestStatement = "DELETE FROM Test WHERE ID=?"
 const GetTestRunStatement = "SELECT ID, test, environmentVariables, dockerfile, script FROM TestRun WHERE ID=?"
 const InsertTestRunStatement = "INSERT INTO TestRun(id, test, environmentVariables, dockerfile, script) VALUES (? ,?, ?, ?, ?)"
 const DeleteTestRunStatement = "DELETE FROM TestRun WHERE ID=?"
-
-func clearDB() {
-	db := getDB()
-	rows, err := db.Query("SELECT name FROM sqlite_master WHERE type='table'")
-	defer rows.Close()
-	if err != nil {
-		log.Fatalln(err)
-	}
-	var tables []string
-	for rows.Next() {
-		var table string
-		err := rows.Scan(&table)
-		if err != nil {
-			log.Fatalln(err)
-		}
-		tables = append(tables, table)
-	}
-	rows.Close()
-	for _, table := range tables {
-		if _, err := db.Exec("DELETE FROM " + table); err != nil {
-			log.Fatalln(err)
-		}
-	}
-}

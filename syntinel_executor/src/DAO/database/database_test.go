@@ -1,40 +1,9 @@
 package database
 
-import "testing"
-
-const DDL = "CREATE TABLE IF NOT EXISTS `Test` (" +
-	"	`id`	INTEGER NOT NULL UNIQUE," +
-	"	`name`	TEXT," +
-	"	`dockerfile`	INTEGER NOT NULL," +
-	"	`script`	INTEGER NOT NULL," +
-	"	PRIMARY KEY(`id`)," +
-	"	FOREIGN KEY(`dockerfile`) REFERENCES `Dockerfile`," +
-	"	FOREIGN KEY(`script`) REFERENCES `Script`" +
-	");" +
-
-	"CREATE TABLE IF NOT EXISTS `Dockerfile` (" +
-	"	`ID`	INTEGER NOT NULL UNIQUE," +
-	"	`Content`	TEXT NOT NULL," +
-	"	`Hash`	TEXT NOT NULL," +
-	"	PRIMARY KEY(`id`)" +
-	");" +
-
-	"CREATE TABLE IF NOT EXISTS `Script` (" +
-	"	`id`	INTEGER NOT NULL UNIQUE," +
-	"	`content`	TEXT NOT NULL," +
-	"	`hash`	TEXT NOT NULL," +
-	"	PRIMARY KEY(`id`)" +
-	");" +
-
-	"CREATE TABLE IF NOT EXISTS `TestRun` (" +
-	"	`id`	INTEGER NOT NULL UNIQUE," +
-	"	`test`	INTEGER NOT NULL," +
-	"	`environemntVariables`	TEXT," +
-	"	`dockerfile`	TEXT NOT NULL," +
-	"	`script`	TEXT NOT NULL," +
-	"	PRIMARY KEY(`id`)," +
-	"	FOREIGN KEY(`test`) REFERENCES `Test`" +
-	");"
+import (
+	"log"
+	"testing"
+)
 
 const dockerfile = `
  FROM docker.io/centos
@@ -117,5 +86,29 @@ func TestInsertScriptUnique(t *testing.T) {
 	}
 	if err := InsertScript(1, script); err == nil {
 		t.Errorf("Failed to enforce UNIQUE constraing on Script.ID")
+	}
+}
+
+func clearDB() {
+	db := getDB()
+	rows, err := db.Query("SELECT name FROM sqlite_master WHERE type='table'")
+	defer rows.Close()
+	if err != nil {
+		log.Fatalln(err)
+	}
+	var tables []string
+	for rows.Next() {
+		var table string
+		err := rows.Scan(&table)
+		if err != nil {
+			log.Fatalln(err)
+		}
+		tables = append(tables, table)
+	}
+	rows.Close()
+	for _, table := range tables {
+		if _, err := db.Exec("DELETE FROM " + table); err != nil {
+			log.Fatalln(err)
+		}
 	}
 }

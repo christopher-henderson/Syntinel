@@ -4,4 +4,5 @@ rm -rf dist
 mkdir -p dist/assets/build
 mkdir -p dist/assets/scripts
 mkdir -p dist/assets/dockers
+mkdir -p dist/assets/database
 go build -v -i -o dist/executor -race src/executor.go

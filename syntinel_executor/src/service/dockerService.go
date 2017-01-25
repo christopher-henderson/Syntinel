@@ -4,18 +4,16 @@ import "syntinel_executor/DAO"
 
 var DockerService = &dockerService{}
 
-func (d *dockerService) Register(id int, body []byte) {
-	docker := &DAO.Docker{id}
-	docker.Save(body)
+func (d *dockerService) Register(id int, body []byte) error {
+	return DAO.Docker.Save(id, body)
 }
 
-func (d *dockerService) Update(id int, body []byte) {
-	d.Register(id, body)
+func (d *dockerService) Update(id int, body []byte) error {
+	return DAO.Docker.Update(id, body)
 }
 
-func (d *dockerService) Delete(id int) {
-	docker := &DAO.Docker{id}
-	docker.Delete()
+func (d *dockerService) Delete(id int) error {
+	return DAO.Docker.Delete(id)
 }
 
 type dockerService struct{}

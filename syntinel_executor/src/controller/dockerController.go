@@ -11,6 +11,7 @@ import (
 )
 
 func RegisterDocker(w http.ResponseWriter, r *http.Request) {
+	log.Println("ATHING HAPPEN LOL")
 	payload := &Payload{nil, nil}
 	status := http.StatusCreated
 	defer WriteJsonResponse(w, payload, status)
@@ -25,7 +26,7 @@ func RegisterDocker(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Fatalln(err)
 	}
-	service.DockerService.Register(id, body)
+	payload.Error = service.DockerService.Register(id, body)
 }
 
 func DeleteDocker(w http.ResponseWriter, r *http.Request) {
@@ -39,9 +40,23 @@ func DeleteDocker(w http.ResponseWriter, r *http.Request) {
 		payload.Data = "Bad Docker ID."
 		return
 	}
-	service.DockerService.Delete(id)
+	payload.Error = service.DockerService.Delete(id)
 }
 
 func UpdateDocker(w http.ResponseWriter, r *http.Request) {
-	RegisterDocker(w, r)
+	payload := &Payload{nil, nil}
+	status := http.StatusCreated
+	defer WriteJsonResponse(w, payload, status)
+	variables := mux.Vars(r)
+	id, err := strconv.Atoi(variables["id"])
+	if err != nil {
+		status = http.StatusBadRequest
+		payload.Data = "Bad Docker ID."
+		return
+	}
+	body, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	payload.Error = service.DockerService.Update(id, body)
 }

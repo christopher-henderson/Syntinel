@@ -1,9 +1,10 @@
 package controller
 
 import (
+	"log"
 	"net/http"
 	"strconv"
-	"syntinel_executor/PAO"
+	"syntinel_executor/DAO/database"
 	"syntinel_executor/service"
 )
 
@@ -24,10 +25,11 @@ func KillTest(w http.ResponseWriter, r *http.Request) {
 		payload.Data = "Bad test run ID."
 		return
 	}
-	service.TestRunService.Kill(testID, testRunID)
+	payload.Error = service.TestRunService.Delete(testID, testRunID)
 }
 
 func RunTest(w http.ResponseWriter, r *http.Request) {
+	log.Println("Running test.")
 	payload := &Payload{nil, nil}
 	status := http.StatusAccepted
 	defer WriteJsonResponse(w, payload, status)
@@ -44,7 +46,8 @@ func RunTest(w http.ResponseWriter, r *http.Request) {
 		payload.Data = "Bad test run ID."
 		return
 	}
-	service.TestRunService.Run(testID, testRunID)
+	payload.Error = service.TestRunService.Save(testID, testRunID)
+	log.Println(payload.Error)
 }
 
 func QueryTest(w http.ResponseWriter, r *http.Request) {
@@ -65,5 +68,5 @@ func QueryTest(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	state := service.TestRunService.Query(testID, testRunID)
-	payload.Data = PAO.TestStateToString(state)
+	payload.Data = database.TestStateToString(state)
 }

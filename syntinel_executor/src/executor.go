@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"runtime"
+	"syntinel_executor/DAO/database"
 	"syntinel_executor/PAO"
 	"syntinel_executor/controller"
 	"time"
@@ -14,6 +15,8 @@ import (
 
 func main() {
 	defer log.Println("Exiting")
+	log.Println("Initializing Database")
+	database.InitDB()
 	PAO.StartPAO()
 	log.SetFlags(log.LstdFlags | log.Lshortfile)
 	router := mux.NewRouter()

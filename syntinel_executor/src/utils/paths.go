@@ -26,6 +26,10 @@ func DockerFileDirectory() string {
 	return dockerfiles
 }
 
+func DatabaseDirectory() string {
+	return database
+}
+
 var projectRoot = func() (path string) {
 	path, err := filepath.Abs(filepath.Dir(os.Args[0]))
 	if err != nil {
@@ -42,4 +46,7 @@ var build = func() string {
 }()
 var dockerfiles = func() string {
 	return fmt.Sprintf("%v%v%v%v%v%v", projectRoot, string(os.PathSeparator), "assets", string(os.PathSeparator), "dockers", string(os.PathSeparator))
+}()
+var database = func() string {
+	return fmt.Sprintf("%v%v%v%v%v%v", projectRoot, string(os.PathSeparator), "assets", string(os.PathSeparator), "database", string(os.PathSeparator))
 }()

@@ -25,7 +25,7 @@ func RegisterScript(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Fatalln(err)
 	}
-	service.ScriptService.Register(id, body)
+	payload.Error = service.ScriptService.Register(id, body)
 }
 
 func DeleteScript(w http.ResponseWriter, r *http.Request) {
@@ -39,9 +39,23 @@ func DeleteScript(w http.ResponseWriter, r *http.Request) {
 		payload.Data = "Bad Script ID."
 		return
 	}
-	service.ScriptService.Delete(id)
+	payload.Error = service.ScriptService.Delete(id)
 }
 
 func UpdateScript(w http.ResponseWriter, r *http.Request) {
-	RegisterScript(w, r)
+	payload := &Payload{nil, nil}
+	status := http.StatusCreated
+	defer WriteJsonResponse(w, payload, status)
+	variables := mux.Vars(r)
+	id, err := strconv.Atoi(variables["id"])
+	if err != nil {
+		status = http.StatusBadRequest
+		payload.Data = "Bad Script ID."
+		return
+	}
+	body, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	payload.Error = service.ScriptService.Update(id, body)
 }

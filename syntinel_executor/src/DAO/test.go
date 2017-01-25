@@ -1,53 +1,23 @@
 package DAO
 
-import "sync"
+import "syntinel_executor/DAO/database"
 
-type Test struct {
-	ID         int
-	DockerPath string
-	ScriptPath string
+var Test = &test{}
+
+func (t *test) Get(id int) (*database.TestEntity, error) {
+	return database.GetTest(id)
 }
 
-type ThreadSafeMapIntTest struct {
-	m map[int]*Test
-	sync.Mutex
+func (t *test) Save(id, dockerfile, script int) error {
+	return database.InsertTest(id, dockerfile, script)
 }
 
-func (m *ThreadSafeMapIntTest) GetTest(id int) (*Test, bool) {
-	m.Lock()
-	defer m.Unlock()
-	test, ok := m.m[id]
-	return test, ok
+func (t *test) Delete(id int) error {
+	return database.DeleteTest(id)
 }
 
-func (m *ThreadSafeMapIntTest) SetTest(id int, test *Test) {
-	m.Lock()
-	defer m.Unlock()
-	m.m[id] = test
+func (t *test) Update(id, dockerfile, script int) error {
+	return database.UpdateTest(id, dockerfile, script)
 }
 
-func (m *ThreadSafeMapIntTest) DeleteTest(id int) {
-	m.Lock()
-	defer m.Unlock()
-	delete(m.m, id)
-}
-
-var testTable = ThreadSafeMapIntTest{make(map[int]*Test), sync.Mutex{}}
-
-func NewTest(ID, dockerID, scriptID int) *Test {
-	dockerPath := (&Docker{dockerID}).Path()
-	scriptPath := (&Script{scriptID}).Path()
-	return &Test{ID, dockerPath, scriptPath}
-}
-
-func GetTest(id int) (*Test, bool) {
-	return testTable.GetTest(id)
-}
-
-func PutTest(testID, dockerID, scriptID int) {
-	testTable.SetTest(testID, NewTest(testID, dockerID, scriptID))
-}
-
-func DeleteTest(id int) {
-	testTable.DeleteTest(id)
-}
+type test struct{}
