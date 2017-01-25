@@ -3,13 +3,13 @@ package service
 import (
 	"log"
 	"syntinel_executor/DAO"
-	"syntinel_executor/DAO/database"
+	"syntinel_executor/DAO/database/entities"
 	"syntinel_executor/PAO"
 )
 
 var TestRunService = &testRunService{}
 
-func (t *testRunService) Get(id int) (*database.TestRunEntity, error) {
+func (t *testRunService) Get(id int) (*entities.TestRunEntity, error) {
 	return DAO.TestRun.Get(id)
 }
 

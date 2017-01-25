@@ -1,6 +1,6 @@
 package entities
 
-type DockerEntity struct {
+type DockerfileEntity struct {
 	ID      int
 	Content string
 	Hash    string

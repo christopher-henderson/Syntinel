@@ -1,10 +1,13 @@
 package DAO
 
-import "syntinel_executor/DAO/database"
+import (
+	"syntinel_executor/DAO/database"
+	"syntinel_executor/DAO/database/entities"
+)
 
 var Docker = &docker{}
 
-func (d *docker) Get(id int) (*database.DockerEntity, error) {
+func (d *docker) Get(id int) (*entities.DockerfileEntity, error) {
 	return database.GetDockerfile(id)
 }
 

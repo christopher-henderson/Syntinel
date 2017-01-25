@@ -6,12 +6,13 @@ import (
 	"sync"
 	"syntinel_executor/DAO"
 	"syntinel_executor/DAO/database"
+	"syntinel_executor/DAO/database/entities"
 )
 
 type TestRunner struct {
 	testID      int
 	queue       chan int
-	currentWork *database.TestRunEntity
+	currentWork *entities.TestRunEntity
 	mutex       sync.RWMutex
 }
 

@@ -1,10 +1,13 @@
 package DAO
 
-import "syntinel_executor/DAO/database"
+import (
+	"syntinel_executor/DAO/database"
+	"syntinel_executor/DAO/database/entities"
+)
 
 var Script = &script{}
 
-func (s *script) Get(id int) (*database.ScriptEntity, error) {
+func (s *script) Get(id int) (*entities.ScriptEntity, error) {
 	return database.GetScript(id)
 }
 

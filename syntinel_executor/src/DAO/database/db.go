@@ -27,8 +27,8 @@ func WriteDDL(ddl string) {
 	}
 }
 
-func GetDockerfile(id int) (*entities.DockerEntity, error) {
-	dockerfile := &entities.DockerEntity{}
+func GetDockerfile(id int) (*entities.DockerfileEntity, error) {
+	dockerfile := &entities.DockerfileEntity{}
 	err := ExecuteTransactionalSingleRowQuery(
 		GetDockerfileStatement, []interface{}{id}, &dockerfile.ID,
 		&dockerfile.Content,

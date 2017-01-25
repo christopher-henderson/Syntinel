@@ -1,10 +1,13 @@
 package DAO
 
-import "syntinel_executor/DAO/database"
+import (
+	"syntinel_executor/DAO/database"
+	"syntinel_executor/DAO/database/entities"
+)
 
 var TestRun = &testRun{}
 
-func (t *testRun) Get(id int) (*database.TestRunEntity, error) {
+func (t *testRun) Get(id int) (*entities.TestRunEntity, error) {
 	return database.GetTestRun(id)
 }
 

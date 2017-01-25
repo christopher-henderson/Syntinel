@@ -4,7 +4,7 @@ import (
 	"log"
 	"net/http"
 	"strconv"
-	"syntinel_executor/DAO/database"
+	"syntinel_executor/DAO/database/entities"
 	"syntinel_executor/service"
 )
 
@@ -68,5 +68,5 @@ func QueryTest(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	state := service.TestRunService.Query(testID, testRunID)
-	payload.Data = database.TestStateToString(state)
+	payload.Data = entities.TestStateToString(state)
 }
