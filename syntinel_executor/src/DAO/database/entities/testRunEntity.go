@@ -72,11 +72,11 @@ func TestStateToString(state int) string {
 }
 
 type TestRunEntity struct {
-	ID                   int
-	Test                 int
-	EnvironmentVariables string
-	Dockerfile           string
-	Script               string
+	ID                   int    `json:"id"`
+	TestID               int    `json:"testID"`
+	EnvironmentVariables string `json:"environmentVariables"`
+	Dockerfile           string `json:"dockerfile"`
+	Script               string `json:"script"`
 
 	Cancel chan uint8
 	state  int

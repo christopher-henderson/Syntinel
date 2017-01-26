@@ -1,7 +1,6 @@
 package database
 
 import (
-	"crypto/sha256"
 	"database/sql"
 	"fmt"
 	"syntinel_executor/DAO/database/entities"
@@ -16,97 +15,31 @@ const (
 )
 
 func InitDB() {
-	WriteDDL(DDL)
-}
-
-func WriteDDL(ddl string) {
-	db := getDB()
-	_, err := db.Exec(ddl)
-	if err != nil {
-		panic(err)
-	}
-}
-
-func GetDockerfile(id int) (*entities.DockerfileEntity, error) {
-	dockerfile := &entities.DockerfileEntity{}
-	err := ExecuteTransactionalSingleRowQuery(
-		GetDockerfileStatement, []interface{}{id}, &dockerfile.ID,
-		&dockerfile.Content,
-		&dockerfile.Hash)
-	return dockerfile, err
-}
-
-func InsertDockerfile(id int, content string) error {
-	hash := sha256.Sum256([]byte(content))
-	return ExecuteTransactionalDDL(InsertDockerfileStatement, id, content, hash[:])
-}
-
-func UpdateDockerfile(id int, content string) error {
-	hash := sha256.Sum256([]byte(content))
-	return ExecuteTransactionalDDL(UpdateDockerfileStatement, content, hash[:], id)
-}
-
-func DeleteDockerfile(id int) error {
-	return ExecuteTransactionalDDL(DeleteDockerfileStatement, id)
-}
-
-func GetScript(id int) (*entities.ScriptEntity, error) {
-	script := &entities.ScriptEntity{}
-	err := ExecuteTransactionalSingleRowQuery(
-		GetScriptStatement, []interface{}{id}, &script.ID,
-		&script.Content,
-		&script.Hash)
-	return script, err
-}
-
-func InsertScript(id int, content string) error {
-	hash := sha256.Sum256([]byte(content))
-	return ExecuteTransactionalDDL(InsertScriptStatement, id, content, hash[:])
-}
-
-func UpdateScript(id int, content string) error {
-	hash := sha256.Sum256([]byte(content))
-	return ExecuteTransactionalDDL(UpdateScriptStatement, content, hash[:], id)
-}
-
-func DeleteScript(id int) error {
-	return ExecuteTransactionalDDL(DeleteScriptStatement, id)
-}
-
-func GetTest(id int) (*entities.TestEntity, error) {
-	test := &entities.TestEntity{}
-	err := ExecuteTransactionalSingleRowQuery(
-		GetTestStatement, []interface{}{id}, &test.ID,
-		&test.Dockerfile,
-		&test.Script)
-	return test, err
-}
-
-func InsertTest(id, dockerfile, script int) error {
-	return ExecuteTransactionalDDL(InsertTestStatement, id, dockerfile, script)
-}
-
-func UpdateTest(id int, dockerfile, script int) error {
-	return ExecuteTransactionalDDL(UpdateTestStatement, dockerfile, script, id)
-}
-
-func DeleteTest(id int) error {
-	return ExecuteTransactionalDDL(DeleteTestStatement, id)
+	ExecuteTransactionalDDL(Schema)
 }
 
 func GetTestRun(id int) (*entities.TestRunEntity, error) {
 	testRun := &entities.TestRunEntity{}
+	// "SELECT id, testID, dockerfile, script, environmentVariables FROM TestRun WHERE ID=?"
 	err := ExecuteTransactionalSingleRowQuery(
-		GetTestRunStatement, []interface{}{id}, &testRun.ID,
-		&testRun.Test,
-		&testRun.EnvironmentVariables,
+		GetTestRunStatement,
+		[]interface{}{id},
+		&testRun.ID,
+		&testRun.TestID,
 		&testRun.Dockerfile,
-		&testRun.Script)
+		&testRun.Script,
+		&testRun.EnvironmentVariables)
 	return testRun, err
 }
 
-func InsertTestRun(id int, test int, environmentVariables, dockerfile, script string) error {
-	return ExecuteTransactionalDDL(InsertTestRunStatement, id, test, environmentVariables, dockerfile, script)
+func InsertTestRun(testRun *entities.TestRunEntity) error {
+	return ExecuteTransactionalDDL(
+		InsertTestRunStatement,
+		testRun.ID,
+		testRun.TestID,
+		testRun.Dockerfile,
+		testRun.Script,
+		testRun.EnvironmentVariables)
 }
 
 func DeleteTestRun(id int) error {
