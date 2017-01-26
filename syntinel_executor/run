@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+
+# Docker requires root.
+sudo dist/executor

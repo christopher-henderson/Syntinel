@@ -1,4 +1,4 @@
-from rest_framework.serializers import ModelSerializer
+from rest_framework.serializers import ModelSerializer, CharField
 from .models import Docker, Test, Suite, Script, TestRun
 
 
@@ -25,9 +25,23 @@ class SuiteSerializer(ModelSerializer):
 
 class ScriptSerializer(ModelSerializer):
 
+    content = CharField(max_length=2 ** 56)
+
     class Meta:
         model = Script
         fields = '__all__'
+
+    def create(self, validated_data):
+        content = validated_data.get('content')
+        del validated_data['content']
+        script = self.Meta.model.objects.create(**validated_data)
+        script.content = content
+        return script
+
+    def update(self, script, validated_data):
+        content = validated_data.get('content')
+        script.content = content
+        return script
 
 
 class TestRunSerializer(ModelSerializer):
