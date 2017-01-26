@@ -1,57 +1,36 @@
 package DAO
 
 import (
-	"fmt"
-	"io/ioutil"
-	"log"
-	"strconv"
-	"syntinel_executor/utils"
+	"syntinel_executor/DAO/database"
+	"syntinel_executor/DAO/database/entities"
 )
 
-type Docker struct {
-	ID int
+var Docker = &docker{}
+
+func (d *docker) Get(id int) (*entities.DockerfileEntity, error) {
+	return database.GetDockerfile(id)
 }
 
-func (d *Docker) Save(content []byte) {
-	path := d.Path()
-	tmp := d.tmpPath()
-	defer func() {
-		if err := recover(); err != nil {
-			// If there was an error, attempt to move the original (now called 'tmp')
-			// back to where it was.
-			utils.FileCopy(tmp, path)
-			utils.FileRemove(tmp)
-			panic(err)
-		}
-	}()
-	// Copy the current Dockerfile to a temporary file.
-	if err := utils.FileCopy(path, tmp); err != nil {
-		log.Println(err)
-	}
-	// Copy the incoming Dockerfile to its final destination.
-	if err := ioutil.WriteFile(path, content, 0770); err != nil {
-		// This write was critical.
-		log.Fatalln(err)
-	}
-	// Remove the temporary file.
-	if err := utils.FileRemove(tmp); err != nil {
-		log.Println(err)
-	}
+func (d *docker) Save(id int, content []byte) error {
+	return database.InsertDockerfile(id, string(content))
 }
 
-// Delete deletes the Dockerfile from the filesystem.
-func (d *Docker) Delete() {
-	if err := utils.FileRemove(d.Path()); err != nil {
-		log.Println(err)
-	}
+func (d *docker) Delete(id int) error {
+	return database.DeleteDockerfile(id)
 }
 
-// Path returns the absolute Dockerfile of the script on the filesystem.
-func (d *Docker) Path() string {
-	return fmt.Sprintf("%v%v", utils.DockerFileDirectory(), strconv.Itoa(d.ID))
+func (d *docker) Update(id int, content []byte) error {
+	return database.UpdateDockerfile(id, string(content))
 }
 
-// tmpPath returns what Path does, but as a hidden file.
-func (d *Docker) tmpPath() string {
-	return fmt.Sprintf("%v.%v", utils.DockerFileDirectory(), strconv.Itoa(d.ID))
-}
+// // Path returns the absolute Dockerfile of the script on the filesystem.
+// func (d *docker) Path() string {
+// 	return fmt.Sprintf("%v%v", utils.DockerFileDirectory(), strconv.Itoa(d.ID))
+// }
+//
+// // tmpPath returns what Path does, but as a hidden file.
+// func (d *docker) tmpPath() string {
+// 	return fmt.Sprintf("%v.%v", utils.DockerFileDirectory(), strconv.Itoa(d.ID))
+// }
+
+type docker struct{}
