@@ -8,20 +8,27 @@ import (
 	"strconv"
 )
 
+var cpuUsageRegex = regexp.MustCompile(".*(\\d+\\.\\d+) sy.*")
+
 type LinuxTop struct {
 	// 9
-	command string
-	args    []string
-	CPU     float64 `json:"cpu"`
-	MEM     float64 `json:"memory"`
-	Swap    float64 `json:"swap"`
+	command  string
+	args     []string
+	CPU      CPUStats      `json:"cpu"`
+	Mem      MemStats      `json:"memory"`
+	Swap     SwapStats     `json:"swap"`
+	Executor ExecutorStats `json:"executor"`
 }
 
 func NewLinuxTop() LinuxTop {
 	return LinuxTop{
 		"top",
 		[]string{"-p", strconv.Itoa(os.Getppid()), "-b"},
-		0.0, 0.0, 0.0}
+		CPUStats{},
+		MemStats{},
+		SwapStats{},
+		ExecutorStats{},
+	}
 }
 
 func (lt LinuxTop) Command() string {
@@ -36,7 +43,7 @@ func (lt LinuxTop) Parse(out *bufio.Scanner) {
 	for {
 		for line := 0; line < 9; line++ {
 			if !out.Scan() {
-				panic("This should never have happened")
+				panic("The statistics server has failed.")
 			}
 			lt.Dispatch(line, out.Text())
 		}
@@ -52,8 +59,8 @@ func (lt LinuxTop) Tasks(line string) {
 }
 
 func (lt LinuxTop) CPUUsage(line string) {
-	pattern := regexp.MustCompile(".*(\\d+\\.\\d+) sy.*")
-	matches := pattern.FindSubmatch([]byte(line))
+	matches := cpuUsageRegex.FindSubmatch([]byte(line))
+	lt.CPU.Sys, err := strconv.ParseFloat(string(matches[1]), 64)
 	fmt.Println(string(matches[1]))
 }
 
