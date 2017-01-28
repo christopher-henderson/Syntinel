@@ -4,10 +4,11 @@ import (
 	"log"
 	"net/http"
 	"net/http/httputil"
-	"net/url"
+"net/url"
 	"time"
 	"net"
 	"strings"
+    "fmt"
 )
 
 //to do: read available servers from config file
@@ -30,37 +31,50 @@ func UrlToString(url url.URL) string {
 	return temp
 }
 
-func balanceLoad() *httputil.ReverseProxy {
-	balancer := func(req *http.Request) {
-		target := r.GetNext()
-		log.Println(target)
-		req.URL.Scheme = target.Scheme
-		req.URL.Host = target.Host
-		req.URL.Path = target.Path
-	}
-	return &httputil.ReverseProxy{
-		Director: balancer,
-		Transport: &http.Transport{
-			Proxy: http.ProxyFromEnvironment,
-			Dial: func(network, addr string) (net.Conn, error) {
-				for{
-					conn, err := net.Dial(network, UrlToString(r.GetNext()))
-					if err != nil {
-						continue
-					}
-					return conn, nil
-				}
-				
-			},
-			TLSHandshakeTimeout: 10 * time.Second,
-		},
-	}
+func balanceLoad() (net.Conn, error) {
+        fmt.Println("I am here")
+        failed:
+        conn, err := net.Dial("tcp", UrlToString(r.GetNext()))
+        if err != nil{
+            goto failed
+        }else{
+            return conn, nil
+        }
+            
+    
+    return nil, fmt.Errorf("Something broke!")
 }
 
-func main() {
-	//fmt.Println(r.GetNext())
-	log.SetFlags(log.LstdFlags | log.Lshortfile)
-	proxy := balanceLoad()
 
-	log.Fatal(http.ListenAndServe(":9090", proxy))
+func GetReverseProxy() http.HandlerFunc{
+    transport := &http.Transport{
+        Proxy: http.ProxyFromEnvironment,
+        Dial: func(network, addr string)(net.Conn, error){
+            log.Println(addr)
+            log.Println(network)
+            return balanceLoad()
+        },
+        TLSHandshakeTimeout: 10 * time.Second,
+    }
+    return func(w http.ResponseWriter, req *http.Request){
+        (&httputil.ReverseProxy{
+			Director: func(req *http.Request) {
+				req.URL.Scheme = "http"
+				req.URL.Host = req.Host
+			},
+			Transport: transport,
+        }).ServeHTTP(w, req)
+    }
+}
+
+
+func main() {
+	log.SetFlags(log.LstdFlags | log.Lshortfile)
+    
+    http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request){
+       proxy := GetReverseProxy()
+       proxy.ServeHTTP(w,r)
+    })
+	
+	log.Fatal(http.ListenAndServe(":9090",nil))
 }
