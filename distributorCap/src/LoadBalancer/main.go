@@ -4,12 +4,21 @@ import (
 	"log"
 	"net/http"
 	"net/http/httputil"
-"net/url"
+    "net/url"
 	"time"
 	"net"
 	"strings"
     "fmt"
+    "io/ioutil"
+    "encoding/json"
+    "io"
+    
 )
+
+type ServerStruct struct {
+    HostName string `json:"hostName"`
+    Port string `json:"port"`
+}
 
 //to do: read available servers from config file
 var r = roundRobbin{servers: []url.URL{
@@ -67,9 +76,51 @@ func GetReverseProxy() http.HandlerFunc{
     }
 }
 
+func addToHosts(s ServerStruct){
+
+    newServer := url.URL{
+        Scheme: "http",
+		Host:   s.HostName + ":" + s.Port,
+    }
+    log.Println(newServer)
+    r.servers = append(r.servers, newServer)
+}
+
+
+func validateServer(s ServerStruct) (valid bool){
+    log.Println(len(s.HostName))
+    log.Println(len(s.Port))
+    if len(s.HostName) < 1 || len(s.Port) < 1{
+        return false
+    }else{
+        return true
+    }
+}
 
 func main() {
 	log.SetFlags(log.LstdFlags | log.Lshortfile)
+    
+    
+    //requests to register must be in format {"hostName":"localhost", "port": "9093"}
+    http.HandleFunc("/register", func(w http.ResponseWriter, r *http.Request){
+        body, err := ioutil.ReadAll(r.Body)
+        if err != nil {
+            log.Println("error")
+        }
+        log.Println(string(body))
+        var t ServerStruct
+        err = json.Unmarshal(body, &t)
+        if err != nil {
+            log.Println("error")
+        }
+        valid := validateServer(t)
+        if valid{
+            addToHosts(t)
+            io.WriteString(w, "accepted, you are now registered")
+        }else{
+            io.WriteString(w, "registration rejected")
+        }
+    })
     
     http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request){
        proxy := GetReverseProxy()
