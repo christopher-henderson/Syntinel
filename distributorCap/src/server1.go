@@ -19,6 +19,7 @@ func main() {
 
 	mux = make(map[string]func(http.ResponseWriter, *http.Request))
 	mux["/"] = hello
+    
 
 	server.ListenAndServe()
 }
