@@ -2,10 +2,17 @@ package main
 
 import (
 	"io"
+	"io/ioutil"
+	"log"
 	"net/http"
 )
 
 func hello(w http.ResponseWriter, r *http.Request) {
+	body, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		log.Println("error")
+	}
+	log.Println(string(body))
 	io.WriteString(w, "Hello world from server 1!")
 }
 
@@ -19,7 +26,6 @@ func main() {
 
 	mux = make(map[string]func(http.ResponseWriter, *http.Request))
 	mux["/"] = hello
-    
 
 	server.ListenAndServe()
 }
