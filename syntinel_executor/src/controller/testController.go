@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"log"
 	"net/http"
 	"strconv"
 
@@ -35,7 +36,9 @@ func RegisterTest(w http.ResponseWriter, r *http.Request) {
 		payload.Data = "Bad Script ID."
 		return
 	}
-	service.TestService.Register(id, dockerID, scriptID)
+	log.Println("Registinerg")
+	payload.Error = service.TestService.Register(id, dockerID, scriptID)
+	log.Println(payload.Error)
 }
 
 func DeleteTest(w http.ResponseWriter, r *http.Request) {
@@ -49,5 +52,5 @@ func DeleteTest(w http.ResponseWriter, r *http.Request) {
 		payload.Data = "Bad Test ID."
 		return
 	}
-	service.TestService.Delete(id)
+	payload.Error = service.TestService.Delete(id)
 }

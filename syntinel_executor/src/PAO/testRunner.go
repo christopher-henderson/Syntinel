@@ -2,59 +2,29 @@ package PAO
 
 import (
 	"log"
+	"strconv"
 	"sync"
 	"syntinel_executor/DAO"
+	"syntinel_executor/DAO/database"
+	"syntinel_executor/DAO/database/entities"
 )
-
-type ThreadSafeMapIntTestRun struct {
-	m map[int]*TestRun
-	sync.RWMutex
-}
-
-func (m *ThreadSafeMapIntTestRun) GetTestRun(id int) (*TestRun, bool) {
-	m.RLock()
-	defer m.RUnlock()
-	testRun, ok := m.m[id]
-	return testRun, ok
-}
-
-func (m *ThreadSafeMapIntTestRun) SetTestRun(id int, testRun *TestRun) {
-	m.Lock()
-	defer m.Unlock()
-	m.m[id] = testRun
-}
-
-func (m *ThreadSafeMapIntTestRun) DeleteTestRun(id int) {
-	m.Lock()
-	defer m.Unlock()
-	delete(m.m, id)
-}
 
 type TestRunner struct {
 	testID      int
 	queue       chan int
-	currentWork *TestRun
+	currentWork *entities.TestRunEntity
 	mutex       sync.RWMutex
-	testRunMap  ThreadSafeMapIntTestRun
 }
 
 func NewTestRunner(testID int) *TestRunner {
-	t := &TestRunner{testID, make(chan int), nil, sync.RWMutex{}, ThreadSafeMapIntTestRun{make(map[int]*TestRun), sync.RWMutex{}}}
+	t := &TestRunner{testID, make(chan int), nil, sync.RWMutex{}}
 	go t.consume()
 	return t
 }
 
 func (t *TestRunner) Run(testRunID int) {
-	if _, ok := t.testRunMap.GetTestRun(testRunID); ok {
-		log.Println("Received attempt to execute test that is already queued.")
-		return
-	}
-	if test, ok := DAO.GetTest(t.testID); !ok {
-		log.Println("Request for non-existent test run.")
-	} else {
-		t.testRunMap.SetTestRun(testRunID, NewTestRun(t.testID, testRunID, test.DockerPath, test.ScriptPath))
-		t.queue <- testRunID
-	}
+	log.Println("Got test ID: " + strconv.Itoa(testRunID))
+	t.queue <- testRunID
 }
 
 func (t *TestRunner) Kill(id int) {
@@ -62,18 +32,16 @@ func (t *TestRunner) Kill(id int) {
 	defer t.mutex.Unlock()
 	if t.currentWork != nil && t.currentWork.ID == id {
 		t.currentWork.Cancel <- 1
-	} else {
-		t.testRunMap.DeleteTestRun(id)
 	}
 }
 
-func (t *TestRunner) Query(testRunID int) int {
+func (t *TestRunner) Query(id int) int {
 	t.mutex.RLock()
 	defer t.mutex.RUnlock()
-	if test, ok := t.testRunMap.GetTestRun(testRunID); ok {
-		return test.Query()
+	if t.currentWork != nil && t.currentWork.ID == id {
+		return t.currentWork.Query()
 	}
-	return NotFound
+	return 0
 }
 
 func (t *TestRunner) consume() {
@@ -83,9 +51,10 @@ func (t *TestRunner) consume() {
 }
 
 func (t *TestRunner) execute(id int) {
-	test, ok := t.testRunMap.GetTestRun(id)
-	if !ok {
-		log.Println("Ticket for expired test received.")
+	log.Println("Executing ID: " + strconv.Itoa(id))
+	test, err := DAO.TestRun.Get(id)
+	if err != nil {
+		log.Println(err)
 		return
 	}
 	t.mutex.Lock()
@@ -102,7 +71,9 @@ func (t *TestRunner) teardown() {
 	}
 	t.mutex.Lock()
 	defer t.mutex.Unlock()
-	t.testRunMap.DeleteTestRun(t.currentWork.ID)
+	if err := database.DeleteTestRun(t.currentWork.ID); err != nil {
+		log.Println(err)
+	}
 	close(t.currentWork.Cancel)
 	t.currentWork = nil
 }

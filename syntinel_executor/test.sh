@@ -15,12 +15,13 @@ RUN yum install -y go git wget
 COPY script.sh \$HOME/script.sh
 CMD chmod +x script.sh && ./script.sh
 "
+echo "Registering Test"
 curl -X POST http://192.168.1.2:8000/test/1?dockerID=1\&scriptID=1
-curl -X POST http://192.168.1.2:8000/test/run?testID=1\&testRunID=2
-curl -X POST http://192.168.1.2:8000/test/run?testID=1\&testRunID=3
-curl -X POST http://192.168.1.2:8000/test/run?testID=1\&testRunID=4
+curl -X POST http://192.168.1.2:8000/test/run?testID=1\&testRunID=1
+# curl -X POST http://192.168.1.2:8000/test/run?testID=1\&testRunID=3
+# curl -X POST http://192.168.1.2:8000/test/run?testID=1\&testRunID=4
 
-curl -X DELETE http://192.168.1.2:8000/test/run?testID=1\&testRunID=2
+# curl -X DELETE http://192.168.1.2:8000/test/run?testID=1\&testRunID=2
 
 # curl -X POST http://192.168.1.2:8000/test/2?dockerID=1\&scriptID=1
 # curl -X POST http://192.168.1.2:8000/test/run?testID=2\&testRunID=2
