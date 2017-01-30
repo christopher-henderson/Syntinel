@@ -8,19 +8,19 @@ import (
 	"time"
 	"net"
 	"strings"
-    "fmt"
     "io/ioutil"
     "encoding/json"
     "io"
+    "fmt"
     
 )
 
 type ServerStruct struct {
     HostName string `json:"hostName"`
     Port string `json:"port"`
+    Scheme string `json:"Scheme"`
 }
 
-//to do: read available servers from config file
 var r = roundRobbin{servers: []url.URL{
 	{
 		Scheme: "http",
@@ -32,6 +32,7 @@ var r = roundRobbin{servers: []url.URL{
 	},
 }}
 
+
 func UrlToString(url url.URL) string {
 	temp := url.String()
 	port := strings.Split(temp, ":")
@@ -41,7 +42,6 @@ func UrlToString(url url.URL) string {
 }
 
 func balanceLoad() (net.Conn, error) {
-        fmt.Println("I am here")
         failed:
         conn, err := net.Dial("tcp", UrlToString(r.GetNext()))
         if err != nil{
@@ -49,9 +49,6 @@ func balanceLoad() (net.Conn, error) {
         }else{
             return conn, nil
         }
-            
-    
-    return nil, fmt.Errorf("Something broke!")
 }
 
 
@@ -79,7 +76,7 @@ func GetReverseProxy() http.HandlerFunc{
 func addToHosts(s ServerStruct){
 
     newServer := url.URL{
-        Scheme: "http",
+        Scheme: s.Scheme,
 		Host:   s.HostName + ":" + s.Port,
     }
     log.Println(newServer)
@@ -101,7 +98,7 @@ func main() {
 	log.SetFlags(log.LstdFlags | log.Lshortfile)
     
     
-    //requests to register must be in format {"hostName":"localhost", "port": "9093"}
+    //requests to register must be in format {"hostName":"localhost", "port": "9093", "Scheme": "http"}
     http.HandleFunc("/register", func(w http.ResponseWriter, r *http.Request){
         body, err := ioutil.ReadAll(r.Body)
         if err != nil {
@@ -116,6 +113,7 @@ func main() {
         valid := validateServer(t)
         if valid{
             addToHosts(t)
+            //to do. Set Headers and response codes
             io.WriteString(w, "accepted, you are now registered")
         }else{
             io.WriteString(w, "registration rejected")
@@ -123,6 +121,11 @@ func main() {
     })
     
     http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request){
+        if r.Method == "POST" {
+        body, err := ioutil.ReadAll(r.Body)
+        panic(err)
+        fmt.Printf("Body: %v\n", string(body));
+      }
        proxy := GetReverseProxy()
        proxy.ServeHTTP(w,r)
     })
