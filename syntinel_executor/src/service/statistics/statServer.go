@@ -29,6 +29,6 @@ func StartStatisticsServer() {
 	go top.Parse(out)
 }
 
-func Statistics() *Stats {
+func Statistics() Stats {
 	return top.Statistics()
 }

@@ -6,12 +6,3 @@ type Stats struct {
 	Swap     SwapStats     `json:"swap"`
 	Executor ExecutorStats `json:"executor"`
 }
-
-func NewStats() Stats {
-	return Stats{
-		CPUStats{},
-		MemStats{},
-		SwapStats{},
-		ExecutorStats{},
-	}
-}

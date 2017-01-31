@@ -2,13 +2,14 @@ package statistics
 
 import (
 	"bufio"
-	"fmt"
+	"log"
 	"os"
 	"strconv"
 )
 
+// @TODO
+
 type DarwinTop struct {
-	//13
 	command string
 	args    []string
 }
@@ -26,16 +27,17 @@ func (dt DarwinTop) Args() []string {
 }
 
 func (dt DarwinTop) Parse(out *bufio.Scanner) {
-	for {
-		fmt.Println("New batch.")
-		for i := 0; i < 10; i++ {
-			for out.Scan() {
-				fmt.Println(string(out.Bytes()))
-			}
-		}
-	}
+	log.Println("Darwin not supported yet. Stats server disabled.")
+	// for {
+	// 	fmt.Println("New batch.")
+	// 	for i := 0; i < 10; i++ {
+	// 		for out.Scan() {
+	// 			fmt.Println(string(out.Bytes()))
+	// 		}
+	// 	}
+	// }
 }
 
-func (dt DarwinTop) Statistics() *Stats {
-	return &Stats{}
+func (dt DarwinTop) Statistics() Stats {
+	return Stats{}
 }
