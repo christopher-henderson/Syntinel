@@ -68,7 +68,7 @@ func (lt LinuxTop) Statistics() *Stats {
 }
 
 func (lt *LinuxTop) AverageLoad(line string) {
-	matches := averageLoadRegex.FindAllStringSubmatch(line)
+	matches := averageLoadRegex.FindAllStringSubmatch(line, -1)
 	oneMin := matches[1][0]
 	fiveMin := matches[2][0]
 	fifteenMin := matches[3][0]
@@ -98,7 +98,7 @@ func (lt *LinuxTop) CPUUsage(line string) {
 
 // KiB Mem : 16162360 total, 15411480 free,   215844 used,   535036 buff/cache
 func (lt *LinuxTop) MemUsage(line string) {
-	matches := memUsageRegex.FindAllStringSubmatch(line)
+	matches := memUsageRegex.FindAllStringSubmatch(line, -1)
 	total := matches[1][0]
 	free := matches[2][0]
 	used := matches[3][0]
