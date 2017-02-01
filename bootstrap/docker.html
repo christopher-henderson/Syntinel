@@ -132,6 +132,45 @@
                 </div>
                 <!-- /.row -->
 
+                <!-- Docker top settings row -->
+                <div class="row">
+                    <div class="col-lg-4">
+                        <h2>General</h2>
+                        <label for="dockerName">Docker Name:</label>
+                        <input type="text" class="form-control" id="dockerName">
+                    </div>
+                </div>
+                <!-- /.row -->
+
+                <!-- Docker env. variables -->
+                <div class="row">                
+                    <div class="col-lg-8">
+                        <h2>Environment Variables</h2>
+                        <div class="table-responsive">
+                            <table class="table table-hover table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Variable</th>
+                                        <th>Value</th>
+                                        <th>Options</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>PATH</td>
+                                        <td>C:\Python3\;</td>
+                                        <td>
+                                            <button type="button" class="btn btn-xs btn-info">Edit</button>
+                                            <button type="button" class="btn btn-xs btn-danger">Remove</button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <button type="button" class="btn btn-success">Add Variable</button>
+                    </div>
+                </div>
+                <!-- /.row -->
             </div>
             <!-- /.container-fluid -->
 
