@@ -1,7 +1,6 @@
 package service
 
 import (
-	"log"
 	"syntinel_executor/DAO"
 	"syntinel_executor/DAO/database/entities"
 	"syntinel_executor/PAO"
@@ -13,27 +12,12 @@ func (t *testRunService) Get(id int) (*entities.TestRunEntity, error) {
 	return DAO.TestRun.Get(id)
 }
 
-func (t *testRunService) Save(id int, test int) error {
-	testEntity, err := DAO.Test.Get(test)
+func (t *testRunService) Save(testRun *entities.TestRunEntity) error {
+	err := DAO.TestRun.Save(testRun)
 	if err != nil {
-		log.Println("Error occur")
 		return err
 	}
-	dockerfile, err := DAO.Docker.Get(testEntity.Dockerfile)
-	if err != nil {
-		log.Println("Error occur")
-		return err
-	}
-	script, err := DAO.Script.Get(testEntity.Script)
-	if err != nil {
-		log.Println("Error occur")
-		return err
-	}
-	if err := DAO.TestRun.Save(id, test, "", dockerfile.Content, script.Content); err != nil {
-		log.Println("Error occur")
-		return err
-	}
-	PAO.Run(test, id)
+	PAO.Run(testRun.TestID, testRun.ID)
 	return nil
 }
 

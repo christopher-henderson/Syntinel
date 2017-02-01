@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"log"
 	"os"
+	"syntinel_executor/DAO/database/entities"
 	"testing"
 )
 
@@ -37,225 +38,50 @@ func TestMain(m *testing.M) {
 	os.Remove(dbFile)
 }
 
-func TestInsertDockerfile(t *testing.T) {
-	defer clearDB()
-	if err := InsertDockerfile(1, dockerfile); err != nil {
-		t.Errorf("Got error inserting Dockerfile: %v", err)
-	}
-}
-
-func TestInsertDockerfileUnique(t *testing.T) {
-	defer clearDB()
-	if err := InsertDockerfile(1, dockerfile); err != nil {
-		t.Errorf("Got error inserting Dockerfile: %v", err)
-	}
-	if err := InsertDockerfile(1, dockerfile); err == nil {
-		t.Errorf("Failed to enforce UNIQUE constraing on Dockerfile.ID")
-	}
-}
-
-func TestDeleteDockerfile(t *testing.T) {
-	defer clearDB()
-	if err := InsertDockerfile(1, dockerfile); err != nil {
-		t.Errorf("Got error inserting Dockerfile: %v", err)
-	}
-	if err := DeleteDockerfile(1); err != nil {
-		t.Errorf("Got error deleting dockerfile: %v", err)
-	}
-	if _, err := GetDockerfile(1); err == nil {
-		t.Errorf("Got a deleted Dockerfile.")
-	}
-}
-
-func TestDeleteNonExistentDockerfile(t *testing.T) {
-	if err := DeleteDockerfile(1); err != nil {
-		t.Errorf("Error deleting Dockerfile when no such dockerfile exists: %v", err)
-	}
-}
-
-func TestUpdateDockefile(t *testing.T) {
-	defer clearDB()
-	newContent := "this is new content"
-	if err := InsertDockerfile(1, dockerfile); err != nil {
-		t.Errorf("Got error inserting Dockerfile: %v", err)
-	}
-	if err := UpdateDockerfile(1, newContent); err != nil {
-		t.Errorf("Got an error updating a Dockerfile: %v", err)
-	}
-	if dockerfile, err := GetDockerfile(1); err != nil {
-		t.Errorf("Got an error retrieving Dockerfile: %v", err)
-	} else if dockerfile.Content != newContent {
-		t.Errorf("Failed to update a Dockerfile. Expected it to change to %v, got %v", newContent, dockerfile.Content)
-	}
-}
-
-func TestInsertScript(t *testing.T) {
-	defer clearDB()
-	if err := InsertScript(1, script); err != nil {
-		t.Errorf("Got error inserting Script: %v", err)
-	}
-}
-
-func TestInsertScriptUnique(t *testing.T) {
-	defer clearDB()
-	if err := InsertScript(1, script); err != nil {
-		t.Errorf("Got error inserting Script: %v", err)
-	}
-	if err := InsertScript(1, script); err == nil {
-		t.Errorf("Failed to enforce UNIQUE constraing on Script.ID")
-	}
-}
-
-func TestDeleteScript(t *testing.T) {
-	defer clearDB()
-	if err := InsertScript(1, script); err != nil {
-		t.Errorf("Got error inserting Script: %v", err)
-	}
-	if err := DeleteScript(1); err != nil {
-		t.Errorf("Got an error deleting a script: %v", err)
-	}
-	if s, err := GetScript(1); err == nil {
-		t.Errorf("Failed to get an error when retrieving a deleted script. Got: %v", s)
-	}
-}
-
-func TestDeleteNonExistentScript(t *testing.T) {
-	clearDB()
-	if err := DeleteScript(1000); err != nil {
-		t.Errorf("Error deleting Script when no such script exists: %v", err)
-	}
-}
-
-func TestUpdateScript(t *testing.T) {
-	defer clearDB()
-	newContent := "this is new content"
-	if err := InsertScript(1, script); err != nil {
-		t.Errorf("Got error inserting script %v", err)
-	}
-	if err := UpdateScript(1, newContent); err != nil {
-		t.Errorf("Got an error updating a Script: %v", err)
-	}
-	if s, err := GetScript(1); err != nil {
-		t.Errorf("Got an error retrieving script: %v", err)
-	} else if s.Content != newContent {
-		t.Errorf("Failed to update a script. Expected it to change to %v, got %v", newContent, s.Content)
-	}
-}
-
-func TestInsertTest(t *testing.T) {
-	defer clearDB()
-	if err := InsertScript(1, script); err != nil {
-		t.Errorf("Got error inserting script %v", err)
-	}
-	if err := InsertDockerfile(1, dockerfile); err != nil {
-		t.Errorf("Got error inserting Dockerfile: %v", err)
-	}
-	if err := InsertTest(1, 1, 1); err != nil {
-		t.Errorf("Failed to insert test: %v", err)
-	}
-}
-
-func TestInsertTestUnique(t *testing.T) {
-	defer clearDB()
-	if err := InsertScript(1, script); err != nil {
-		t.Errorf("Got error inserting script %v", err)
-	}
-	if err := InsertDockerfile(1, dockerfile); err != nil {
-		t.Errorf("Got error inserting Dockerfile: %v", err)
-	}
-	if err := InsertTest(1, 1, 1); err != nil {
-		t.Errorf("Failed to insert test: %v", err)
-	}
-	if err := InsertTest(1, 1, 1); err == nil {
-		t.Errorf("Failed to enforce unique constraint on Test")
-	}
-}
-
-func TestDeleteTest(t *testing.T) {
-	defer clearDB()
-	if err := InsertScript(1, script); err != nil {
-		t.Errorf("Got error inserting script %v", err)
-	}
-	if err := InsertDockerfile(1, dockerfile); err != nil {
-		t.Errorf("Got error inserting Dockerfile: %v", err)
-	}
-	if err := InsertTest(1, 1, 1); err != nil {
-		t.Errorf("Failed to insert test: %v", err)
-	}
-	if err := DeleteTest(1); err != nil {
-		t.Errorf("Failed to delete Test: %v", err)
-	}
-	if _, err := GetTest(1); err == nil {
-		t.Errorf("Failed to get an error when retrieving a deleted test. Got: %v", err)
-	}
-}
-
-func TestDeleteNonExistentTest(t *testing.T) {
-	if err := DeleteTest(1); err != nil {
-		t.Errorf("Error deleting Test when no such test exists: %v", err)
-	}
-}
-
-func TestUpdateTest(t *testing.T) {
-	clearDB()
-	defer clearDB()
-	if err := InsertScript(1, script); err != nil {
-		t.Errorf("Got error inserting script %v", err)
-	}
-	if err := InsertDockerfile(1, dockerfile); err != nil {
-		t.Errorf("Got error inserting Dockerfile: %v", err)
-	}
-	if err := InsertTest(1, 1, 1); err != nil {
-		t.Errorf("Failed to insert test: %v", err)
-	}
-	if err := InsertScript(2, script); err != nil {
-		t.Errorf("Got error inserting script %v", err)
-	}
-	if err := InsertDockerfile(2, dockerfile); err != nil {
-		t.Errorf("Got error inserting Dockerfile: %v", err)
-	}
-	if err := UpdateTest(1, 2, 2); err != nil {
-		t.Errorf("Got an error updating a Test: %v", err)
-	}
-	if test, err := GetTest(1); err != nil {
-		t.Errorf("Got an error retrieving a Test: %v", err)
-	} else if test.Script != 2 || test.Dockerfile != 2 {
-		t.Errorf("Failed to update Test. Expected Script to be %v, Dockerfile to be %v. Got %v and %v respectively.", 2, 2, test.Script, test.Dockerfile)
-	}
-}
-
-// @TODO Constraints in general
-// func TestInsertTestFKConstraint(t *testing.T) {
-// 	defer clearDB()
-// 	if err := InsertTest(1, 1, 1); err == nil {
-// 		test, _ := GetTest(1)
-// 		t.Errorf("Inserted a Test with a non-existent Script and Dockerfile. Test is %v", test)
-// 	}
-// }
-
 func TestInsertTestRun(t *testing.T) {
 	defer clearDB()
-	if err := InsertTestRun(1, 1, "a=b", dockerfile, script); err != nil {
+	tr := &entities.TestRunEntity{}
+	tr.ID = 1
+	tr.TestID = 1
+	tr.Dockerfile = dockerfile
+	tr.Script = script
+	tr.EnvironmentVariables = ""
+	if err := InsertTestRun(tr); err != nil {
 		t.Errorf("Failed to insert TestRun: %v", err)
 	}
-	if _, err := GetTestRun(1); err != nil {
+	if tr, err := GetTestRun(1); err != nil {
 		t.Errorf("Failed to retrieve TestRun: %v", err)
+	} else if tr.Dockerfile != dockerfile || tr.Script != script {
+		log.Println(tr.Dockerfile)
+		t.Errorf("Got back a test run with bad Dockerfile and Script:\n%v\n%v", tr.Dockerfile, tr.Script)
 	}
 }
 
 func TestInsertTestRunUnique(t *testing.T) {
 	defer clearDB()
-	if err := InsertTestRun(1, 1, "a=b", dockerfile, script); err != nil {
+	tr := &entities.TestRunEntity{}
+	tr.ID = 1
+	tr.TestID = 1
+	tr.Dockerfile = dockerfile
+	tr.Script = script
+	tr.EnvironmentVariables = ""
+	if err := InsertTestRun(tr); err != nil {
 		t.Errorf("Failed to insert TestRun: %v", err)
 	}
-	if err := InsertTestRun(1, 1, "a=b", dockerfile, script); err == nil {
+	if err := InsertTestRun(tr); err == nil {
 		t.Errorf("Failed to enforce unique constraint on TestRun")
 	}
 }
 
 func TestDeleteTestRun(t *testing.T) {
 	defer clearDB()
-	if err := InsertTestRun(1, 1, "a=b", dockerfile, script); err != nil {
+	tr := &entities.TestRunEntity{}
+	tr.ID = 1
+	tr.TestID = 1
+	tr.Dockerfile = dockerfile
+	tr.Script = script
+	tr.EnvironmentVariables = ""
+	if err := InsertTestRun(tr); err != nil {
 		t.Errorf("Failed to insert TestRun: %v", err)
 	}
 	if err := DeleteTestRun(1); err != nil {
@@ -290,11 +116,17 @@ func TestBadDB(t *testing.T) {
 		}()
 		InitDB()
 	}()
-	if err := InsertDockerfile(1, dockerfile); err == nil {
-		t.Errorf("No error with deleted database.")
+	tr := &entities.TestRunEntity{}
+	tr.ID = 1
+	tr.TestID = 1
+	tr.Dockerfile = dockerfile
+	tr.Script = script
+	tr.EnvironmentVariables = ""
+	if err := InsertTestRun(tr); err == nil {
+		t.Errorf("Did not recieve error on deleted database.")
 	}
-	if _, err := GetDockerfile(1); err == nil {
-		t.Errorf("No error with deleted database.")
+	if _, err := GetTestRun(1); err == nil {
+		t.Errorf("Did not recieve error on deleted database.")
 	}
 }
 
