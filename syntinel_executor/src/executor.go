@@ -6,6 +6,7 @@ import (
 	"syntinel_executor/DAO/database"
 	"syntinel_executor/PAO"
 	"syntinel_executor/controller"
+	"syntinel_executor/service/statistics"
 
 	"github.com/gorilla/mux"
 )
@@ -15,10 +16,13 @@ func main() {
 	log.Println("Initializing Database")
 	database.InitDB()
 	PAO.StartPAO()
+	statistics.StartStatisticsServer()
 	log.SetFlags(log.LstdFlags | log.Lshortfile)
 	router := mux.NewRouter()
 	// Makes, e.g., /test/1 and /test/1/ properly resolve to the same handler.
 	router.StrictSlash(true)
+
+	router.HandleFunc("/stats", controller.Statistics).Methods("GET")
 
 	router.HandleFunc("/test/run", controller.RunTest).Methods("POST")
 	router.HandleFunc("/test/run", controller.KillTest).Methods("DELETE")
