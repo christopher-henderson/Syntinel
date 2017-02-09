@@ -15,6 +15,8 @@ import (
 	"time"
 )
 
+var jobMap = NewJobMap()
+
 //ServerStruct... for all connected servers. HostName: string, port:string, Scheme:string
 type ServerStruct struct {
 	HostName string `json:"hostName"`
@@ -92,6 +94,7 @@ func validateServer(s ServerStruct) (valid bool) {
 }
 
 func main() {
+
 	log.SetFlags(log.LstdFlags | log.Lshortfile)
 
 	//requests to register must be in format {"hostName":"localhost", "port": "9093", "Scheme": "http"}
@@ -119,6 +122,45 @@ func main() {
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		proxy := getReverseProxy()
 		proxy.ServeHTTP(w, r)
+	})
+
+	http.HandleFunc("/schedule", func(w http.ResponseWriter, r *http.Request) {
+		body, err := ioutil.ReadAll(r.Body)
+		if err != nil {
+			log.Println("error")
+		}
+		log.Println(string(body))
+		var t job
+		err = json.Unmarshal(body, &t)
+		if err != nil {
+			log.Println("error")
+			io.WriteString(w, "There was a problem with your submission")
+		} else {
+			t.Canceled = false
+			jobMap.Put(t.Id, t)
+			go scheduleJob(t)
+			io.WriteString(w, "Scheduled")
+		}
+
+	})
+
+	http.HandleFunc("/cancel", func(w http.ResponseWriter, r *http.Request) {
+		body, err := ioutil.ReadAll(r.Body)
+		if err != nil {
+			log.Println("error")
+		}
+		log.Println(string(body))
+		var t job
+		err = json.Unmarshal(body, &t)
+		if err != nil {
+			log.Println("error")
+			io.WriteString(w, "There was a problem with your submission")
+		} else {
+			tmp := jobMap.Get(t.Id)
+			tmp.Canceled = true
+			jobMap.Put(tmp.Id, tmp)
+			io.WriteString(w, "Job has been canceled")
+		}
 	})
 
 	log.Fatal(http.ListenAndServe(":9090", nil))
