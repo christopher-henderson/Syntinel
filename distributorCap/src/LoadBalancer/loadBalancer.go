@@ -27,11 +27,11 @@ type ServerStruct struct {
 var r = roundRobbin{servers: []url.URL{
 	{
 		Scheme: "http",
-		Host:   "127.0.0.1:9091",
+		Host:   "localhost:9090",
 	},
 	{
 		Scheme: "http",
-		Host:   "127.0.0.1:9092",
+		Host:   "localhost:9091",
 	},
 }}
 
@@ -163,5 +163,5 @@ func main() {
 		}
 	})
 
-	log.Fatal(http.ListenAndServe(":9090", nil))
+	log.Fatal(http.ListenAndServe(":9093", nil))
 }
