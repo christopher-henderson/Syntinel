@@ -32,7 +32,10 @@ git clone https://github.com/christopher-henderson/TestTheTester.git && cd TestT
 		EnvironmentVariables string `json:"environmentVairables"`
 	}{1, dockerfile, script, "a=b"}
 	r, w := io.Pipe()
-	json.NewEncoder(w).Encode(obj)
+	go func() {
+		json.NewEncoder(w).Encode(obj)
+		close(w)
+	}()
 	req, err := http.NewRequest("POST", "http://localhost:9093/test/run", r)
 	if err != nil {
 		// handle err
