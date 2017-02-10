@@ -1,6 +1,7 @@
 package main
 
 import (
+<<<<<<< HEAD
 	"fmt"
 	"math/rand"
 	"net/http"
@@ -28,5 +29,4 @@ func main() {
 		}
 		defer resp.Body.Close()
 	}
-
 }

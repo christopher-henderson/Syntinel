@@ -2,8 +2,10 @@ package main
 
 import (
 	"fmt"
-	"net/http"
 	"strings"
+
+	"net/http"
+
 	"time"
 )
 
@@ -23,6 +25,10 @@ func executeJob(j job) {
 		// handle err
 	}
 	defer resp.Body.Close()
+
+	fmt.Print("Executed: ")
+	fmt.Println(j.Id)
+
 }
 
 func scheduleJob(j job) {
@@ -33,6 +39,7 @@ func scheduleJob(j job) {
 	if tmp.Canceled == false {
 		go scheduleJob(j)
 		go executeJob(j)
+
 	} else {
 		jobMap.Delete(j.Id)
 	}
