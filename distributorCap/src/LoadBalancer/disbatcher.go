@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 
 	"net/http"
 
@@ -30,9 +31,9 @@ git clone https://github.com/christopher-henderson/TestTheTester.git && cd TestT
 		Script               string `json:"script"`
 		EnvironmentVariables string `json:"environmentVairables"`
 	}{1, dockerfile, script, "a=b"}
-	marshalled, _ := json.MarshalIndent(obj, "", " ")
-	body := string(marshalled)
-	req, err := http.NewRequest("POST", "http://localhost:9093/test/run", body)
+	r, w := io.Pipe()
+	json.NewEncoder(w).Encode(obj)
+	req, err := http.NewRequest("POST", "http://localhost:9093/test/run", r)
 	if err != nil {
 		// handle err
 	}
