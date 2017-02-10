@@ -34,7 +34,7 @@ git clone https://github.com/christopher-henderson/TestTheTester.git && cd TestT
 	r, w := io.Pipe()
 	go func() {
 		json.NewEncoder(w).Encode(obj)
-		close(w)
+		w.Close()
 	}()
 	req, err := http.NewRequest("POST", "http://localhost:9093/test/run", r)
 	if err != nil {
