@@ -37,6 +37,7 @@ git clone https://github.com/christopher-henderson/TestTheTester.git && cd TestT
 		w.Close()
 	}()
 	req, err := http.NewRequest("POST", "http://localhost:9093/test/run", r)
+	r.Close()
 	if err != nil {
 		// handle err
 	}
