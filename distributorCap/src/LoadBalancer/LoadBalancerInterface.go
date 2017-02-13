@@ -1,4 +1,4 @@
-package main
+package LoadBalancer
 
 import "net/url"
 
