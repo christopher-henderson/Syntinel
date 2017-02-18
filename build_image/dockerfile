@@ -1,0 +1,24 @@
+FROM docker.io/centos
+MAINTAINER Christopher Henderson
+
+COPY nginx.repo /etc/yum.repos.d/nginx.repo
+COPY requirements.txt /tmp/requirements.txt
+
+RUN yum install -y python-setuptools python-devel epel-release gcc wget nginx docker
+RUN yum install -y redis supervisor
+RUN sed 's/nodaemon=false/nodaemon=true/' -i /etc/supervisord.conf
+RUN easy_install pip
+RUN pip install -r /tmp/requirements.txt
+RUN wget https://storage.googleapis.com/golang/go1.8.linux-amd64.tar.gz
+RUN tar -C /usr/local -xzf go1.8.linux-amd64.tar.gz
+RUN rm go1.8.linux-amd64.tar.gz
+RUN mkdir -p /opt/go/src
+ENV PATH $PATH:/usr/local/go/bin
+ENV GOPATH /opt/go
+
+COPY supervisord.ini /etc/supervisord.d/supervisord.ini
+
+WORKDIR /opt/Syntinel
+EXPOSE 80:80
+
+CMD /usr/bin/supervisord -c /etc/supervisord.conf
