@@ -19,7 +19,7 @@ import os
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-LOAD_BALANCER = "syntinel.chenderson.org:8080"
+LOAD_BALANCER = "localhost:9093"
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.10/howto/deployment/checklist/
@@ -30,7 +30,7 @@ SECRET_KEY = 'yxykq#(-66g=3a-g+em1)n=!p87gq=c%wx(23e@urm%z76qz21'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["192.168.1.2", "localhost"]
+ALLOWED_HOSTS = ["syntinel", "localhost"]
 
 DATABASES = {
     'default': {

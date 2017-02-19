@@ -1,0 +1,61 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Syntinel Demo</title>
+</head>
+
+<body>
+  <h2>Dockerfile</h2>
+<p>
+  FROM docker.io/centos<br>
+
+  MAINTAINER Christopher Henderson<br>
+
+  RUN yum install -y go git wget<br>
+  COPY script.sh $HOME/script.sh<br>
+  CMD chmod +x script.sh && ./script.sh<br>
+</p>
+  <h2>Script</h2>
+  <p>#!/usr/bin/env bash<br>
+  git clone https://github.com/christopher-henderson/TestTheTester.git && cd TestTheTester/GoBeInGoodHands && go test . -v -cover
+</p>
+  <script>
+    function startWebsocket() {
+      // Note that the path doesn't matter right now; any WebSocket
+      // connection gets bumped over to WebSocket consumers
+      var c = document.getElementById("test");
+      socket = new WebSocket("ws://192.168.1.2/testRun/console/14");
+      socket.onmessage = function(e) {
+        console.log("WUT WUT IN THE ");
+          c.innerHTML += e.data + "\n";
+      }
+      socket.onopen = function() {
+          console.log("hello world");
+      }
+      // Call onopen directly if socket is already open
+      if (socket.readyState == WebSocket.OPEN) socket.onopen();
+    }
+    function test() {
+      startWebsocket();
+      var data = {
+        "test": 1
+      }
+      // var data = '{"id": 1, "dockerfile": "FROM docker.io/centos\n\nMAINTAINER Christopher Henderson\n\nRUN yum install -y go git wget\nCOPY script.sh $HOME/script.sh\nCMD chmod +x script.sh && ./script.sh\n", "environmentVariables": "a=b", "script": "#!/usr/bin/env bash\ngit clone https://github.com/christopher-henderson/TestTheTester.git && cd TestTheTester/GoBeInGoodHands && go test . -v -cover\n", "testID": 1}';
+      var xmlHttp = new XMLHttpRequest();
+      xmlHttp.open("POST", "http://192.168.1.2/api/v1/testrun/", false ); // false for synchronous request
+      xmlHttp.setRequestHeader('Content-Type', "application/json");
+      xmlHttp.setRequestHeader('Access-Control-Allow-Origin', "*");
+      xmlHttp.setRequestHeader('Access-Control-Allow-Methods', "GET, POST, PATCH, PUT, DELETE, OPTIONS");
+      xmlHttp.setRequestHeader('Access-Control-Allow-Headers', "Origin, Content-Type, X-Auth-Token");
+      xmlHttp.send(JSON.stringify(data));
+    }
+  </script>
+  <button onclick="test()">Run!</button>
+  <h2>Test Results</h2>
+  <div id="test" style="white-space:pre-wrap;">
+  </div>
+
+</body>
+</html>

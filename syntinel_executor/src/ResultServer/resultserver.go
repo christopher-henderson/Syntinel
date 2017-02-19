@@ -28,8 +28,8 @@ const maxBackoff = 20
 // fmt.Printf("Received: %s.\n", msg[:n])
 
 func Stream(ID int, stdout *bufio.Scanner) {
-	origin := "http://192.168.1.2:8000"
-	url := fmt.Sprintf("ws://192.168.1.2:8000/testRun/console/%v-executor", ID)
+	origin := "http://localhost"
+	url := fmt.Sprintf("ws://localhost/testRun/console/%v-executor", ID)
 	log.Println(origin)
 	log.Println(url)
 	ws, err := websocket.Dial(url, "", origin)
@@ -38,7 +38,7 @@ func Stream(ID int, stdout *bufio.Scanner) {
 	}
 	go func() {
 		for stdout.Scan() {
-			// log.Println(fmt.Sprintf("STDOUT ID %v: %v", ID, string(stdout.Bytes())))
+			log.Println(fmt.Sprintf("STDOUT ID %v: %v", ID, string(stdout.Bytes())))
 			if _, err := ws.Write(stdout.Bytes()); err != nil {
 				log.Fatalln(err)
 			}
