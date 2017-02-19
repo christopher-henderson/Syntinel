@@ -4,9 +4,20 @@ MAINTAINER Christopher Henderson
 COPY nginx.repo /etc/yum.repos.d/nginx.repo
 COPY requirements.txt /tmp/requirements.txt
 
-RUN yum install -y python-setuptools python-devel epel-release gcc wget nginx docker
-RUN yum install -y redis supervisor
+#
+RUN yum install -y python-setuptools
+RUN yum install -y python-devel
+RUN yum install -y epel-release
+RUN yum install -y gcc
+RUN yum install -y wget
+RUN yum install -y nginx
+RUN yum install -y docker
+RUN yum install -y git
+RUN yum install -y redis
+RUN yum install -y supervisor
+
 RUN sed 's/nodaemon=false/nodaemon=true/' -i /etc/supervisord.conf
+
 RUN easy_install pip
 RUN pip install -r /tmp/requirements.txt
 RUN wget https://storage.googleapis.com/golang/go1.8.linux-amd64.tar.gz
@@ -15,6 +26,9 @@ RUN rm go1.8.linux-amd64.tar.gz
 RUN mkdir -p /opt/go/src
 ENV PATH $PATH:/usr/local/go/bin
 ENV GOPATH /opt/go
+RUN go get github.com/gorilla/mux
+RUN go get github.com/mattn/go-sqlite3
+RUN ln -s /opt/Syntinel/syntinel_executor/src /opt/go/src/syntinel_executor
 
 COPY supervisord.ini /etc/supervisord.d/supervisord.ini
 
