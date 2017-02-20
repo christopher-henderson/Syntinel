@@ -1,8 +1,10 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
+	"os"
 	"syntinel_executor/DAO/database"
 	"syntinel_executor/PAO"
 	"syntinel_executor/controller"
@@ -11,8 +13,16 @@ import (
 	"github.com/gorilla/mux"
 )
 
+func Port() string {
+	if len(os.Args) > 1 {
+		return fmt.Sprintf(":%v", os.Args[1])
+	}
+	return ":8080"
+}
+
 func main() {
 	defer log.Println("Exiting")
+	port := Port()
 	log.Println("Initializing Database")
 	database.InitDB()
 	PAO.StartPAO()
@@ -35,7 +45,7 @@ func main() {
 	// 		log.Println(fmt.Sprintf("Number of Goroutines: %v", runtime.NumGoroutine()))
 	// 	}
 	// }()
-	if err := http.ListenAndServe(":8080", nil); err != nil {
+	if err := http.ListenAndServe(port, nil); err != nil {
 		log.Fatalln(err)
 	}
 }

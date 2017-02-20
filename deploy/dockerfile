@@ -1,0 +1,44 @@
+FROM docker.io/centos
+MAINTAINER Christopher Henderson
+
+COPY nginx.repo /etc/yum.repos.d/nginx.repo
+COPY requirements.txt /tmp/requirements.txt
+
+RUN yum install -y python-setuptools python-devel readline-devel openssl-devel bzip2-devel gcc wget make zlib-devel sqlite-devel
+RUN wget https://www.python.org/ftp/python/3.6.0/Python-3.6.0.tgz
+RUN tar zxvf Python-3.6.0.tgz
+RUN cd Python-3.6.0 && ./configure --prefix=/usr/local
+RUN cd Python-3.6.0 && make && make altinstall
+RUN rm -rf /Python-3.6.0*
+RUN easy_install pip
+RUN pip install virtualenv
+RUN virtualenv -p python3.6 /opt/venv3
+RUN source /opt/venv3/bin/activate && pip install -r /tmp/requirements.txt
+
+RUN yum install -y epel-release
+RUN yum install -y nginx
+RUN yum install -y docker
+RUN yum install -y git
+RUN yum install -y redis
+RUN yum install -y supervisor
+
+RUN sed 's/nodaemon=false/nodaemon=true/' -i /etc/supervisord.conf
+
+RUN wget https://storage.googleapis.com/golang/go1.8.linux-amd64.tar.gz
+RUN tar -C /usr/local -xzf go1.8.linux-amd64.tar.gz
+RUN rm go1.8.linux-amd64.tar.gz
+RUN mkdir -p /opt/go/src
+ENV PATH $PATH:/usr/local/go/bin
+ENV GOPATH /opt/go
+RUN go get github.com/gorilla/mux
+RUN go get github.com/mattn/go-sqlite3
+RUN ln -s /opt/Syntinel/syntinel_executor/src /opt/go/src/syntinel_executor
+
+COPY supervisord.ini /etc/supervisord.d/supervisord.ini
+COPY syntinel_nginx.conf /etc/nginx/conf.d/syntinel_nginx.conf
+RUN rm /etc/nginx/conf.d/default.conf
+
+WORKDIR /opt/Syntinel
+EXPOSE 80:80
+
+CMD /usr/bin/supervisord -c /etc/supervisord.conf

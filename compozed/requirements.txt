@@ -1,2 +1,5 @@
+requests
+django
+djangorestframework
 channels
 asgi_redis
