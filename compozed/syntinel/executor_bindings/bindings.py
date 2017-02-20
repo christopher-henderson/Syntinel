@@ -8,9 +8,10 @@ logger = logging.getLogger(__name__)
 class ExecutorBindings(object):
 
     @staticmethod
-    def run(testID, dockerfile, script, environmentVariables):
+    def run(id, testID, dockerfile, script, environmentVariables):
         print("Firing off to load balancer.")
         data = {
+            "ID": id,
             "testID": testID,
             "dockerfile": dockerfile,
             "script": script,

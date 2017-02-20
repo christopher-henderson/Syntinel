@@ -27,6 +27,7 @@ class TestRun(models.Model):
 
     def run(self):
         ExecutorBindings.run(
+            id=self.id,
             testID=self.test.id,
             dockerfile=self.test.dockerfile,
             script=self.test.script,
