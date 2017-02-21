@@ -38,3 +38,11 @@ class TestRun(models.Model):
 class Suite(models.Model):
 
     name = models.CharField(max_length=2 ** 16)
+
+
+class Executor(models.Model):
+
+    hostName = models.CharField(max_length=256)
+    # Max port is 65535, five characters long.
+    port = models.CharField(max_length=5)
+    Scheme = models.CharField(max_length=5, default="http")
