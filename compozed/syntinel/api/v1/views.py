@@ -10,11 +10,13 @@ from rest_framework import generics
 from syntinel.models import (
     Test,
     Suite,
-    TestRun)
+    TestRun,
+    Executor)
 from .serializers import (
     TestSerializer,
     SuiteSerializer,
-    TestRunSerializer)
+    TestRunSerializer,
+    ExecutorSerializer)
 
 
 class TestView(CreateAPIView, RetrieveUpdateDestroyAPIView):
@@ -60,3 +62,15 @@ class TestRunListView(ListAPIView):
 
     queryset = TestRun.objects.all()
     serializer_class = TestRunSerializer
+
+
+class ExecutorView(CreateAPIView, RetrieveUpdateDestroyAPIView):
+
+    queryset = Executor.objects.all()
+    serializer_class = ExecutorSerializer
+
+
+class ExecutorListView(ListAPIView):
+
+    queryset = Executor.objects.all()
+    serializer_class = ExecutorSerializer

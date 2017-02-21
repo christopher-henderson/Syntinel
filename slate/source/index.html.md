@@ -193,3 +193,70 @@ xmlHttp.send(JSON.stringify(data));
   "test":1
 }
 ```
+
+# Executor
+
+## Register an Executor
+
+Registering an executor requires JSON body formatted as follows:
+
+hostName: String<br>
+port: String<br>
+Scheme: String. Optional. Default is "http"<br>
+
+```shell
+curl -X POST -H "Content-Type:application/json" http://192.168.1.2/api/v1/executor/ -d '{"port": "9090", "hostName": "localhost"}'
+```
+
+> The above command returns JSON structured like this:
+
+```json
+{
+  "id":1,
+  "hostName":"localhost",
+  "port":"9090",
+  "Scheme":"http"
+}
+```
+
+## Get All Executors
+
+```shell
+curl -X GET http://192.168.1.2/api/v1/executor/all/
+```
+
+> The above command returns JSON structured like this:
+
+```json
+[
+  {
+    "id":1,
+    "hostName":"localhost",
+    "port":"9090",
+    "Scheme":"http"
+  },
+  {
+    "id":2,
+    "hostName":"localhost",
+    "port":"9091",
+    "Scheme":"http"
+  }
+]
+```
+
+## Get a Specific Executor
+
+```shell
+curl -X GET http://192.168.1.2/api/v1/executor/1
+```
+
+> The above command returns JSON structured like this:
+
+```json
+{
+  "id":1,
+  "hostName":"localhost",
+  "port":"9090",
+  "Scheme":"http"
+}
+```
