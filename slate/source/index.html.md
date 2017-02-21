@@ -243,3 +243,20 @@ curl -X GET http://192.168.1.2/api/v1/executor/all/
   }
 ]
 ```
+
+## Get a Specific Executor
+
+```shell
+curl -X GET http://192.168.1.2/api/v1/executor/1
+```
+
+> The above command returns JSON structured like this:
+
+```json
+{
+  "id":1,
+  "hostName":"localhost",
+  "port":"9090",
+  "Scheme":"http"
+}
+```

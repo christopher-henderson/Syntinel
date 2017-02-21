@@ -319,6 +319,19 @@ Scheme: String. Optional. Default is &ldquo;http&rdquo;<br></p>
   </span><span class="p">}</span><span class="w">
 </span><span class="p">]</span><span class="w">
 </span></code></pre>
+<h2 id="get-a-specific-executor">Get a Specific Executor</h2>
+<pre class="highlight shell"><code>curl -X GET http://192.168.1.2/api/v1/executor/1
+</code></pre>
+<blockquote>
+<p>The above command returns JSON structured like this:</p>
+</blockquote>
+<pre class="highlight json"><code><span class="p">{</span><span class="w">
+  </span><span class="nt">"id"</span><span class="p">:</span><span class="mi">1</span><span class="p">,</span><span class="w">
+  </span><span class="nt">"hostName"</span><span class="p">:</span><span class="s2">"localhost"</span><span class="p">,</span><span class="w">
+  </span><span class="nt">"port"</span><span class="p">:</span><span class="s2">"9090"</span><span class="p">,</span><span class="w">
+  </span><span class="nt">"Scheme"</span><span class="p">:</span><span class="s2">"http"</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
           <h1 id="errors">Errors</h1>
 
 <aside class="notice">This error section is stored in a separate file in `includes/_errors.md`. Slate allows you to optionally separate out your docs into many files&hellip;just save them to the `includes` folder and add them to the top of your `index.md`&rsquo;s frontmatter. Files are included in the order listed.</aside>
