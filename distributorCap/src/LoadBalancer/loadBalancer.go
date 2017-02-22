@@ -3,6 +3,7 @@
 package LoadBalancer
 
 import (
+	"fmt"
 	"log"
 	"net"
 	"net/http"
@@ -31,17 +32,18 @@ type ServerStruct struct {
 }
 
 //outputs to format [protocollhost]:port
-func urlToString(url url.URL) string {
+func UrlToString(url url.URL) string {
 	temp := url.String()
 	port := strings.Split(temp, ":")
 	name := strings.Split(port[1], "//")
 	temp = "[" + name[1] + "]" + ":" + port[2]
+	fmt.Println(temp)
 	return temp
 }
 
 func balanceLoad() (net.Conn, error) {
 failed:
-	conn, err := net.Dial("tcp", urlToString(r.GetNext()))
+	conn, err := net.Dial("tcp", UrlToString(r.GetNext()))
 	if err != nil {
 		goto failed
 	} else {

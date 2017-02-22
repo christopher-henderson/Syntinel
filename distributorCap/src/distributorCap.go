@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"reflect"
 
 	"./LoadBalancer"
 	"./Scheduler"
@@ -49,37 +50,47 @@ func main() {
 		}
 		log.Println(string(body))
 		var t Scheduler.Job
-		err = json.Unmarshal(body, &t)
-		if err != nil {
-			log.Println("error")
-			io.WriteString(w, "There was a problem with your submission")
+		log.Println(reflect.TypeOf(t))
+		j, worked := Scheduler.UnmarshalStruct(body, t)
+		log.Println(j)
+		if worked {
+			log.Print("54")
+			j, ok := j.(Scheduler.Job)
+			log.Println(ok)
+			log.Println(j)
+			log.Println(reflect.TypeOf(j))
+			if ok {
+				log.Println("57")
+				j.Canceled = false
+				Scheduler.ExportedjobMap.Put(j.Id, j)
+				go Scheduler.ScheduleJob(j)
+				io.WriteString(w, "Scheduled")
+			}
 		} else {
-			t.Canceled = false
-			Scheduler.ExportedjobMap.Put(t.Id, t)
-			go Scheduler.ScheduleJob(t)
-			io.WriteString(w, "Scheduled")
-		}
-
-	})
-
-	http.HandleFunc("/cancel", func(w http.ResponseWriter, r *http.Request) {
-		body, err := ioutil.ReadAll(r.Body)
-		if err != nil {
-			log.Println("error")
-		}
-		log.Println(string(body))
-		var t Scheduler.Job
-		err = json.Unmarshal(body, &t)
-		if err != nil {
-			log.Println("error")
-			io.WriteString(w, "There was a problem with your submission")
-		} else {
-			tmp := Scheduler.ExportedjobMap.Get(t.Id)
-			tmp.Canceled = true
-			Scheduler.ExportedjobMap.Put(tmp.Id, tmp)
-			io.WriteString(w, "Job has been canceled")
+			log.Println("63")
+			io.WriteString(w, "There was an error with your submission")
 		}
 	})
-
+	/*
+		http.HandleFunc("/cancel", func(w http.ResponseWriter, r *http.Request) {
+			body, err := ioutil.ReadAll(r.Body)
+			if err != nil {
+				log.Println("error")
+			}
+			log.Println(string(body))
+			Scheduler.UnmarshalJob(body)
+			var t Scheduler.Job
+			err = json.Unmarshal(body, &t)
+			if err != nil {
+				log.Println("error")
+				io.WriteString(w, "There was a problem with your submission")
+			} else {
+				tmp := Scheduler.ExportedjobMap.Get(t.Id)
+				tmp.Canceled = true
+				Scheduler.ExportedjobMap.Put(tmp.Id, tmp)
+				io.WriteString(w, "Job has been canceled")
+			}
+		})
+	*/
 	log.Fatal(http.ListenAndServe(":9093", nil))
 }
