@@ -27,7 +27,7 @@
       // connection gets bumped over to WebSocket consumers
       console.log(id);
       var c = document.getElementById("test");
-      socket = new WebSocket("ws://192.168.1.2/testRun/console/" + id);
+      socket = new WebSocket("ws://" + document.domain + "/testRun/console/" + id);
       socket.onmessage = function(e) {
         console.log("WUT WUT IN THE ");
         c.innerHTML += e.data + "\n";
@@ -43,7 +43,7 @@
         "test": 1
       }
       var xmlHttp = new XMLHttpRequest();
-      xmlHttp.open("POST", "http://192.168.1.2/api/v1/testrun/", false ); // false for synchronous request
+      xmlHttp.open("POST", document.domain + "/api/v1/testrun/", false ); // false for synchronous request
       xmlHttp.setRequestHeader('Content-Type', "application/json");
       xmlHttp.setRequestHeader('Access-Control-Allow-Origin', "*");
       xmlHttp.setRequestHeader('Access-Control-Allow-Methods', "GET, POST, PATCH, PUT, DELETE, OPTIONS");
