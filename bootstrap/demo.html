@@ -43,7 +43,7 @@
         "test": 1
       }
       var xmlHttp = new XMLHttpRequest();
-      xmlHttp.open("POST", document.domain + "/api/v1/testrun/", false ); // false for synchronous request
+      xmlHttp.open("POST", "/api/v1/testrun/", false ); // false for synchronous request
       xmlHttp.setRequestHeader('Content-Type', "application/json");
       xmlHttp.setRequestHeader('Access-Control-Allow-Origin', "*");
       xmlHttp.setRequestHeader('Access-Control-Allow-Methods', "GET, POST, PATCH, PUT, DELETE, OPTIONS");
