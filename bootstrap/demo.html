@@ -50,6 +50,7 @@
       xmlHttp.setRequestHeader('Access-Control-Allow-Headers', "Origin, Content-Type, X-Auth-Token");
       xmlHttp.onreadystatechange = function() {
         if (xmlHttp.readyState === 4)  {
+          console.log(xmlHttp.responseText);
           startWebsocket(JSON.parse(xmlHttp.responseText)["id"]);
         }
       };
