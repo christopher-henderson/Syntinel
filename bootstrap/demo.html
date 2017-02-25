@@ -23,6 +23,15 @@
 </p>
   <script>
     function createTest() {
+      exists(thenCreate);
+    }
+
+    function thenCreate(exists) {
+      if (exists) {
+        var runButton = document.getElementById("run");
+        runButton.hidden = false;
+        return;
+      }
       var dockerfile = `
       FROM docker.io/centos
       MAINTAINER Christopher Henderson
@@ -55,11 +64,22 @@
       xmlHttp.send(JSON.stringify(test));
     }
 
+    function exists(callback) {
+      var xmlHttp = new XMLHttpRequest();
+      xmlHttp.open("GET", "/api/v1/test/1/");
+      xmlHttp.onreadystatechange = function() {
+        if (xmlHttp.readyState === 4 && xmlHttp.status === 200)  {
+          console.log("Found test.");
+          callback(true);
+        } else {
+          console.log("No test found.");
+          callback(false);
+        }
+      };
+      xmlHttp.send(null);
+    }
 
     function startWebsocket(id) {
-      // Note that the path doesn't matter right now; any WebSocket
-      // connection gets bumped over to WebSocket consumers
-      console.log(id);
       var c = document.getElementById("test");
       socket = new WebSocket("ws://" + document.domain + "/testRun/console/" + id);
       socket.onmessage = function(e) {
