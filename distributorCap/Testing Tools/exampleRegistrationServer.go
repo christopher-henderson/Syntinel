@@ -18,7 +18,7 @@ func main() {
 		//	}
 		fmt.Println(i)
 		body := strings.NewReader(`{"TestID":` + fmt.Sprint(i) + `, "Interval": ` + fmt.Sprint(i) + `}`)
-		req, err := http.NewRequest("POST", "http://localhost:9093/schedule", body)
+		req, err := http.NewRequest("POST", "http://localhost:9093/cancel", body)
 		if err != nil {
 			// handle err
 		}

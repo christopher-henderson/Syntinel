@@ -16,7 +16,7 @@ import (
 var r = roundRobbin{servers: []url.URL{
 	{
 		Scheme: "http",
-		Host:   "localhost:9092",
+		Host:   "localhost:9090",
 	},
 	{
 		Scheme: "http",
@@ -31,6 +31,10 @@ type ServerStruct struct {
 	Scheme   string `json:"Scheme"`
 }
 
+func removeServer(url url.URL) {
+	//needs implimentation
+}
+
 //outputs to format [protocollhost]:port
 func UrlToString(url url.URL) string {
 	temp := url.String()
@@ -43,8 +47,10 @@ func UrlToString(url url.URL) string {
 
 func balanceLoad() (net.Conn, error) {
 failed:
-	conn, err := net.Dial("tcp", UrlToString(r.GetNext()))
+	url := r.GetNext()
+	conn, err := net.Dial("tcp", UrlToString(url))
 	if err != nil {
+		removeServer(url)
 		goto failed
 	} else {
 		return conn, nil
@@ -72,14 +78,18 @@ func GetReverseProxy() http.HandlerFunc {
 	}
 }
 
-func AddToHosts(s ServerStruct) {
-
-	newServer := url.URL{
-		Scheme: s.Scheme,
-		Host:   s.HostName + ":" + s.Port,
+func AddToHosts(s []ServerStruct) {
+	for _, server := range s {
+		valid := ValidateServer(server)
+		if valid {
+			newServer := url.URL{
+				Scheme: server.Scheme,
+				Host:   server.HostName + ":" + server.Port,
+			}
+			log.Println(newServer)
+			r.servers = append(r.servers, newServer)
+		}
 	}
-	log.Println(newServer)
-	r.servers = append(r.servers, newServer)
 }
 
 func ValidateServer(s ServerStruct) (valid bool) {
