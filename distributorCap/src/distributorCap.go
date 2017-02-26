@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
 	"io"
 	"io/ioutil"
@@ -34,8 +35,31 @@ func main() {
 	})
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		proxy := LoadBalancer.GetReverseProxy()
-		proxy.ServeHTTP(w, r)
+		log.Println(r.URL.Path)
+		buf, _ := ioutil.ReadAll(r.Body)
+		rdr1 := ioutil.NopCloser(bytes.NewBuffer(buf))
+		rdr2 := ioutil.NopCloser(bytes.NewBuffer(buf))
+		r.Body = rdr2
+		if r.URL.Path == "/test/run" {
+			body, err := ioutil.ReadAll(rdr1)
+			if err != nil {
+				log.Println("error")
+			}
+			var t Scheduler.ExecutorRequestObj
+			err = json.Unmarshal(body, &t)
+			if err == nil {
+				log.Println(t.ID)
+				proxy := LoadBalancer.GetReverseProxy(t.ID, true)
+				proxy.ServeHTTP(w, r)
+			} else {
+				proxy := LoadBalancer.GetReverseProxy(0, false)
+				proxy.ServeHTTP(w, r)
+			}
+		} else {
+			proxy := LoadBalancer.GetReverseProxy(0, false)
+			proxy.ServeHTTP(w, r)
+		}
+
 	})
 
 	http.HandleFunc("/cancelrunning", func(w http.ResponseWriter, r *http.Request) {

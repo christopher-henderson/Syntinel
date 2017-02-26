@@ -11,6 +11,8 @@ import (
 	"net/url"
 	"strings"
 	"time"
+
+	"../Scheduler"
 )
 
 var r = roundRobbin{servers: []url.URL{
@@ -20,7 +22,7 @@ var r = roundRobbin{servers: []url.URL{
 	},
 	{
 		Scheme: "http",
-		Host:   "localhost:9091",
+		Host:   "localhost:9090",
 	},
 }}
 
@@ -41,13 +43,29 @@ func UrlToString(url url.URL) string {
 	port := strings.Split(temp, ":")
 	name := strings.Split(port[1], "//")
 	temp = "[" + name[1] + "]" + ":" + port[2]
-	fmt.Println(temp)
 	return temp
 }
 
-func balanceLoad() (net.Conn, error) {
+func updateLastExecutor(ID int, url url.URL) {
+	log.Println("Reaching updatelast")
+	tmp := Scheduler.ExportedjobMap.Get(ID)
+	log.Println(tmp)
+	if tmp.Canceled == false && tmp.Interval != 0 && tmp.Id != 0 {
+		tmp.LastExecutor = url
+		fmt.Println(tmp)
+		Scheduler.ExportedjobMap.Put(tmp.Id, tmp)
+		fmt.Println(tmp)
+	} else {
+		Scheduler.ExportedjobMap.Delete(tmp.Id)
+	}
+}
+
+func balanceLoad(ID int, doIt bool) (net.Conn, error) {
 failed:
 	url := r.GetNext()
+	if doIt {
+		updateLastExecutor(ID, url)
+	}
 	conn, err := net.Dial("tcp", UrlToString(url))
 	if err != nil {
 		removeServer(url)
@@ -57,13 +75,13 @@ failed:
 	}
 }
 
-func GetReverseProxy() http.HandlerFunc {
+func GetReverseProxy(ID int, doIt bool) http.HandlerFunc {
 	transport := &http.Transport{
 		Proxy: http.ProxyFromEnvironment,
 		Dial: func(network, addr string) (net.Conn, error) {
 			log.Println(addr)
 			log.Println(network)
-			return balanceLoad()
+			return balanceLoad(ID, doIt)
 		},
 		TLSHandshakeTimeout: 10 * time.Second,
 	}
