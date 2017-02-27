@@ -1,6 +1,8 @@
 package Scheduler
 
-import "sync"
+import (
+	"sync"
+)
 
 type JobMap struct {
 	m map[int]Job

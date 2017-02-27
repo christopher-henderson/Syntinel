@@ -27,11 +27,6 @@ var r = roundRobbin{servers: []url.URL{
 }}
 
 //ServerStruct... for all connected servers. HostName: string, port:string, Scheme:string
-type ServerStruct struct {
-	HostName string `json:"hostName"`
-	Port     string `json:"port"`
-	Scheme   string `json:"Scheme"`
-}
 
 func removeServer(url url.URL) {
 	//needs implimentation
@@ -48,15 +43,15 @@ func UrlToString(url url.URL) string {
 
 func updateLastExecutor(ID int, url url.URL) {
 	log.Println("Reaching updatelast")
-	tmp := Scheduler.ExportedjobMap.Get(ID)
+	tmp := Scheduler.StoredJobMap.Get(ID)
 	log.Println(tmp)
 	if tmp.Canceled == false && tmp.Interval != 0 && tmp.Id != 0 {
 		tmp.LastExecutor = url
 		fmt.Println(tmp)
-		Scheduler.ExportedjobMap.Put(tmp.Id, tmp)
+		Scheduler.StoredJobMap.Put(tmp.Id, tmp)
 		fmt.Println(tmp)
 	} else {
-		Scheduler.ExportedjobMap.Delete(tmp.Id)
+		Scheduler.StoredJobMap.Delete(tmp.Id)
 	}
 }
 
@@ -108,6 +103,7 @@ func AddToHosts(s []ServerStruct) {
 			r.servers = append(r.servers, newServer)
 		}
 	}
+	log.Println(r.servers)
 }
 
 func ValidateServer(s ServerStruct) (valid bool) {
