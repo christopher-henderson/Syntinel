@@ -3,221 +3,186 @@
 
 <head>
 
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="">
-    <meta name="author" content="">
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="description" content="">
+	<meta name="author" content="">
 
-    <title>Syntinel - Docker Configuration</title>
+	<title>Syntinel - Docker Configuration</title>
 
-    <!-- Bootstrap Core CSS -->
-    <link href="css/bootstrap.min.css" rel="stylesheet">
+	<!-- Bootstrap Core CSS -->
+	<link href="css/bootstrap.min.css" rel="stylesheet">
 
-    <!-- Custom CSS -->
-    <link href="css/sb-admin.css" rel="stylesheet">
+	<!-- Custom CSS -->
+	<link href="css/sb-admin.css" rel="stylesheet">
 
-    <!-- Custom Fonts -->
-    <link href="font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+	<!-- Custom Fonts -->
+	<link href="font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
 
-    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
-    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-    <!--[if lt IE 9]>
-        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-    <![endif]-->
+	<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+	<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+	<!--[if lt IE 9]>
+		<script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+		<script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+	<![endif]-->
 
 </head>
 
 <body>
 
-    <div id="wrapper">
-        <!-- Navigation -->
-        <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
-            <!-- Brand and toggle get grouped for better mobile display -->
-            <div class="navbar-header">
-                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
-                    <span class="sr-only">Toggle navigation</span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
-                <a class="navbar-brand" href="index.html">Allstate - Syntinel</a>
-            </div>
-            <!-- Top Menu Items -->
-            <ul class="nav navbar-right top-nav">
-                <li class="dropdown">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-bell"></i> <b class="caret"></b></a>
-                    <ul class="dropdown-menu alert-dropdown">
-                        <li>
-                            <a href="#">Alert Name <span class="label label-default">Alert Badge</span></a>
-                        </li>
-                        <li>
-                            <a href="#">Alert Name <span class="label label-primary">Alert Badge</span></a>
-                        </li>
-                        <li>
-                            <a href="#">Alert Name <span class="label label-success">Alert Badge</span></a>
-                        </li>
-                        <li>
-                            <a href="#">Alert Name <span class="label label-info">Alert Badge</span></a>
-                        </li>
-                        <li>
-                            <a href="#">Alert Name <span class="label label-warning">Alert Badge</span></a>
-                        </li>
-                        <li>
-                            <a href="#">Alert Name <span class="label label-danger">Alert Badge</span></a>
-                        </li>
-                        <li class="divider"></li>
-                        <li>
-                            <a href="#">View All</a>
-                        </li>
-                    </ul>
-                </li>
-                <li class="dropdown">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-user"></i> David Henderson <b class="caret"></b></a>
-                    <ul class="dropdown-menu">
-                        <li>
-                            <a href="#"><i class="fa fa-fw fa-user"></i> Profile</a>
-                        </li>
-                        <li>
-                            <a href="#"><i class="fa fa-fw fa-envelope"></i> Inbox</a>
-                        </li>
-                        <li>
-                            <a href="#"><i class="fa fa-fw fa-gear"></i> Settings</a>
-                        </li>
-                        <li class="divider"></li>
-                        <li>
-                            <a href="#"><i class="fa fa-fw fa-power-off"></i> Log Out</a>
-                        </li>
-                    </ul>
-                </li>
-            </ul>
-            <!-- Sidebar Menu Items - These collapse to the responsive navigation menu on small screens -->
-            <div class="collapse navbar-collapse navbar-ex1-collapse">
-                <ul class="nav navbar-nav side-nav">
-                    <li>
-                        <a href="index.html"><i class="fa fa-fw fa-dashboard"></i> Dashboard</a>
-                    </li>
-                    <li class="active">
-                        <a href="project.html"><i class="fa fa-fw fa-table"></i> Projects</a>
-                    </li>
-                    <li>
-                        <a href="docker.html"><i class="fa fa-fw fa-file"></i> Dockers</a>
-                    </li>
-                </ul>
-            </div>
-            <!-- /.navbar-collapse -->
-        </nav>
+	<div id="wrapper">
+		<!-- Navigation -->
+		<nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+			<!-- Brand and toggle get grouped for better mobile display -->
+			<div class="navbar-header">
+				<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+					<span class="sr-only">Toggle navigation</span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+				</button>
+				<a class="navbar-brand" href="index.html">Allstate - Syntinel</a>
+			</div>
 
-        <div id="page-wrapper">
+			<ul class="nav navbar-right top-nav">
+				<li class="dropdown">
+					<a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-user"></i> David Henderson <b class="caret"></b></a>
+					<ul class="dropdown-menu">
+						<li>
+							<a href="#"><i class="fa fa-fw fa-user"></i> Team</a>
+							<a href="#"><i class="fa fa-fw fa-power-off"></i> Log Out</a>
+						</li>
+					</ul>
+				</li>
+			</ul>
 
-            <div class="container-fluid">
+			<!-- Sidebar Menu Items - These collapse to the responsive navigation menu on small screens -->
+			<div class="collapse navbar-collapse navbar-ex1-collapse">
+				<ul class="nav navbar-nav side-nav">
+					<li>
+						<a href="index.html"><i class="fa fa-fw fa-dashboard"></i> Dashboard</a>
+					</li>
+					<li class="active">
+						<a href="project.html"><i class="fa fa-fw fa-table"></i> Projects</a>
+					</li>
+					<li>
+						<a href="docker.html"><i class="fa fa-fw fa-file"></i> Dockers</a>
+					</li>
+				</ul>
+			</div>
+			<!-- /.navbar-collapse -->
+		</nav>
 
-                <!-- Page Heading -->
-                <div class="row">
-                    <div class="col-lg-12">
-                        <h1 class="page-header">
-                            Project Alfa
-                            <small>Project Info</small>
-                        </h1>
-                        <ol class="breadcrumb">
-                            <li>
-                                <i class="fa fa-dashboard"></i>  <a href="index.html">Dashboard</a>
-                            </li>
-                            <li class="active">
-                                <i class="fa fa-file"></i> Project Info - Project Alfa
-                            </li>
-                        </ol>
-                    </div>
-                </div>
-                <!-- /.row -->
+		<div id="page-wrapper">
 
-                <!-- Docker top settings row -->
-                <div class="row">
-                    <h2>General</h2>
-                    <div class="col-lg-2">
-                        <label for="docker">Docker:</label>
-                        <div class="form-group">
-                            <select class="form-control" id="sel1">
-                                <option>Win 10 - Client</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-                <!-- /.row -->
+			<div class="container-fluid">
 
-                <!-- Docker top settings row -->
-                <div class="row">
-                    <h2>Scheduling</h2>
-                    <div class="col-lg-8">
-                        <label for="docker">On days of week</label>
-                        <div class="form-group">
-                            <label class="checkbox-inline"><input type="checkbox" value="">Monday</label>
-                            <label class="checkbox-inline"><input type="checkbox" value="">Tuesday</label>
-                            <label class="checkbox-inline"><input type="checkbox" value="">Wednesday</label>
-                            <label class="checkbox-inline"><input type="checkbox" value="">Thursday</label>
-                            <label class="checkbox-inline"><input type="checkbox" value="">Friday</label>
-                            <label class="checkbox-inline"><input type="checkbox" value="">Saturday</label>
-                            <label class="checkbox-inline"><input type="checkbox" value="">Sunday</label>
-                        </div>
-                    </div>
-                </div>
-                <!-- /.row -->
+				<!-- Page Heading -->
+				<div class="row">
+					<div class="col-lg-12">
+						<h1 class="page-header">
+							Project Alfa
+							<small>Project Info</small>
+						</h1>
+						<ol class="breadcrumb">
+							<li>
+								<i class="fa fa-dashboard"></i>  <a href="index.html">Dashboard</a>
+							</li>
+							<li class="active">
+								<i class="fa fa-file"></i> Project Info - Project Alfa
+							</li>
+						</ol>
+					</div>
+				</div>
+				<!-- /.row -->
 
-                <!-- Docker env. variables -->
-                <div class="row">                
-                    <div class="col-lg-8">
-                        <h2>History</h2>
-                        <div class="table-responsive">
-                            <table class="table table-hover table-striped">
-                                <thead>
-                                    <tr>
-                                        <th>Build #</th>
-                                        <th>Date</th>
-                                        <th>Duration</th>
-                                        <th>Status</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr class="warning">
-                                        <td>403</td>
-                                        <td>2016-02-01 1630</td>
-                                        <td>128.64s elapsed</td>
-                                        <td>Running</td>
-                                    </tr>
-                                    <tr class="success">
-                                        <td>402</td>
-                                        <td>2016-02-01 1615</td>
-                                        <td>64.32s total</td>
-                                        <td>Succeeded</td>
-                                    </tr>
-                                    <tr class="danger">
-                                        <td>401</td>
-                                        <td>2016-02-01 1600</td>
-                                        <td>16.8s total</td>
-                                        <td>Failed</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                        <button type="button" class="btn btn-success">Add Variable</button>
-                    </div>
-                </div>
-                <!-- /.row -->
-            </div>
-            <!-- /.container-fluid -->
+				<!-- Docker top settings row -->
+				<div class="row">
+					<h2>General</h2>
+					<div class="col-lg-2">
+						<label for="docker">Docker:</label>
+						<div class="form-group">
+							<select class="form-control" id="sel1">
+								<option>Win 10 - Client</option>
+							</select>
+						</div>
+					</div>
+				</div>
+				<!-- /.row -->
 
-        </div>
-        <!-- /#page-wrapper -->
+				<!-- Docker top settings row -->
+				<div class="row">
+					<h2>Scheduling</h2>
+					<div class="col-lg-8">
+						<label for="docker">On days of week</label>
+						<div class="form-group">
+							<label class="checkbox-inline"><input type="checkbox" value="">Monday</label>
+							<label class="checkbox-inline"><input type="checkbox" value="">Tuesday</label>
+							<label class="checkbox-inline"><input type="checkbox" value="">Wednesday</label>
+							<label class="checkbox-inline"><input type="checkbox" value="">Thursday</label>
+							<label class="checkbox-inline"><input type="checkbox" value="">Friday</label>
+							<label class="checkbox-inline"><input type="checkbox" value="">Saturday</label>
+							<label class="checkbox-inline"><input type="checkbox" value="">Sunday</label>
+						</div>
+					</div>
+				</div>
+				<!-- /.row -->
 
-    </div>
-    <!-- /#wrapper -->
+				<!-- Docker env. variables -->
+				<div class="row">                
+					<div class="col-lg-8">
+						<h2>History</h2>
+						<div class="table-responsive">
+							<table class="table table-hover table-striped">
+								<thead>
+									<tr>
+										<th>Build #</th>
+										<th>Date</th>
+										<th>Duration</th>
+										<th>Status</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr class="warning">
+										<td>403</td>
+										<td>2016-02-01 1630</td>
+										<td>128.64s elapsed</td>
+										<td>Running</td>
+									</tr>
+									<tr class="success">
+										<td>402</td>
+										<td>2016-02-01 1615</td>
+										<td>64.32s total</td>
+										<td>Succeeded</td>
+									</tr>
+									<tr class="danger">
+										<td>401</td>
+										<td>2016-02-01 1600</td>
+										<td>16.8s total</td>
+										<td>Failed</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+						<button type="button" class="btn btn-success">Add Variable</button>
+					</div>
+				</div>
+				<!-- /.row -->
+			</div>
+			<!-- /.container-fluid -->
 
-    <!-- jQuery -->
-    <script src="js/jquery.js"></script>
+		</div>
+		<!-- /#page-wrapper -->
 
-    <!-- Bootstrap Core JavaScript -->
-    <script src="js/bootstrap.min.js"></script>
+	</div>
+	<!-- /#wrapper -->
+
+	<!-- jQuery -->
+	<script src="js/jquery.js"></script>
+
+	<!-- Bootstrap Core JavaScript -->
+	<script src="js/bootstrap.min.js"></script>
 
 </body>
 
