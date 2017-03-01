@@ -1,0 +1,3 @@
+curl -H "Content-Type: application/json" -X POST http://localhost:8000/api/v1/test/ -d '{"name": "The greatest song in the world", "dockerfile": "FROM docker.io/centos\n\nMAINTAINER Christopher Henderson\n\nRUN yum install -y go git wget\nCOPY script.sh $HOME/script.sh\nCMD chmod +x script.sh && ./script.sh\n", "environmentVariables": "a=b", "script": "#!/usr/bin/env bash\ngit clone https://github.com/christopher-henderson/TestTheTester.git && cd TestTheTester/GoBeInGoodHands && go test . -v -cover\n"}'
+
+curl -H "Content-Type: application/json" -X POST http://localhost:8000/api/v1/testrun -d "test=1"
