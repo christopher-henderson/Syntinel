@@ -1,4 +1,4 @@
-package Scheduler
+package DAO
 
 import (
 	"sync"
