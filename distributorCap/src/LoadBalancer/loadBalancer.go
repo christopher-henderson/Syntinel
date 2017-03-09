@@ -12,13 +12,13 @@ import (
 	"strings"
 	"time"
 
-	"../Scheduler"
+	"../DAO"
 )
 
 var r = roundRobbin{servers: []url.URL{
 	{
 		Scheme: "http",
-		Host:   "localhost:9090",
+		Host:   "localhost:9091",
 	},
 	{
 		Scheme: "http",
@@ -43,19 +43,20 @@ func UrlToString(url url.URL) string {
 
 func updateLastExecutor(ID int, url url.URL) {
 	log.Println("Reaching updatelast")
-	tmp := Scheduler.StoredJobMap.Get(ID)
+	tmp := DAO.GetJob(ID)
 	log.Println(tmp)
 	if tmp.Canceled == false && tmp.Interval != 0 && tmp.Id != 0 {
 		tmp.LastExecutor = url
 		fmt.Println(tmp)
-		Scheduler.StoredJobMap.Put(tmp.Id, tmp)
+		DAO.PutJob(tmp.Id, tmp)
 		fmt.Println(tmp)
 	} else {
-		Scheduler.StoredJobMap.Delete(tmp.Id)
+		DAO.RemoveJob(tmp.Id)
 	}
 }
 
 func balanceLoad(ID int, doIt bool) (net.Conn, error) {
+	log.Println("I am balancing")
 failed:
 	url := r.GetNext()
 	if doIt {

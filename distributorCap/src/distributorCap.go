@@ -6,6 +6,7 @@ import (
 
 	"github.com/gorilla/mux"
 
+	"./LoadBalancer"
 	"./controller"
 )
 
@@ -16,13 +17,19 @@ func main() {
 	router := mux.NewRouter()
 	//requests to register must be in format {"hostName":"localhost", "port": "9093", "Scheme": "http"}
 	router.HandleFunc("/register", controller.AddExecutor).Methods("POST")
+	log.Println("somthing")
 	router.HandleFunc("/schedule", controller.ScheduleTest).Methods("POST")
 	router.HandleFunc("/cancel", controller.CancelTest).Methods("POST")
-	http.Handle("/", router)
+	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		proxy := LoadBalancer.GetReverseProxy(0, false)
+		proxy.ServeHTTP(w, r)
+	})
 
 	if err := http.ListenAndServe(":9093", nil); err != nil {
+		log.Println("huh")
 		log.Fatalln(err)
 	}
+
 	/*
 		http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 			log.Println(r.URL.Path)

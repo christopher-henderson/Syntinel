@@ -7,6 +7,7 @@ import (
 	"log"
 	"net/http"
 
+	"../DAO"
 	"../Scheduler"
 )
 
@@ -18,7 +19,7 @@ func ScheduleTest(w http.ResponseWriter, r *http.Request) {
 		io.WriteString(w, "There was a problem with your submission")
 	}
 	log.Println(string(body))
-	var t Scheduler.Job
+	var t DAO.Job
 	err = json.Unmarshal(body, &t)
 	if err != nil {
 		log.Println("error")
@@ -38,7 +39,7 @@ func CancelTest(w http.ResponseWriter, r *http.Request) {
 		io.WriteString(w, "There was a problem with your submission")
 	}
 	log.Println(string(body))
-	var t Scheduler.Job
+	var t DAO.Job
 	err = json.Unmarshal(body, &t)
 	if err != nil {
 		log.Println("error")

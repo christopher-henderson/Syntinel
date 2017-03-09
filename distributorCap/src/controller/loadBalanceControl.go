@@ -29,3 +29,9 @@ func AddExecutor(w http.ResponseWriter, r *http.Request) {
 		io.WriteString(w, "Accepted")
 	}
 }
+
+func BalanceLoad(w http.ResponseWriter, r *http.Request) {
+	log.Println("Balance Load")
+	proxy := LoadBalancer.GetReverseProxy(0, false)
+	proxy.ServeHTTP(w, r)
+}
