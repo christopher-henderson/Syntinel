@@ -3,7 +3,6 @@
 package LoadBalancer
 
 import (
-	"fmt"
 	"log"
 	"net"
 	"net/http"
@@ -45,16 +44,8 @@ func updateLastExecutor(ID int, url url.URL) {
 	log.Println("Reaching updatelast")
 	tmp := DAO.GetJob(ID)
 	log.Println(tmp)
-	if tmp.Canceled == false && tmp.Interval != 0 && tmp.Id != 0 {
-		log.Println("Job exists, updating")
-		tmp.LastExecutor = url
-		fmt.Println(tmp)
-		DAO.PutJob(tmp.Id, tmp)
-		fmt.Println(tmp)
-	} else {
-		log.Println("Does not exist")
-		DAO.RemoveJob(tmp.Id)
-	}
+	tmp.LastExecutor = url
+	DAO.PutJob(tmp.Id, tmp)
 }
 
 func balanceLoad(ID int, doIt bool) (net.Conn, error) {

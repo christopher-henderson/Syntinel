@@ -22,7 +22,9 @@ func main() {
 	//requests to register must be in format {"hostName":"localhost", "port": "9093", "Scheme": "http"}
 	router.HandleFunc("/register", controller.AddExecutor).Methods("POST")
 	router.HandleFunc("/schedule", controller.ScheduleTest).Methods("POST")
+	router.HandleFunc("/kill", controller.Kill).Methods("POST")
 	router.HandleFunc("/cancel", controller.CancelTest).Methods("POST")
+
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 
 		buf, _ := ioutil.ReadAll(r.Body)

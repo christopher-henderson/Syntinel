@@ -61,6 +61,14 @@ func CancelJob(j DAO.Job) {
 	DAO.PutJob(tmp.Id, tmp)
 }
 
+func KillJob(j DAO.Job) {
+	tmp := DAO.GetJob(j.Id)
+	url := tmp.LastExecutor
+	log.Print("Should Send kill to ")
+	log.Println(url)
+	//send del Request to executor to kill job
+}
+
 func ScheduleJob(j DAO.Job) {
 	fmt.Println("scheduling job")
 	time.Sleep(time.Duration(j.Interval) * time.Second)
