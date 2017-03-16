@@ -66,8 +66,8 @@
 				<div class="row">
 					<div class="col-lg-12">
 						<h1 class="page-header">
-							Test 1
-							<small>Syntinel Test</small>
+							Run #1
+							<small>Syntinel Test Run</small>
 						</h1>
 						<ol class="breadcrumb">
 							<li>
@@ -88,121 +88,21 @@
 				<!-- /.row -->
 
 				<!-- Docker top settings row -->
-				<div class="col-lg-6">
+				<div class="col-lg-8">
 					<div class="row">
-						<h2>Settings</h2>
-						<div class="col-lg-3">
-							<label for="setting-project">Project:</label>
-							<select class="form-control" id="setting-project">
-								<option>Project Alpha</option>
-							</select>
-						</div>
-						<div class="col-lg-4">
-							<label for="setting-testName">Name:</label>
-							<input type="text" class="form-control" id="setting-testName">
-						</div>
-						<div class="col-lg-3">
-							<label for="setting-testID">ID:</label>
-							<input type="text" disabled class="form-control" id="setting-testID">
-						</div>
+						<h2>
+							Run #1 | Ran at 2017-03-13 18:20:00 | Took 32.85 seconds | Succeeded
+						</h2>
 					</div>
-					<!-- /.row -->
-
-					<div class="row">
-						<div class="col-lg-10">
-							<label for="setting-testScript">Script:</label>
-							<textarea type="text" rows="6" class="form-control" id="setting-testScript"></textarea>
-						</div>
-						<div class="col-lg-10">
-							<label for="setting-testDocker">Dockerfile:</label>
-							<textarea type="text" rows="6" class="form-control" id="setting-testDocker"></textarea>
-						</div>
-					</div>
-					<!-- /.row -->
-
-					<div class="row">
-						<div class="col-lg-4">
-							<label for="setting-testSchedule">Run interval (seconds):</label>
-							<input type="number" value="0" class="form-control" id="setting-testSchedule">
-						</div>
-					</div>
-					<!-- /.row -->
-
-					<div class="row">
-						<h3>Environment Variables
-							<button type="button" class="btn btn-xs btn-success">Add Variable</button>
-						</h3>
-						<div class="col-lg-10">
-							<div class="table-responsive">
-								<table class="table table-hover table-striped">
-									<thead>
-										<tr>
-											<th>Variable</th>
-											<th>Value</th>
-											<th>Options</th>
-										</tr>
-									</thead>
-									<tbody>
-										<tr>
-											<td>PATH</td>
-											<td>C:\Python3\;</td>
-											<td>
-												<button type="button" class="btn btn-xs btn-info">Edit</button>
-												<button type="button" class="btn btn-xs btn-danger">Remove</button>
-											</td>
-										</tr>
-									</tbody>
-								</table>
-							</div>
-						</div>
-					</div>
-					<!-- /.row -->
 				</div>
-				<!-- /Settings column -->
 
 				<!-- Results/health -->
-				<div class="col-lg-6">
+				<div class="col-lg-8">
 					<div class="row">
-						<h2>Terminal</h2>
+						<h3>Log</h3>
 						<div>
 							<!-- TODO Chris' terminal div -->
 							<textarea type="text" rows="14" class="form-control" id="setting-testDocker"></textarea>
-						</div>
-					</div>
-					<!-- /.row -->
-					<div class="row">
-						<h2>Run History</h2>
-						<div class="table-responsive">
-							<table class="table table-hover table-striped">
-								<thead>
-									<tr>
-										<th>Run ID</th>
-										<th>Date</th>
-										<th>Duration</th>
-										<th>Status</th>
-									</tr>
-								</thead>
-								<tbody>
-									<tr class="warning">
-										<td>403</td>
-										<td>2016-02-01 1630</td>
-										<td>128.64s elapsed</td>
-										<td>Running</td>
-									</tr>
-									<tr class="success">
-										<td>402</td>
-										<td>2016-02-01 1615</td>
-										<td>64.32s total</td>
-										<td>Succeeded</td>
-									</tr>
-									<tr class="danger">
-										<td>401</td>
-										<td>2016-02-01 1600</td>
-										<td>16.8s total</td>
-										<td>Failed</td>
-									</tr>
-								</tbody>
-							</table>
 						</div>
 					</div>
 					<!-- /.row -->
