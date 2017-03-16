@@ -65,8 +65,7 @@
 				<!-- Page Heading -->
 				<div class="row">
 					<div class="col-lg-12">
-						<h1 class="page-header">
-							Test 1
+						<h1 class="page-header" id="header-test-name"><div class="">Test 1
 							<small>Syntinel Test</small>
 						</h1>
 						<ol class="breadcrumb">
@@ -76,7 +75,7 @@
 							<li>
 								<i class="fa fa-dashboard"></i>  <a href="project.html">Project Alpha</a>
 							</li>
-							<li class="active">
+							<li class="active" id="breadcrumb-test-name">
 								<i class="fa fa-file"></i> Test 1
 							</li>
 						</ol>
@@ -139,15 +138,8 @@
 											<th>Options</th>
 										</tr>
 									</thead>
-									<tbody>
-										<tr>
-											<td>PATH</td>
-											<td>C:\Python3\;</td>
-											<td>
-												<button type="button" class="btn btn-xs btn-info">Edit</button>
-												<button type="button" class="btn btn-xs btn-danger">Remove</button>
-											</td>
-										</tr>
+									<tbody id="setting-environmentVariables">
+										<!-- Env. table rows, populated through JS -->
 									</tbody>
 								</table>
 							</div>
@@ -220,6 +212,8 @@
 	<!-- Bootstrap Core JavaScript -->
 	<script src="js/bootstrap.min.js"></script>
 
+	<script src="js/syntinel-utils.js"></script>
+	<script src="js/syntinel-test.js" onload="this.onload=function(){};pageLoad()"></script>
 </body>
 
 </html>
