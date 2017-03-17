@@ -157,6 +157,114 @@ Parameter | Description
 --------- | -----------
 ID | The ID of the test to retrieve
 
+# Projects
+
+## Create a Project
+
+Creating a project requires JSON body formatted as follows:
+
+name: String naming the project.<br>
+
+```shell
+curl -X POST http://192.168.1.2/api/v1/project/ -d "name=UltimateCode"
+```
+
+```javascript
+var test = {
+  "name":"UltimateCode",
+}
+var xmlHttp = new XMLHttpRequest();
+xmlHttp.open("POST", "http://192.168.1.2/api/v1/project/");
+xmlHttp.setRequestHeader("Content-Type", "application/json");
+xmlHttp.onreadystatechange = function() {
+  if (xmlHttp.readyState === 4)  {
+    var project = JSON.parse(xmlHttp.responseText);
+    console.log(project);
+  }
+};
+xmlHttp.send(JSON.stringify(project));
+```
+
+> The above command returns JSON structured like this:
+
+```json
+{
+  "id": 1,
+  "tests": [],
+  "name":"UltimateCode"
+}
+```
+
+## Get All Projects
+
+```shell
+curl "http://syntinel/api/v1/project/all"
+```
+
+```javascript
+var xmlHttp = new XMLHttpRequest();
+xmlHttp.open("GET", "http://192.168.1.2/api/v1/project/all");
+xmlHttp.onreadystatechange = function() {
+  if (xmlHttp.readyState === 4)  {
+    var projects = JSON.parse(xmlHttp.responseText);
+    console.log(projects);
+  }
+};
+xmlHttp.send(null);
+```
+
+> The above command returns JSON structured like this:
+
+```json
+[
+  {
+    "id": 1,
+    "tests": [1],
+    "name": "UltimateCode"
+  }
+]  
+```
+
+This endpoint retrieves all projects.
+
+### HTTP Request
+
+`GET http://syntinel/api/v1/project/all`
+
+## Get a Specific Project
+
+```shell
+curl "http://syntinel/api/v1/project/1"
+```
+
+```javascript
+var xmlHttp = new XMLHttpRequest();
+xmlHttp.open("GET", "http://192.168.1.2/api/v1/project/1");
+xmlHttp.onreadystatechange = function() {
+  if (xmlHttp.readyState === 4)  {
+    var project = JSON.parse(xmlHttp.responseText);
+    console.log(project);
+  }
+};
+xmlHttp.send(null);
+```
+
+> The above command returns JSON structured like this:
+
+```json
+{
+  "id": 1,
+  "tests": [1, 24, 89],
+  "name": "UltimateCode"}
+```
+
+This endpoint retrieves a specific project.
+
+
+### HTTP Request
+
+`GET http://syntinel/api/v1/project/<ID>`
+
 # Test Runs
 
 ## Create a Test Run

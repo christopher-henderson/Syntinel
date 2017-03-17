@@ -247,6 +247,90 @@ http://192.168.1.2/api/v1/test/ -d <span class="se">\</span>
 </tr>
 </tbody></table>
 
+<h2 id="create-a-project">Create a Project</h2>
+
+<p>Creating a project requires JSON body formatted as follows:</p>
+
+<p>name: String naming the project.<br></p>
+<pre class="highlight shell"><code>curl -X POST http://192.168.1.2/api/v1/project/ -d <span class="s2">"name=UltimateCode"</span>
+</code></pre><pre class="highlight javascript"><code><span class="kd">var</span> <span class="nx">test</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="s2">"name"</span><span class="p">:</span><span class="s2">"UltimateCode"</span><span class="p">,</span>
+<span class="p">}</span>
+<span class="kd">var</span> <span class="nx">xmlHttp</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">XMLHttpRequest</span><span class="p">();</span>
+<span class="nx">xmlHttp</span><span class="p">.</span><span class="nx">open</span><span class="p">(</span><span class="s2">"POST"</span><span class="p">,</span> <span class="s2">"http://192.168.1.2/api/v1/project/"</span><span class="p">);</span>
+<span class="nx">xmlHttp</span><span class="p">.</span><span class="nx">setRequestHeader</span><span class="p">(</span><span class="s2">"Content-Type"</span><span class="p">,</span> <span class="s2">"application/json"</span><span class="p">);</span>
+<span class="nx">xmlHttp</span><span class="p">.</span><span class="nx">onreadystatechange</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+  <span class="k">if</span> <span class="p">(</span><span class="nx">xmlHttp</span><span class="p">.</span><span class="nx">readyState</span> <span class="o">===</span> <span class="mi">4</span><span class="p">)</span>  <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">project</span> <span class="o">=</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">parse</span><span class="p">(</span><span class="nx">xmlHttp</span><span class="p">.</span><span class="nx">responseText</span><span class="p">);</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">project</span><span class="p">);</span>
+  <span class="p">}</span>
+<span class="p">};</span>
+<span class="nx">xmlHttp</span><span class="p">.</span><span class="nx">send</span><span class="p">(</span><span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">(</span><span class="nx">project</span><span class="p">));</span>
+</code></pre>
+<blockquote>
+<p>The above command returns JSON structured like this:</p>
+</blockquote>
+<pre class="highlight json"><code><span class="p">{</span><span class="w">
+  </span><span class="nt">"id"</span><span class="p">:</span><span class="mi">1</span><span class="p">,</span><span class="w">
+  </span><span class="nt">"tests"</span><span class="p">:[],</span><span class="w">
+  </span><span class="nt">"name"</span><span class="p">:</span><span class="s2">"UltimateCode"</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
+<h2 id="get-all-projects">Get All Projects</h2>
+<pre class="highlight shell"><code>curl <span class="s2">"http://syntinel/api/v1/project/all"</span>
+</code></pre><pre class="highlight javascript"><code><span class="kd">var</span> <span class="nx">xmlHttp</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">XMLHttpRequest</span><span class="p">();</span>
+<span class="nx">xmlHttp</span><span class="p">.</span><span class="nx">open</span><span class="p">(</span><span class="s2">"GET"</span><span class="p">,</span> <span class="s2">"http://192.168.1.2/api/v1/project/all"</span><span class="p">);</span>
+<span class="nx">xmlHttp</span><span class="p">.</span><span class="nx">onreadystatechange</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+  <span class="k">if</span> <span class="p">(</span><span class="nx">xmlHttp</span><span class="p">.</span><span class="nx">readyState</span> <span class="o">===</span> <span class="mi">4</span><span class="p">)</span>  <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">projects</span> <span class="o">=</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">parse</span><span class="p">(</span><span class="nx">xmlHttp</span><span class="p">.</span><span class="nx">responseText</span><span class="p">);</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">projects</span><span class="p">);</span>
+  <span class="p">}</span>
+<span class="p">};</span>
+<span class="nx">xmlHttp</span><span class="p">.</span><span class="nx">send</span><span class="p">(</span><span class="kc">null</span><span class="p">);</span>
+</code></pre>
+<blockquote>
+<p>The above command returns JSON structured like this:</p>
+</blockquote>
+<pre class="highlight json"><code><span class="p">[</span><span class="w">
+  </span><span class="p">{</span><span class="w">
+    </span><span class="nt">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"tests"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="w">
+    </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"UltimateCode"</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+</span><span class="p">]</span><span class="w">  
+</span></code></pre>
+<p>This endpoint retrieves all projects.</p>
+
+<h3 id="http-request">HTTP Request</h3>
+
+<p><code class="prettyprint">GET http://syntinel/api/v1/project/all</code></p>
+
+<h2 id="get-a-specific-project">Get a Specific Project</h2>
+<pre class="highlight shell"><code>curl <span class="s2">"http://syntinel/api/v1/project/1"</span>
+</code></pre><pre class="highlight javascript"><code><span class="kd">var</span> <span class="nx">xmlHttp</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">XMLHttpRequest</span><span class="p">();</span>
+<span class="nx">xmlHttp</span><span class="p">.</span><span class="nx">open</span><span class="p">(</span><span class="s2">"GET"</span><span class="p">,</span> <span class="s2">"http://192.168.1.2/api/v1/project/1"</span><span class="p">);</span>
+<span class="nx">xmlHttp</span><span class="p">.</span><span class="nx">onreadystatechange</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+  <span class="k">if</span> <span class="p">(</span><span class="nx">xmlHttp</span><span class="p">.</span><span class="nx">readyState</span> <span class="o">===</span> <span class="mi">4</span><span class="p">)</span>  <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">project</span> <span class="o">=</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">parse</span><span class="p">(</span><span class="nx">xmlHttp</span><span class="p">.</span><span class="nx">responseText</span><span class="p">);</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">project</span><span class="p">);</span>
+  <span class="p">}</span>
+<span class="p">};</span>
+<span class="nx">xmlHttp</span><span class="p">.</span><span class="nx">send</span><span class="p">(</span><span class="kc">null</span><span class="p">);</span>
+</code></pre>
+<blockquote>
+<p>The above command returns JSON structured like this:</p>
+</blockquote>
+<pre class="highlight json"><code><span class="p">{</span><span class="w">
+  </span><span class="nt">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w">
+  </span><span class="nt">"tests"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">24</span><span class="p">,</span><span class="w"> </span><span class="mi">89</span><span class="p">],</span><span class="w">
+  </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"UltimateCode"</span><span class="p">}</span><span class="w">
+</span></code></pre>
+<p>This endpoint retrieves a specific project.</p>
+
+<h3 id="http-request">HTTP Request</h3>
+
+<p><code class="prettyprint">GET http://syntinel/api/v1/project/&lt;ID&gt;</code></p>
+
 <h1 id="test-runs">Test Runs</h1>
 
 <h2 id="create-a-test-run">Create a Test Run</h2>
