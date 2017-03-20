@@ -28,7 +28,7 @@ func executeJob(j DAO.Job) {
 		Dockerfile           string `json:"dockerfile"`
 		Script               string `json:"script"`
 		EnvironmentVariables string `json:"environmentVairables"`
-	}{1, dockerfile, script, "a=b"}
+	}{j.Id, dockerfile, script, "a=b"}
 	r, w := io.Pipe()
 	log.Println(r)
 	log.Println(w)
@@ -69,10 +69,25 @@ func KillJob(j DAO.Job) {
 	tmp := DAO.GetJob(j.Id)
 	url := tmp.LastExecutor
 	log.Print("Should Send kill to ")
-	log.Print(url)
+	log.Print(url.Host)
 	log.Print(" with Test ID")
 	log.Println(j.Id)
+
 	//send del Request to executor to kill job
+	toSend := "http://" + fmt.Sprint(url.Host) + "/test/run?testID=" + fmt.Sprint(j.Id)
+	log.Println(toSend)
+	req, err := http.NewRequest("DELETE", "http://"+fmt.Sprint(url.Host)+"/test/run?testID="+fmt.Sprint(j.Id), nil)
+	if err != nil {
+		// handle err
+	}
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		log.Println(err)
+	}
+	defer resp.Body.Close()
+
 }
 
 func ScheduleJob(j DAO.Job) {

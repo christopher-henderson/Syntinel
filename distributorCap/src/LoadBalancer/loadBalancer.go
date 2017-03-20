@@ -42,10 +42,15 @@ func UrlToString(url url.URL) string {
 
 func updateLastExecutor(ID int, url url.URL) {
 	log.Println("Reaching updatelast")
+	log.Println(ID)
 	tmp := DAO.GetJob(ID)
 	log.Println(tmp)
+	log.Println(url)
 	tmp.LastExecutor = url
+	tmp.Id = ID
 	DAO.PutJob(tmp.Id, tmp)
+	tmp = DAO.GetJob(ID)
+	log.Println(tmp)
 }
 
 func balanceLoad(ID int, doIt bool) (net.Conn, error) {
