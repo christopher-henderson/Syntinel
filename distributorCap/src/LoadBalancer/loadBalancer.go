@@ -55,6 +55,7 @@ failed:
 	if doIt {
 		updateLastExecutor(ID, url)
 	}
+	log.Println(UrlToString(url))
 	conn, err := net.Dial("tcp", UrlToString(url))
 	if err != nil {
 		removeServer(url)
