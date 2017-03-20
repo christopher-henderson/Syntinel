@@ -24,39 +24,9 @@ func main() {
 	router.HandleFunc("/schedule", controller.ScheduleTest).Methods("POST")
 	router.HandleFunc("/kill", controller.Kill).Methods("POST")
 	router.HandleFunc("/cancel", controller.CancelTest).Methods("POST")
+	router.HandleFunc("/", mainRoute).Methods("GET")
 
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-
-		buf, _ := ioutil.ReadAll(r.Body)
-		rdr1 := ioutil.NopCloser(bytes.NewBuffer(buf))
-		rdr2 := ioutil.NopCloser(bytes.NewBuffer(buf))
-
-		if r.URL.Path == "/test/run" {
-			body, err := ioutil.ReadAll(rdr1)
-			if err != nil {
-				log.Println("error")
-			}
-			var t Scheduler.ExecutorRequestObj
-			err = json.Unmarshal(body, &t)
-			if err != nil {
-				log.Println(t.ID)
-				r.Body = rdr2
-				proxy := LoadBalancer.GetReverseProxy(0, false)
-				proxy.ServeHTTP(w, r)
-			} else {
-				r.Body = rdr2
-				proxy := LoadBalancer.GetReverseProxy(t.ID, true)
-				proxy.ServeHTTP(w, r)
-			}
-		} else {
-			r.Body = rdr2
-			proxy := LoadBalancer.GetReverseProxy(0, false)
-			proxy.ServeHTTP(w, r)
-		}
-
-	})
-
-	if err := http.ListenAndServe(":9093", nil); err != nil {
+	if err := http.ListenAndServe(":9093", router); err != nil {
 		log.Println("What happened?")
 		log.Fatalln(err)
 	}
@@ -81,5 +51,36 @@ func main() {
 
 		log.Fatal(http.ListenAndServe(":9093", nil))
 	*/
+
+}
+
+func mainRoute(w http.ResponseWriter, r *http.Request) {
+	log.Println("Entering default")
+	buf, _ := ioutil.ReadAll(r.Body)
+	rdr1 := ioutil.NopCloser(bytes.NewBuffer(buf))
+	rdr2 := ioutil.NopCloser(bytes.NewBuffer(buf))
+
+	if r.URL.Path == "/test/run" {
+		body, err := ioutil.ReadAll(rdr1)
+		if err != nil {
+			log.Println("error")
+		}
+		var t Scheduler.ExecutorRequestObj
+		err = json.Unmarshal(body, &t)
+		if err != nil {
+			log.Println(t.ID)
+			r.Body = rdr2
+			proxy := LoadBalancer.GetReverseProxy(0, false)
+			proxy.ServeHTTP(w, r)
+		} else {
+			r.Body = rdr2
+			proxy := LoadBalancer.GetReverseProxy(t.ID, true)
+			proxy.ServeHTTP(w, r)
+		}
+	} else {
+		r.Body = rdr2
+		proxy := LoadBalancer.GetReverseProxy(0, false)
+		proxy.ServeHTTP(w, r)
+	}
 
 }

@@ -65,7 +65,9 @@ func KillJob(j DAO.Job) {
 	tmp := DAO.GetJob(j.Id)
 	url := tmp.LastExecutor
 	log.Print("Should Send kill to ")
-	log.Println(url)
+	log.Print(url)
+	log.Print(" with Test ID")
+	log.Println(j.Id)
 	//send del Request to executor to kill job
 }
 
