@@ -1,23 +1,25 @@
-package main
+package DAO
 
-import "sync"
+import (
+	"sync"
+)
 
 type JobMap struct {
-	m map[int]job
+	m map[int]Job
 	sync.RWMutex
 }
 
 func NewJobMap() *JobMap {
-	return &JobMap{make(map[int]job), sync.RWMutex{}}
+	return &JobMap{make(map[int]Job), sync.RWMutex{}}
 }
 
-func (j *JobMap) Get(key int) job {
+func (j *JobMap) Get(key int) Job {
 	j.RLock()
 	defer j.RUnlock()
 	return j.m[key]
 }
 
-func (j *JobMap) Put(key int, jo job) {
+func (j *JobMap) Put(key int, jo Job) {
 	j.Lock()
 	j.m[key] = jo
 	j.Unlock()
