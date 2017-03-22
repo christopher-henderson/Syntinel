@@ -23,6 +23,7 @@ class TestRun(models.Model):
 
     test = models.ForeignKey('Test')
     log = models.CharField(max_length=2 ** 16, default="")
+    error = models.CharField(max_length=2 ** 16, default="")
     status = models.IntegerField(null=True)
     successful = models.NullBooleanField()
 

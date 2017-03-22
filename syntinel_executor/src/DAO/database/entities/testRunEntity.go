@@ -94,7 +94,8 @@ func (t *TestRunEntity) Run() {
 		log.Println(err)
 		return
 	}
-	t.awaitOutput(t.runDockerImage)
+	testError := t.awaitOutput(t.runDockerImage)
+	ResultServer.Finalize(t.TestID, testError)
 }
 
 func (t *TestRunEntity) ImageName() string {
