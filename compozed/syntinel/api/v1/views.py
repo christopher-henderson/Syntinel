@@ -7,30 +7,16 @@ from rest_framework.generics import (
 from rest_framework import mixins
 from rest_framework import generics
 
-from .models import (
-    Docker,
+from syntinel.models import (
     Test,
-    Suite,
-    Script,
-    TestRun)
+    Project,
+    TestRun,
+    Executor)
 from .serializers import (
-    DockerSerializer,
     TestSerializer,
-    SuiteSerializer,
-    ScriptSerializer,
-    TestRunSerializer)
-
-
-class DockerView(CreateAPIView, RetrieveUpdateDestroyAPIView):
-
-    queryset = Docker.objects.all()
-    serializer_class = DockerSerializer
-
-
-class DockerListView(ListAPIView):
-
-    queryset = Docker.objects.all()
-    serializer_class = DockerSerializer
+    ProjectSerializer,
+    TestRunSerializer,
+    ExecutorSerializer)
 
 
 class TestView(CreateAPIView, RetrieveUpdateDestroyAPIView):
@@ -45,28 +31,16 @@ class TestListView(ListAPIView):
     serializer_class = TestSerializer
 
 
-class SuiteView(CreateAPIView, RetrieveUpdateDestroyAPIView):
+class ProjectView(CreateAPIView, RetrieveUpdateDestroyAPIView):
 
-    queryset = Suite.objects.all()
-    serializer_class = SuiteSerializer
-
-
-class SuiteListView(ListAPIView):
-
-    queryset = Suite.objects.all()
-    serializer_class = SuiteSerializer
+    queryset = Project.objects.all()
+    serializer_class = ProjectSerializer
 
 
-class ScriptView(CreateAPIView, RetrieveUpdateDestroyAPIView):
+class ProjectListView(ListAPIView):
 
-    queryset = Script.objects.all()
-    serializer_class = ScriptSerializer
-
-
-class ScriptListView(ListAPIView):
-
-    queryset = Script.objects.all()
-    serializer_class = ScriptSerializer
+    queryset = Project.objects.all()
+    serializer_class = ProjectSerializer
 
 
 class TestRunView(CreateAPIView, RetrieveUpdateDestroyAPIView):
@@ -74,8 +48,29 @@ class TestRunView(CreateAPIView, RetrieveUpdateDestroyAPIView):
     queryset = TestRun.objects.all()
     serializer_class = TestRunSerializer
 
+    def post(self, request, pk):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+        testRun = serializer.instance
+        return_code = testRun.run()
+        return Response(serializer.data, status=return_code, headers=headers)
+
 
 class TestRunListView(ListAPIView):
 
     queryset = TestRun.objects.all()
     serializer_class = TestRunSerializer
+
+
+class ExecutorView(CreateAPIView, RetrieveUpdateDestroyAPIView):
+
+    queryset = Executor.objects.all()
+    serializer_class = ExecutorSerializer
+
+
+class ExecutorListView(ListAPIView):
+
+    queryset = Executor.objects.all()
+    serializer_class = ExecutorSerializer

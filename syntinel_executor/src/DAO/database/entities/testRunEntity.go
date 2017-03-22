@@ -98,7 +98,7 @@ func (t *TestRunEntity) Run() {
 }
 
 func (t *TestRunEntity) ImageName() string {
-	return fmt.Sprintf("%v%v", ContainerPrefix, strconv.Itoa(t.ID))
+	return fmt.Sprintf("%v%v", ContainerPrefix, strconv.Itoa(t.TestID))
 }
 
 func (t *TestRunEntity) DockerBuildDirectory() string {

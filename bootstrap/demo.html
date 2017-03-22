@@ -1,0 +1,125 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Syntinel Demo</title>
+</head>
+
+<body>
+  <h2>Dockerfile</h2>
+<p>
+  FROM docker.io/centos<br>
+
+  MAINTAINER Christopher Henderson<br>
+
+  RUN yum install -y go git wget<br>
+  COPY script.sh $HOME/script.sh<br>
+  CMD chmod +x script.sh && ./script.sh<br>
+</p>
+  <h2>Script</h2>
+  <p>#!/usr/bin/env bash<br>
+  git clone https://github.com/christopher-henderson/TestTheTester.git && cd TestTheTester/GoBeInGoodHands && go test . -v -cover
+</p>
+  <script>
+    function createTest() {
+      exists(thenCreate);
+    }
+
+    function thenCreate(exists) {
+      if (exists) {
+        var runButton = document.getElementById("run");
+        runButton.hidden = false;
+        return;
+      }
+      var dockerfile = `
+      FROM docker.io/centos
+      MAINTAINER Christopher Henderson
+      RUN yum install -y go git wget
+      COPY script.sh $HOME/script.sh
+      CMD chmod +x script.sh && ./script.sh`
+      var script = `#!/usr/bin/env bash
+      git clone https://github.com/christopher-henderson/TestTheTester.git && cd TestTheTester/GoBeInGoodHands && go test . -v -cover`
+      var test = {
+          "name":"The greatest song in the world",
+          "script":script,
+          "dockerfile":dockerfile,
+          "environmentVariables":"a=b"
+        }
+      var xmlHttp = new XMLHttpRequest();
+      xmlHttp.open("POST", "/api/v1/test/");
+      xmlHttp.setRequestHeader("Content-Type", "application/json");
+      xmlHttp.onreadystatechange = function() {
+        if (xmlHttp.readyState === 4 && xmlHttp.status === 201)  {
+          console.log("Received positive response for POST of a test.");
+          console.log(test);
+          var test = JSON.parse(xmlHttp.responseText);
+          var runButton = document.getElementById("run");
+          runButton.hidden = false;
+        } else {
+          console.log("Response code" + xmlHttp.status);
+          console.log(xmlHttp.responseText);
+        }
+      };
+      xmlHttp.send(JSON.stringify(test));
+    }
+
+    function exists(callback) {
+      var xmlHttp = new XMLHttpRequest();
+      xmlHttp.open("GET", "/api/v1/test/1/");
+      xmlHttp.onreadystatechange = function() {
+        if (xmlHttp.readyState === 4 && xmlHttp.status === 200)  {
+          console.log("Found test.");
+          callback(true);
+        } else {
+          console.log("No test found.");
+          callback(false);
+        }
+      };
+      xmlHttp.send(null);
+    }
+
+    function startWebsocket(id) {
+      var c = document.getElementById("test");
+      socket = new WebSocket("ws://" + document.domain + "/testRun/console/" + id);
+      socket.onmessage = function(e) {
+        c.innerHTML += e.data + "\n";
+      }
+      socket.onopen = function() {
+          console.log("Established websocket");
+      }
+      // Call onopen directly if socket is already open
+      if (socket.readyState == WebSocket.OPEN) socket.onopen();
+    }
+    function test() {
+      var data = {
+        "test": 1
+      }
+      var xmlHttp = new XMLHttpRequest();
+      xmlHttp.open("POST", "/api/v1/testrun/", false ); // false for synchronous request
+      xmlHttp.setRequestHeader('Content-Type', "application/json");
+      xmlHttp.setRequestHeader('Access-Control-Allow-Origin', "*");
+      xmlHttp.setRequestHeader('Access-Control-Allow-Methods', "GET, POST, PATCH, PUT, DELETE, OPTIONS");
+      xmlHttp.setRequestHeader('Access-Control-Allow-Headers', "Origin, Content-Type, X-Auth-Token");
+      xmlHttp.onreadystatechange = function() {
+        if (xmlHttp.readyState === 4 && xmlHttp.status === 200)  {
+          console.log("Received positive response for POST of a test run.")
+          var test = JSON.parse(xmlHttp.responseText);
+          startWebsocket(test.id);
+          console.log(test);
+        } else {
+          console.log("Response code " + xmlHttp.status);
+          console.log(xmlHttp.responseText);
+        }
+      };
+      xmlHttp.send(JSON.stringify(data));
+    }
+  </script>
+  <button onclick="createTest()">Create!</button>
+  <button onclick="test()" hidden="true" id="run">Run!</button>
+  <h2>Test Results</h2>
+  <div id="test" style="white-space:pre-wrap;">
+  </div>
+
+</body>
+</html>
