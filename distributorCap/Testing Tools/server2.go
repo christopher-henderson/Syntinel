@@ -2,10 +2,17 @@ package main
 
 import (
 	"io"
+	"io/ioutil"
+	"log"
 	"net/http"
 )
 
 func hello(w http.ResponseWriter, r *http.Request) {
+	body, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		log.Println("error")
+	}
+	log.Println(string(body))
 	io.WriteString(w, "Hello world from server 2!")
 }
 
@@ -13,7 +20,7 @@ var mux map[string]func(http.ResponseWriter, *http.Request)
 
 func main() {
 	server := http.Server{
-		Addr:    ":9092",
+		Addr:    ":9090",
 		Handler: &myHandler{},
 	}
 
@@ -31,5 +38,5 @@ func (*myHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	io.WriteString(w, "My server: "+r.URL.String())
+	io.WriteString(w, "My server 2: "+r.URL.String())
 }

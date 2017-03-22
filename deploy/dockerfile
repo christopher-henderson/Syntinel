@@ -27,6 +27,7 @@ RUN mkdir -p /opt/go/src
 ENV PATH $PATH:/usr/local/go/bin
 ENV GOPATH /opt/go
 RUN go get github.com/gorilla/mux
+RUN go get github.com/gorilla/http
 RUN go get github.com/mattn/go-sqlite3
 RUN ln -s /opt/Syntinel/syntinel_executor/src /opt/go/src/syntinel_executor
 

@@ -2,10 +2,13 @@ package ResultServer
 
 import (
 	"bufio"
+	"bytes"
+	"encoding/json"
 	"fmt"
 	"log"
 	"time"
 
+	"github.com/gorilla/http"
 	"golang.org/x/net/websocket"
 )
 
@@ -45,4 +48,41 @@ func Stream(ID int, stdout *bufio.Scanner) {
 			time.Sleep(time.Millisecond * 100)
 		}
 	}()
+}
+
+type TestFinalization struct {
+	Err        string `json:"error"`
+	Successful bool   `json:"successful"`
+}
+
+func Finalize(ID int, testErr error) error {
+	log.Println("Finalizing")
+	log.Println("Ping")
+	url := fmt.Sprintf("http://localhost/api/v1/testrun/%v", ID)
+	var errorMessage string
+	if testErr != nil {
+		errorMessage = testErr.Error()
+	}
+	log.Println("Ping")
+	obj, _ := json.Marshal(TestFinalization{errorMessage, testErr == nil})
+	headers := map[string][]string{
+		"Content-Type": []string{"application/json"},
+	}
+	log.Println("Ping")
+	status, _, r, err := http.DefaultClient.Patch(url, headers, bytes.NewBuffer(obj))
+	log.Println("Ping")
+	if err != nil {
+		log.Println("Ping")
+		log.Println("error!")
+		log.Println(err)
+		return err
+	}
+	log.Println("Ping")
+	if r != nil {
+		defer r.Close()
+		log.Println("Ping")
+	}
+	log.Println("Ping")
+	log.Printf("Patch result: %v", status)
+	return nil
 }

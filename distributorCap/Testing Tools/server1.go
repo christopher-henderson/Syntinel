@@ -38,5 +38,5 @@ func (*myHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	io.WriteString(w, "My server: "+r.URL.String())
+	io.WriteString(w, "My server 1: "+r.URL.String())
 }

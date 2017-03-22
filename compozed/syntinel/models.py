@@ -10,7 +10,7 @@ from syntinel.executor_bindings import ExecutorBindings
 class Test(models.Model):
 
     name = models.CharField(max_length=2 ** 16)
-    suite = models.ForeignKey('Suite', on_delete=models.CASCADE, null=True)
+    project = models.ForeignKey('Project', on_delete=models.CASCADE, null=True, related_name="tests")
     script = models.CharField(max_length=2 ** 16)
     dockerfile = models.CharField(max_length=2 ** 16)
     environmentVariables = models.CharField(max_length=2 ** 16, null=True)
@@ -23,6 +23,8 @@ class TestRun(models.Model):
 
     test = models.ForeignKey('Test')
     log = models.CharField(max_length=2 ** 16, default="")
+    error = models.CharField(max_length=2 ** 16, default="")
+    status = models.IntegerField(null=True)
     successful = models.NullBooleanField()
 
     def run(self):
@@ -34,8 +36,11 @@ class TestRun(models.Model):
             environmentVariables=self.test.environmentVariables
             )
 
+    def finalize():
+        self.successful = self.status is 0
 
-class Suite(models.Model):
+
+class Project(models.Model):
 
     name = models.CharField(max_length=2 ** 16)
 

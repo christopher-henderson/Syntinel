@@ -1,22 +1,31 @@
+import logging
+
+from django.core import cache
+
 from rest_framework.response import Response
 from rest_framework.generics import (
     RetrieveUpdateDestroyAPIView,
     CreateAPIView,
-    ListAPIView)
+    ListAPIView,
+    UpdateAPIView)
 
 from rest_framework import mixins
 from rest_framework import generics
 
+from syntinel.consumers import LogCache
+
 from syntinel.models import (
     Test,
-    Suite,
+    Project,
     TestRun,
     Executor)
 from .serializers import (
     TestSerializer,
-    SuiteSerializer,
+    ProjectSerializer,
     TestRunSerializer,
     ExecutorSerializer)
+
+logger = logging.getLogger("views")
 
 
 class TestView(CreateAPIView, RetrieveUpdateDestroyAPIView):
@@ -31,16 +40,16 @@ class TestListView(ListAPIView):
     serializer_class = TestSerializer
 
 
-class SuiteView(CreateAPIView, RetrieveUpdateDestroyAPIView):
+class ProjectView(CreateAPIView, RetrieveUpdateDestroyAPIView):
 
-    queryset = Suite.objects.all()
-    serializer_class = SuiteSerializer
+    queryset = Project.objects.all()
+    serializer_class = ProjectSerializer
 
 
-class SuiteListView(ListAPIView):
+class ProjectListView(ListAPIView):
 
-    queryset = Suite.objects.all()
-    serializer_class = SuiteSerializer
+    queryset = Project.objects.all()
+    serializer_class = ProjectSerializer
 
 
 class TestRunView(CreateAPIView, RetrieveUpdateDestroyAPIView):
@@ -56,6 +65,12 @@ class TestRunView(CreateAPIView, RetrieveUpdateDestroyAPIView):
         testRun = serializer.instance
         return_code = testRun.run()
         return Response(serializer.data, status=return_code, headers=headers)
+
+    def patch(self, request, pk):
+        logger.debug("Finalizing test " + str(pk))
+        super(TestRunView, self).patch(request, pk)
+        logCache = LogCache.getLogCache(pk)
+        logCache.finalize()
 
 
 class TestRunListView(ListAPIView):
