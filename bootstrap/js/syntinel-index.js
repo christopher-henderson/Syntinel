@@ -18,11 +18,11 @@ function pageLoad() {
 			var tab = "";
 			tab += "<div aria-multiselectable=\"true\" class=\"panel-group\" id=\"project_" + project.id + "_#PROJECT_TAB#_accordion\" role=\"tablist\">";
 			tab += "	<div class=\"panel panel-#PROJECT-HEALTH#\">";
-			tab += "		<div class=\"panel-heading prev-emp activestate\" id=\"rc_branch\" role=\"tab\">";
-			tab += "			<h4 class=\"panel-title\"><a aria-controls=\"project_" + project.id + "_#PROJECT_TAB#_collapse\" aria-expanded=\"true\" data-parent=\"#project_" + project.id + "_#PROJECT_TAB#_accordion\" data-toggle=\"collapse\" href=\"#collapseOne\">" + p[i].project.name + "</a>";
+			tab += "		<div class=\"panel-heading prev-emp activestate\" id=\"project_" + project.id + "_#PROJECT_TAB#_tab\" role=\"tab\">";
+			tab += "			<h4 class=\"panel-title\"><a aria-controls=\"project_" + project.id + "_#PROJECT_TAB#_collapse\" aria-expanded=\"true\" data-parent=\"#project_" + project.id + "_#PROJECT_TAB#_accordion\" data-toggle=\"collapse\" href=\"#project_" + project.id + "_#PROJECT_TAB#_collapse\">" + p[i].project.name + "</a>";
 			tab += "			</h4>";
 			tab += "		</div>";
-			tab += "		<div aria-labelledby=\"rc_branch\" class=\"panel-collapse collapse\" id=\"project_" + project.id + "_#PROJECT_TAB#_collapse\" role=\"tabpanel\">";
+			tab += "		<div aria-labelledby=\"project_" + project.id + "_#PROJECT_TAB#_tab\" class=\"panel-collapse collapse\" id=\"project_" + project.id + "_#PROJECT_TAB#_collapse\" role=\"tabpanel\">";
 			tab += "			<div class=\"container panel-body\">";
 			// Project details
 			tab += "				<h3>Project details</h3>";
