@@ -23,67 +23,13 @@
 <body>
 	<div id="wrapper">
 		<!-- Navigation -->
-
-			<!-- Modal -->
-			<div id="modal-results" class="modal fade" role="dialog">
-			  <div class="modal-dialog">
-				<!-- Modal content-->
-				<div class="modal-content">
-					<div class="modal-header">
-						<button type="button" class="close" data-dismiss="modal">&times;</button>
-						<h4 id="modal-results-header" class="modal-title"></h4>
-					</div>
-					<div class="modal-body">
-						<h2>History</h2>
-						<div class="table-responsive">
-							<table class="table table-hover table-striped">
-								<thead>
-									<tr>
-										<th>Build #</th>
-										<th>Date</th>
-										<th>Duration</th>
-										<th>Status</th>
-									</tr>
-								</thead>
-								<tbody>
-									<tr class="warning">
-										<td>403</td>
-										<td>2016-02-01 1630</td>
-										<td>128.64s elapsed</td>
-										<td>Running</td>
-									</tr>
-									<tr class="success">
-										<td>402</td>
-										<td>2016-02-01 1615</td>
-										<td>64.32s total</td>
-										<td>Succeeded</td>
-									</tr>
-									<tr class="danger">
-										<td>401</td>
-										<td>2016-02-01 1600</td>
-										<td>16.8s total</td>
-										<td>Failed</td>
-									</tr>
-								</tbody>
-							</table>
-						</div>
-					</div>
-					<div class="modal-footer">
-							<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-						</div>
-					</div>
-				</div>
-			</div>
-
 		<nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
 			<!-- Brand and toggle get grouped for better mobile display -->
-
 
 			<div class="navbar-header">
 				<button class="navbar-toggle" data-target=".navbar-ex1-collapse" data-toggle="collapse" type="button"><span class="sr-only">Toggle navigation</span> <span class="icon-bar"></span> <span class="icon-bar"></span> <span class="icon-bar"></span></button> <a class="navbar-brand" href="index.html">Allstate - Syntinel</a>
 			</div>
 			<!-- Top Menu Items -->
-
 
 			<ul class="nav navbar-right top-nav">
 				<li class="dropdown">
@@ -114,250 +60,46 @@
 		<div id="page-wrapper">
 			<div class="container-fluid">
 				<!-- Page Heading -->
-
-
 				<div class="row">
 					<div class="col-lg-12">
-						<h1 class="page-header">Syntinel <small>Project Overview</small></h1>
+						<h1 class="page-header">
+							Syntinel <small>Project Overview</small>
+							<button type="button" class="btn btn-success">Create project</button>
+						</h1>
 					</div>
 				</div>
 				<!-- /.row -->
+
 				<!-- DROPDOWN PANELS -->
-
-
 				<div role="tabpanel">
 					<!-- Nav tabs -->
-
-
 					<ul class="nav nav-tabs" role="tablist">
 						<li class="active" role="presentation">
-							<a aria-controls="all" data-toggle="tab" href="#all" role="tab">All</a>
+							<a aria-controls="projectsTab-all" data-toggle="tab" href="#projectsTab-all" role="tab">All</a>
 						</li>
 
-
 						<li role="presentation">
-							<a aria-controls="success" data-toggle="tab" href="#success" role="tab">Success</a>
+							<a aria-controls="projectsTab-passing" data-toggle="tab" href="#projectsTab-passing" role="tab">Passing</a>
 						</li>
 
-
 						<li role="presentation">
-							<a aria-controls="warning" data-toggle="tab" href="#warning" role="tab">Warning</a>
-						</li>
-
-
-						<li role="presentation">
-							<a aria-controls="warning" data-toggle="tab" href="#danger" role="tab">Danger</a>
+							<a aria-controls="projectsTab-failing" data-toggle="tab" href="#projectsTab-failing" role="tab">Failing</a>
 						</li>
 					</ul>
 					<!-- Tab panes -->
-
-
 					<div class="tab-content">
-
-
-			<!-- All Tab -->
-						<div class="tab-pane active" id="all" role="tabpanel">
-
-
-							<div aria-multiselectable="true" class="panel-group" id="accordion" role="tablist">
-								<div class="panel panel-success">
-									<div class="panel-heading prev-emp activestate" id="rc_branch" role="tab">
-										<h4 class="panel-title"><a aria-controls="collapseOne" aria-expanded="true" data-parent="#accordion" data-toggle="collapse" href="#collapseOne">rc_branch</a>
-										</h4>
-									</div>
-
-
-									<div aria-labelledby="rc_branch" class="panel-collapse collapse" id="collapseOne" role="tabpanel">
-										<div class="container panel-body">
-											***** SOME TEXT *****
-										</div>
-									</div>
-								</div>
-
-
-								<div class="panel panel-success">
-									<div class="panel-heading prev-emp" id="UI_Changes" role="tab">
-										<h4 class="panel-title"><a aria-controls="collapseTwo" aria-expanded="false" class="collapsed" data-parent="#accordion" data-toggle="collapse" href="#collapseTwo">UI_Changes</a>
-										</h4>
-									</div>
-
-
-									<div aria-labelledby="UI_Changes" class="panel-collapse collapse" id="collapseTwo" role="tabpanel">
-										<div class="container panel-body">
-											***** SOME TEXT *****
-										</div>
-									</div>
-								</div>
-
-
-								<div class="panel panel-warning">
-									<div class="panel-heading prev-emp activestate" id="main_trunk" role="tab">
-										<h4 class="panel-title"><a aria-controls="collapseThree" aria-expanded="true" data-parent="#accordion" data-toggle="collapse" href="#collapseThree">main_trunk</a>
-										</h4>
-									</div>
-
-
-									<div aria-labelledby="main_trunk" class="panel-collapse collapse" id="collapseThree" role="tabpanel">
-										<div class="container panel-body">
-											***** SOME TEXT *****
-										</div>
-									</div>
-								</div>
-
-
-								<div class="panel panel-success">
-									<div class="panel-heading prev-emp" id="Remoting" role="tab">
-										<h4 class="panel-title"><a aria-controls="collapseFour" aria-expanded="false" class="collapsed" data-parent="#accordion" data-toggle="collapse" href="#collapseFour">Remoting</a>
-										</h4>
-									</div>
-
-
-									<div aria-labelledby="Remoting" class="panel-collapse collapse" id="collapseFour" role="tabpanel">
-										<div class="container panel-body">
-											***** SOME TEXT *****
-										</div>
-									</div>
-								</div>
-
-
-								<div class="panel panel-danger">
-									<div class="panel-heading prev-emp activestate" id="main_maven" role="tab">
-										<h4 class="panel-title"><a aria-controls="collapseFive" aria-expanded="true" data-parent="#accordion" data-toggle="collapse" href="#collapseFive">main_maven</a>
-										</h4>
-									</div>
-
-
-									<div aria-labelledby="main_maven" class="panel-collapse collapse" id="collapseFive" role="tabpanel">
-										<div class="container panel-body">
-											***** SOME TEXT *****
-										</div>
-									</div>
-								</div>
-
-
-								<div class="panel panel-success">
-									<div class="panel-heading prev-emp" id="Pom" role="tab">
-										<h4 class="panel-title"><a aria-controls="collapseSix" aria-expanded="false" class="collapsed" data-parent="#accordion" data-toggle="collapse" href="#collapseSix">Pom</a>
-										</h4>
-									</div>
-
-
-									<div aria-labelledby="Pom" class="panel-collapse collapse" id="collapseSix" role="tabpanel">
-										<div class="container panel-body">
-											***** SOME TEXT *****
-										</div>
-									</div>
-								</div>
-							</div>
+						<!-- All Tab -->
+						<div class="tab-pane active" id="projectsTab-all" role="tabpanel">
 						</div>
 						<!-- /All Tab -->
+
 						<!-- Success Tab -->
-
-
-						<div class="tab-pane" id="success" role="tabpanel">
-							<div aria-multiselectable="true" class="panel-group" id="accordion-1" role="tablist">
-								<div class="panel panel-success">
-									<div class="panel-heading prev-emp activestate" id="rc_branch1" role="tab">
-										<h4 class="panel-title"><a aria-controls="collapseSeven" aria-expanded="true" data-parent="#accordion-1" data-toggle="collapse" href="#collapseSeven">rc_branch</a>
-										</h4>
-									</div>
-
-
-									<div aria-labelledby="rc_branch1" class="panel-collapse collapse" id="collapseSeven" role="tabpanel">
-										<div class="container panel-body">
-											***** SOME TEXT *****
-										</div>
-									</div>
-								</div>
-
-
-								<div class="panel panel-success">
-									<div class="panel-heading prev-emp" id="UI_Changes" role="tab">
-										<h4 class="panel-title"><a aria-controls="collapseEight" aria-expanded="false" class="collapsed" data-parent="#accordion-1" data-toggle="collapse" href="#collapseEight">UI_Changes</a>
-										</h4>
-									</div>
-
-
-									<div aria-labelledby="UI_Changes" class="panel-collapse collapse" id="collapseEight" role="tabpanel">
-										<div class="container panel-body">
-											***** SOME TEXT *****
-										</div>
-									</div>
-								</div>
-								<!-- Start of Previous Employment Tab #3 -->
-
-
-								<div class="panel panel-success">
-									<div class="panel-heading prev-emp" id="Remoting" role="tab">
-										<h4 class="panel-title"><a aria-controls="collapseNine" aria-expanded="false" class="collapsed" data-parent="#accordion-1" data-toggle="collapse" href="#collapseNine">Remoting</a>
-										</h4>
-									</div>
-
-
-									<div aria-labelledby="Remoting" class="panel-collapse collapse" id="collapseNine" role="tabpanel">
-										<div class="container panel-body">
-											***** SOME TEXT *****
-										</div>
-									</div>
-								</div>
-
-
-								<div class="panel panel-success">
-									<div class="panel-heading prev-emp" id="Pom" role="tab">
-										<h4 class="panel-title"><a aria-controls="collapseTen" aria-expanded="false" class="collapsed" data-parent="#accordion-1" data-toggle="collapse" href="#collapseTen">Pom</a>
-										</h4>
-									</div>
-
-
-									<div aria-labelledby="Pom" class="panel-collapse collapse" id="collapseTen" role="tabpanel">
-										<div class="container panel-body">
-											***** SOME TEXT *****
-										</div>
-									</div>
-								</div>
-							</div>
+						<div class="tab-pane" id="projectsTab-passing" role="tabpanel">
 						</div>
 						<!-- /Success tab -->
-						<!--Warning Tab -->
 
-
-						<div class="tab-pane" id="warning" role="tabpanel">
-							<div aria-multiselectable="true" class="panel-group" id="accordion-2" role="tablist">
-								<div class="panel panel-warning">
-									<div class="panel-heading prev-emp activestate" id="headingOne" role="tab">
-										<h4 class="panel-title"><a aria-controls="collapseEleven" aria-expanded="true" data-parent="#accordion-2" data-toggle="collapse" href="#collapseEleven">main_trunk</a>
-										</h4>
-									</div>
-
-
-									<div aria-labelledby="headingOne" class="panel-collapse collapse" id="collapseEleven" role="tabpanel">
-										<div class="container panel-body">
-											***** SOME TEXT *****
-										</div>
-									</div>
-								</div>
-							</div>
-						</div>
-						<!--/Warning Tab -->
 						<!-- Danger Tab -->
-
-
-						<div class="tab-pane" id="danger" role="tabpanel">
-							<div aria-multiselectable="true" class="panel-group" id="accordion" role="tablist">
-								<div class="panel panel-danger">
-									<div class="panel-heading prev-emp activestate" id="headingOne" role="tab">
-										<h4 class="panel-title"><a aria-controls="collapseTwelve" aria-expanded="true" data-parent="#accordion" data-toggle="collapse" href="#collapseTwelve">main_maven</a>
-										</h4>
-									</div>
-
-
-									<div aria-labelledby="headingOne" class="panel-collapse collapse" id="collapseTwelve" role="tabpanel">
-										<div class="container panel-body">
-											***** SOME TEXT *****
-										</div>
-									</div>
-								</div>
-							</div>
+						<div class="tab-pane" id="projectsTab-failing" role="tabpanel">
 						</div>
 						<!-- /Danger Tab -->
 					</div>
@@ -376,11 +118,11 @@
 	<script src="js/bootstrap.min.js">
 	</script> <!-- Morris Charts JavaScript -->
 
-	<script src="js/plugins/morris/raphael.min.js">
-	</script>
-	<script src="js/plugins/morris/morris.min.js">
-	</script>
-	<script src="js/plugins/morris/morris-data.js">
-	</script>
+	<script src="js/plugins/morris/raphael.min.js"></script>
+	<script src="js/plugins/morris/morris.min.js"></script>
+	<script src="js/plugins/morris/morris-data.js"></script>
+
+	<script src="js/syntinel-utils.js"></script>
+	<script src="js/syntinel-index.js" onload="this.onload=function(){};pageLoad()"></script>
 </body>
 </html>
