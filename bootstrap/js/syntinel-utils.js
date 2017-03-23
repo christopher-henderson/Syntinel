@@ -18,17 +18,29 @@ function escapeNewLineChars(valueToEscape) {
 }
 
 function apiGet(url, params, callback) {
-	var handler = function(request) {
-		callback(request.response);
-	};
+	// Hard coded testing
+	if(url.indexOf("/project/all") != -1) {
+		callback("[{\"id\": 1,\"tests\": [1],\"name\": \"UltimateCode\"}]");
+	} else if(url.indexOf("test/") != -1) {
+		callback("{\"id\":1,\"name\":\"The greatest song in the world\",\"script\":\"#!/usr/bin/env bash\ngit clone https://github.com/christopher-henderson/TestTheTester.git && cd TestTheTester/GoBeInGoodHands && go test . -v -cover\",\"dockerfile\":\"FROM docker.io/centos\n\nMAINTAINER Christopher Henderson\n\nRUN yum install -y go git wget\nCOPY script.sh $HOME/script.sh\nCMD chmod +x script.sh && ./script.sh\",\"environmentVariables\":[\"a=b\"],\"health\":100,\"suite\":null}");
+	} else {
+		var handler = function(request) {
+			callback(request.response);
+		};
 
-	var request = new XMLHttpRequest();
-	request.open("GET", url, true);
-	request.withCredentials = true;
-	request.setRequestHeader("Content-Type","application/json");
-	request.send();
-	request.onreadystatechange = function() {
-		if(request.readyState >= 4)
-			handler(request);
-	};
+		var request = new XMLHttpRequest();
+		request.open("GET", url, true);
+		request.withCredentials = true;
+		request.setRequestHeader("Content-Type","application/json");
+		request.send();
+		request.onreadystatechange = function() {
+			if(request.readyState >= 4)
+				handler(request);
+		};
+	}
 }
+
+String.prototype.replaceAll = function(search, replacement) {
+  var target = this;
+  return target.split(search).join(replacement);
+};
