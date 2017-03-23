@@ -19,7 +19,7 @@ function escapeNewLineChars(valueToEscape) {
 
 function apiGet(url, params, callback) {
 	var handler = function(request) {
-		callback(request);
+		callback(request.response);
 	};
 
 	var request = new XMLHttpRequest();
