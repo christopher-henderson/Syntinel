@@ -68,9 +68,9 @@ class TestRunView(CreateAPIView, RetrieveUpdateDestroyAPIView):
 
     def patch(self, request, pk):
         logger.debug("Finalizing test " + str(pk))
-        super(TestRunView, self).patch(request, pk)
         logCache = LogCache.getLogCache(pk)
         logCache.finalize()
+        return super(TestRunView, self).patch(request, pk)
 
 
 class TestRunListView(ListAPIView):
