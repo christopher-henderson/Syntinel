@@ -33,7 +33,7 @@ environmentVariables: Key/value pairs. E.G ```a=b, c=d```<br>
 ```shell
 curl -X POST -H "Content-type:application/json" \
 http://192.168.1.2/api/v1/test/ -d \
-'{"environmentVariables": "a=b", "dockerfile": "FROM docker.io/centos\\n\\nMAINTAINER Christopher Henderson\\n\\nRUN yum install -y go git wget\\nCOPY script.sh $HOME/script.sh\\nCMD chmod +x script.sh && ./script.sh", "name": "The greatest song in the world", "script": "#!/usr/bin/env bash\\ngit clone https://github.com/christopher-henderson/TestTheTester.git && cd TestTheTester/GoBeInGoodHands && go test . -v -cover"}'
+'{"environmentVariables": "a=b", "dockerfile": "FROM docker.io/centos\\n\\nMAINTAINER Christopher Henderson\\n\\nRUN yum install -y go git wget\\nCOPY script.sh $HOME/script.sh\\nCMD chmod +x script.sh && ./script.sh", "name": "The greatest song in the world", "script": "#!/usr/bin/env bash\\ngit clone https://github.com/christopher-henderson/TestTheTester.git && cd TestTheTester/GoBeInGoodHands && go test . -v -cover", "interval": 300}'
 ```
 
 ```javascript
@@ -41,7 +41,8 @@ var test = {
   "name":"The greatest song in the world",
   "script":"#!/usr/bin/env bash\\ngit clone https://github.com/christopher-henderson/TestTheTester.git && cd TestTheTester/GoBeInGoodHands && go test . -v -cover",
   "dockerfile":"FROM docker.io/centos\\n\\nMAINTAINER Christopher Henderson\\n\\nRUN yum install -y go git wget\\nCOPY script.sh $HOME/script.sh\\nCMD chmod +x script.sh && ./script.sh",
-  "environmentVariables":"a=b"
+  "environmentVariables":"a=b",
+  "interval": 300
 }
 var xmlHttp = new XMLHttpRequest();
 xmlHttp.open("POST", "http://192.168.1.2/api/v1/test/");
@@ -65,7 +66,8 @@ xmlHttp.send(JSON.stringify(test));
   "dockerfile":"FROM docker.io/centos\\n\\nMAINTAINER Christopher Henderson\\n\\nRUN yum install -y go git wget\\nCOPY script.sh $HOME/script.sh\\nCMD chmod +x script.sh && ./script.sh",
   "environmentVariables":"a=b",
   "health":100,
-  "suite":null
+  "project":null,
+  "interval": 300
 }
 ```
 
@@ -98,7 +100,8 @@ xmlHttp.send(null);
     "dockerfile":"FROM docker.io/centos\n\nMAINTAINER Christopher Henderson\n\nRUN yum install -y go git wget\nCOPY script.sh $HOME/script.sh\nCMD chmod +x script.sh && ./script.sh",
     "environmentVariables":"a=b",
     "health":100,
-    "suite":null
+    "project":null,
+    "interval": null
   }
 ]
 ```
@@ -140,12 +143,77 @@ xmlHttp.send(null);
   "dockerfile":"FROM docker.io/centos\n\nMAINTAINER Christopher Henderson\n\nRUN yum install -y go git wget\nCOPY script.sh $HOME/script.sh\nCMD chmod +x script.sh && ./script.sh",
   "environmentVariables":"a=b",
   "health":100,
-  "suite":null
+  "project":null,
+  "interval": 300
 }
 ```
 
 This endpoint retrieves a specific test.
 
+
+### HTTP Request
+
+`GET http://syntinel/api/v1/test/<ID>`
+
+### URL Parameters
+
+Parameter | Description
+--------- | -----------
+ID | The ID of the test to retrieve
+
+## Schedule a Test
+
+Scheduling a test means that the "interval" field of a Test is some non-null integer value that represents the interval, in seconds, that the test will run. This can be achieved either with a POST or a PATCH.
+
+```shell
+curl -H "Content-Type:application/json" -X PATCH http://192.168.1.2/api/v1/test/1 -d '{"interval": 10}'
+```
+
+```javascript
+var test = {"interval": 10}
+var xmlHttp = new XMLHttpRequest();
+xmlHttp.open("PATCH", "http://192.168.1.2/api/v1/test/");
+xmlHttp.setRequestHeader("Content-Type", "application/json");
+xmlHttp.onreadystatechange = function() {
+  if (xmlHttp.readyState === 4)  {
+    var test = JSON.parse(xmlHttp.responseText);
+    console.log(test);
+  }
+};
+xmlHttp.send(JSON.stringify(test));
+```
+
+### HTTP Request
+
+`GET http://syntinel/api/v1/test/<ID>`
+
+### URL Parameters
+
+Parameter | Description
+--------- | -----------
+ID | The ID of the test to retrieve
+
+## Unschedule a Test
+
+Unscheduling a test means that the "interval" field of a Test is null. This can be achieved either with a POST or a PATCH.
+
+```shell
+curl -H "Content-Type:application/json" -X PATCH http://192.168.1.2/api/v1/test/1 -d '{"interval": null}'
+```
+
+```javascript
+var test = {"interval": null}
+var xmlHttp = new XMLHttpRequest();
+xmlHttp.open("PATCH", "http://192.168.1.2/api/v1/test/");
+xmlHttp.setRequestHeader("Content-Type", "application/json");
+xmlHttp.onreadystatechange = function() {
+  if (xmlHttp.readyState === 4)  {
+    var test = JSON.parse(xmlHttp.responseText);
+    console.log(test);
+  }
+};
+xmlHttp.send(JSON.stringify(test));
+```
 
 ### HTTP Request
 

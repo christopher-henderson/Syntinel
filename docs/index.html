@@ -134,12 +134,13 @@ script: String field of the full test script.<br>
 environmentVariables: Key/value pairs. E.G <code class="prettyprint">a=b, c=d</code><br></p>
 <pre class="highlight shell"><code>curl -X POST -H <span class="s2">"Content-type:application/json"</span> <span class="se">\</span>
 http://192.168.1.2/api/v1/test/ -d <span class="se">\</span>
-<span class="s1">'{"environmentVariables": "a=b", "dockerfile": "FROM docker.io/centos\\n\\nMAINTAINER Christopher Henderson\\n\\nRUN yum install -y go git wget\\nCOPY script.sh $HOME/script.sh\\nCMD chmod +x script.sh &amp;&amp; ./script.sh", "name": "The greatest song in the world", "script": "#!/usr/bin/env bash\\ngit clone https://github.com/christopher-henderson/TestTheTester.git &amp;&amp; cd TestTheTester/GoBeInGoodHands &amp;&amp; go test . -v -cover"}'</span>
+<span class="s1">'{"environmentVariables": "a=b", "dockerfile": "FROM docker.io/centos\\n\\nMAINTAINER Christopher Henderson\\n\\nRUN yum install -y go git wget\\nCOPY script.sh $HOME/script.sh\\nCMD chmod +x script.sh &amp;&amp; ./script.sh", "name": "The greatest song in the world", "script": "#!/usr/bin/env bash\\ngit clone https://github.com/christopher-henderson/TestTheTester.git &amp;&amp; cd TestTheTester/GoBeInGoodHands &amp;&amp; go test . -v -cover", "interval": 300}'</span>
 </code></pre><pre class="highlight javascript"><code><span class="kd">var</span> <span class="nx">test</span> <span class="o">=</span> <span class="p">{</span>
   <span class="s2">"name"</span><span class="p">:</span><span class="s2">"The greatest song in the world"</span><span class="p">,</span>
   <span class="s2">"script"</span><span class="p">:</span><span class="s2">"#!/usr/bin/env bash\\ngit clone https://github.com/christopher-henderson/TestTheTester.git &amp;&amp; cd TestTheTester/GoBeInGoodHands &amp;&amp; go test . -v -cover"</span><span class="p">,</span>
   <span class="s2">"dockerfile"</span><span class="p">:</span><span class="s2">"FROM docker.io/centos\\n\\nMAINTAINER Christopher Henderson\\n\\nRUN yum install -y go git wget\\nCOPY script.sh $HOME/script.sh\\nCMD chmod +x script.sh &amp;&amp; ./script.sh"</span><span class="p">,</span>
-  <span class="s2">"environmentVariables"</span><span class="p">:</span><span class="s2">"a=b"</span>
+  <span class="s2">"environmentVariables"</span><span class="p">:</span><span class="s2">"a=b"</span><span class="p">,</span>
+  <span class="s2">"interval"</span><span class="p">:</span> <span class="mi">300</span>
 <span class="p">}</span>
 <span class="kd">var</span> <span class="nx">xmlHttp</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">XMLHttpRequest</span><span class="p">();</span>
 <span class="nx">xmlHttp</span><span class="p">.</span><span class="nx">open</span><span class="p">(</span><span class="s2">"POST"</span><span class="p">,</span> <span class="s2">"http://192.168.1.2/api/v1/test/"</span><span class="p">);</span>
@@ -162,7 +163,8 @@ http://192.168.1.2/api/v1/test/ -d <span class="se">\</span>
   </span><span class="nt">"dockerfile"</span><span class="p">:</span><span class="s2">"FROM docker.io/centos\\n\\nMAINTAINER Christopher Henderson\\n\\nRUN yum install -y go git wget\\nCOPY script.sh $HOME/script.sh\\nCMD chmod +x script.sh &amp;&amp; ./script.sh"</span><span class="p">,</span><span class="w">
   </span><span class="nt">"environmentVariables"</span><span class="p">:</span><span class="s2">"a=b"</span><span class="p">,</span><span class="w">
   </span><span class="nt">"health"</span><span class="p">:</span><span class="mi">100</span><span class="p">,</span><span class="w">
-  </span><span class="nt">"suite"</span><span class="p">:</span><span class="kc">null</span><span class="w">
+  </span><span class="nt">"project"</span><span class="p">:</span><span class="kc">null</span><span class="p">,</span><span class="w">
+  </span><span class="nt">"interval"</span><span class="p">:</span><span class="w"> </span><span class="mi">300</span><span class="w">
 </span><span class="p">}</span><span class="w">
 </span></code></pre>
 <h2 id="get-all-tests">Get All Tests</h2>
@@ -188,7 +190,8 @@ http://192.168.1.2/api/v1/test/ -d <span class="se">\</span>
     </span><span class="nt">"dockerfile"</span><span class="p">:</span><span class="s2">"FROM docker.io/centos\n\nMAINTAINER Christopher Henderson\n\nRUN yum install -y go git wget\nCOPY script.sh $HOME/script.sh\nCMD chmod +x script.sh &amp;&amp; ./script.sh"</span><span class="p">,</span><span class="w">
     </span><span class="nt">"environmentVariables"</span><span class="p">:</span><span class="s2">"a=b"</span><span class="p">,</span><span class="w">
     </span><span class="nt">"health"</span><span class="p">:</span><span class="mi">100</span><span class="p">,</span><span class="w">
-    </span><span class="nt">"suite"</span><span class="p">:</span><span class="kc">null</span><span class="w">
+    </span><span class="nt">"project"</span><span class="p">:</span><span class="kc">null</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"interval"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="w">
   </span><span class="p">}</span><span class="w">
 </span><span class="p">]</span><span class="w">
 </span></code></pre>
@@ -224,11 +227,80 @@ http://192.168.1.2/api/v1/test/ -d <span class="se">\</span>
   </span><span class="nt">"dockerfile"</span><span class="p">:</span><span class="s2">"FROM docker.io/centos\n\nMAINTAINER Christopher Henderson\n\nRUN yum install -y go git wget\nCOPY script.sh $HOME/script.sh\nCMD chmod +x script.sh &amp;&amp; ./script.sh"</span><span class="p">,</span><span class="w">
   </span><span class="nt">"environmentVariables"</span><span class="p">:</span><span class="s2">"a=b"</span><span class="p">,</span><span class="w">
   </span><span class="nt">"health"</span><span class="p">:</span><span class="mi">100</span><span class="p">,</span><span class="w">
-  </span><span class="nt">"suite"</span><span class="p">:</span><span class="kc">null</span><span class="w">
+  </span><span class="nt">"project"</span><span class="p">:</span><span class="kc">null</span><span class="p">,</span><span class="w">
+  </span><span class="nt">"interval"</span><span class="p">:</span><span class="w"> </span><span class="mi">300</span><span class="w">
 </span><span class="p">}</span><span class="w">
 </span></code></pre>
 <p>This endpoint retrieves a specific test.</p>
 
+<h3 id="http-request">HTTP Request</h3>
+
+<p><code class="prettyprint">GET http://syntinel/api/v1/test/&lt;ID&gt;</code></p>
+
+<h3 id="url-parameters">URL Parameters</h3>
+
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>ID</td>
+<td>The ID of the test to retrieve</td>
+</tr>
+</tbody></table>
+
+<h2 id="schedule-a-test">Schedule a Test</h2>
+
+<p>Scheduling a test means that the &ldquo;interval&rdquo; field of a Test is some non-null integer value that represents the interval, in seconds, that the test will run. This can be achieved either with a POST or a PATCH.</p>
+<pre class="highlight shell"><code>curl -H <span class="s2">"Content-Type:application/json"</span> -X PATCH http://192.168.1.2/api/v1/test/1 -d <span class="s1">'{"interval": 10}'</span>
+</code></pre><pre class="highlight javascript"><code><span class="kd">var</span> <span class="nx">test</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"interval"</span><span class="p">:</span> <span class="mi">10</span><span class="p">}</span>
+<span class="kd">var</span> <span class="nx">xmlHttp</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">XMLHttpRequest</span><span class="p">();</span>
+<span class="nx">xmlHttp</span><span class="p">.</span><span class="nx">open</span><span class="p">(</span><span class="s2">"PATCH"</span><span class="p">,</span> <span class="s2">"http://192.168.1.2/api/v1/test/"</span><span class="p">);</span>
+<span class="nx">xmlHttp</span><span class="p">.</span><span class="nx">setRequestHeader</span><span class="p">(</span><span class="s2">"Content-Type"</span><span class="p">,</span> <span class="s2">"application/json"</span><span class="p">);</span>
+<span class="nx">xmlHttp</span><span class="p">.</span><span class="nx">onreadystatechange</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+  <span class="k">if</span> <span class="p">(</span><span class="nx">xmlHttp</span><span class="p">.</span><span class="nx">readyState</span> <span class="o">===</span> <span class="mi">4</span><span class="p">)</span>  <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">test</span> <span class="o">=</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">parse</span><span class="p">(</span><span class="nx">xmlHttp</span><span class="p">.</span><span class="nx">responseText</span><span class="p">);</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">test</span><span class="p">);</span>
+  <span class="p">}</span>
+<span class="p">};</span>
+<span class="nx">xmlHttp</span><span class="p">.</span><span class="nx">send</span><span class="p">(</span><span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">(</span><span class="nx">test</span><span class="p">));</span>
+</code></pre>
+<h3 id="http-request">HTTP Request</h3>
+
+<p><code class="prettyprint">GET http://syntinel/api/v1/test/&lt;ID&gt;</code></p>
+
+<h3 id="url-parameters">URL Parameters</h3>
+
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>ID</td>
+<td>The ID of the test to retrieve</td>
+</tr>
+</tbody></table>
+
+<h2 id="unschedule-a-test">Unschedule a Test</h2>
+
+<p>Unscheduling a test means that the &ldquo;interval&rdquo; field of a Test is null. This can be achieved either with a POST or a PATCH.</p>
+<pre class="highlight shell"><code>curl -H <span class="s2">"Content-Type:application/json"</span> -X PATCH http://192.168.1.2/api/v1/test/1 -d <span class="s1">'{"interval": null}'</span>
+</code></pre><pre class="highlight javascript"><code><span class="kd">var</span> <span class="nx">test</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"interval"</span><span class="p">:</span> <span class="kc">null</span><span class="p">}</span>
+<span class="kd">var</span> <span class="nx">xmlHttp</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">XMLHttpRequest</span><span class="p">();</span>
+<span class="nx">xmlHttp</span><span class="p">.</span><span class="nx">open</span><span class="p">(</span><span class="s2">"PATCH"</span><span class="p">,</span> <span class="s2">"http://192.168.1.2/api/v1/test/"</span><span class="p">);</span>
+<span class="nx">xmlHttp</span><span class="p">.</span><span class="nx">setRequestHeader</span><span class="p">(</span><span class="s2">"Content-Type"</span><span class="p">,</span> <span class="s2">"application/json"</span><span class="p">);</span>
+<span class="nx">xmlHttp</span><span class="p">.</span><span class="nx">onreadystatechange</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+  <span class="k">if</span> <span class="p">(</span><span class="nx">xmlHttp</span><span class="p">.</span><span class="nx">readyState</span> <span class="o">===</span> <span class="mi">4</span><span class="p">)</span>  <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">test</span> <span class="o">=</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">parse</span><span class="p">(</span><span class="nx">xmlHttp</span><span class="p">.</span><span class="nx">responseText</span><span class="p">);</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">test</span><span class="p">);</span>
+  <span class="p">}</span>
+<span class="p">};</span>
+<span class="nx">xmlHttp</span><span class="p">.</span><span class="nx">send</span><span class="p">(</span><span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">(</span><span class="nx">test</span><span class="p">));</span>
+</code></pre>
 <h3 id="http-request">HTTP Request</h3>
 
 <p><code class="prettyprint">GET http://syntinel/api/v1/test/&lt;ID&gt;</code></p>
