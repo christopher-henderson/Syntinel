@@ -87,7 +87,6 @@ class LogCache(object):
 
     def flush(self):
         logger.debug("Flushing.")
-        logger.debug(self.test_run.log)
         self.test_run.log = "{SAVED}{CACHED}".format(
             SAVED=self.test_run.log,
             CACHED=cache.get(self.id))

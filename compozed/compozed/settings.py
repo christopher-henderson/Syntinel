@@ -41,6 +41,11 @@ LOGGING = {
             'level': 'DEBUG',
             'propagate': True,
         },
+        'bindings': {
+            'handlers': ['file'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
     },
 }
 

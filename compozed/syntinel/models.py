@@ -17,6 +17,7 @@ class Test(models.Model):
     # Integer so that we can have granularity of test health.
     # Similar to Jenkin's "red, yellow, green"
     health = models.IntegerField(default=100)
+    interval = models.IntegerField(null=True)
 
 
 class TestRun(models.Model):

@@ -22,8 +22,12 @@
   git clone https://github.com/christopher-henderson/TestTheTester.git && cd TestTheTester/GoBeInGoodHands && go test . -v -cover
 </p>
   <script>
+    function createScheduledTest() {
+      thenCreateScheduledTest(false);
+    }
+
     function createTest() {
-      exists(thenCreate);
+      thenCreate(false);
     }
 
     function thenCreate(exists) {
@@ -52,11 +56,48 @@
       xmlHttp.onreadystatechange = function() {
         if (xmlHttp.readyState === 4 && xmlHttp.status === 201)  {
           console.log("Received positive response for POST of a test.");
-          console.log(test);
           var test = JSON.parse(xmlHttp.responseText);
           var runButton = document.getElementById("run");
           runButton.hidden = false;
-        } else {
+        } else if (xmlHttp.readyState === 4) {
+          console.log("Response code " + xmlHttp.status);
+          console.log(xmlHttp.responseText);
+        }
+      };
+      xmlHttp.send(JSON.stringify(test));
+    }
+
+    function thenCreateScheduledTest(exists) {
+      if (exists) {
+        var runButton = document.getElementById("run");
+        runButton.hidden = false;
+        return;
+      }
+      var dockerfile = `
+      FROM docker.io/centos
+      MAINTAINER Christopher Henderson
+      RUN yum install -y go git wget
+      COPY script.sh $HOME/script.sh
+      CMD chmod +x script.sh && ./script.sh`
+      var script = `#!/usr/bin/env bash
+      git clone https://github.com/christopher-henderson/TestTheTester.git && cd TestTheTester/GoBeInGoodHands && go test . -v -cover`
+      var test = {
+          "name":"The greatest song in the world",
+          "script":script,
+          "dockerfile":dockerfile,
+          "environmentVariables":"a=b",
+          "interval": 10
+        }
+      var xmlHttp = new XMLHttpRequest();
+      xmlHttp.open("POST", "/api/v1/test/");
+      xmlHttp.setRequestHeader("Content-Type", "application/json");
+      xmlHttp.onreadystatechange = function() {
+        if (xmlHttp.readyState === 4 && xmlHttp.status === 201)  {
+          console.log("Received positive response for POST of a test.");
+          var test = JSON.parse(xmlHttp.responseText);
+          var runButton = document.getElementById("run");
+          runButton.hidden = false;
+        } else if (xmlHttp.readyState === 4) {
           console.log("Response code" + xmlHttp.status);
           console.log(xmlHttp.responseText);
         }
@@ -71,7 +112,7 @@
         if (xmlHttp.readyState === 4 && xmlHttp.status === 200)  {
           console.log("Found test.");
           callback(true);
-        } else {
+        } else if (xmlHttp.readyState === 4) {
           console.log("No test found.");
           callback(false);
         }
@@ -107,7 +148,7 @@
           var test = JSON.parse(xmlHttp.responseText);
           startWebsocket(test.id);
           console.log(test);
-        } else {
+        } else if (xmlHttp.readyState === 4) {
           console.log("Response code " + xmlHttp.status);
           console.log(xmlHttp.responseText);
         }
@@ -116,6 +157,7 @@
     }
   </script>
   <button onclick="createTest()">Create!</button>
+  <button onclick="createScheduledTest()">Create Scheduled Test!</button>
   <button onclick="test()" hidden="true" id="run">Run!</button>
   <h2>Test Results</h2>
   <div id="test" style="white-space:pre-wrap;">
