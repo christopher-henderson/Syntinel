@@ -5,6 +5,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"io"
 	"log"
 	"time"
 
@@ -25,8 +26,9 @@ func Stream(ID int, stdout *bufio.Scanner) {
 	}
 	go func() {
 		for stdout.Scan() {
+
 			log.Println(fmt.Sprintf("STDOUT ID %v: %v", ID, string(stdout.Bytes())))
-			if _, err := ws.Write(stdout.Bytes()); err != nil {
+			if _, err := io.WriteString(ws, string(stdout.Bytes())); err != nil {
 				log.Fatalln(err)
 			}
 			time.Sleep(time.Millisecond * 100)
