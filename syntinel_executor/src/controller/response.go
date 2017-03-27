@@ -2,6 +2,7 @@ package controller
 
 import (
 	"encoding/json"
+	"io"
 	"log"
 	"net/http"
 )
@@ -11,16 +12,16 @@ func WriteJsonResponse(w http.ResponseWriter, payload *Payload, status int) {
 	if err := recover(); err != nil {
 		log.Println(err)
 		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte(""))
+		io.WriteString(w, err.(error).Error())
 		return
 	}
 	serializedPayload, err := json.MarshalIndent(payload, " ", "    ")
 	if err != nil {
 		log.Println(err)
 		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte(""))
+		io.WriteString(w, err.Error())
 		return
 	}
 	w.WriteHeader(status)
-	w.Write(append(serializedPayload, '\n'))
+	io.WriteString(w, string(append(serializedPayload, '\n')))
 }
