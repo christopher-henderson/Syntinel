@@ -4,3 +4,4 @@ djangorestframework
 channels
 asgi_redis
 django_redis
+django-filter

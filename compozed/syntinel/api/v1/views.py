@@ -3,6 +3,8 @@ import logging
 from django.core import cache
 from django.core import exceptions
 
+from django_filters.rest_framework import DjangoFilterBackend
+
 from rest_framework.response import Response
 from rest_framework.generics import (
     RetrieveUpdateDestroyAPIView,
@@ -97,6 +99,7 @@ class TestListView(ListAPIView):
 
     queryset = Test.objects.all()
     serializer_class = TestSerializer
+    filter_fields = ("project",)
 
 
 class ProjectView(CreateAPIView, RetrieveUpdateDestroyAPIView):
@@ -136,6 +139,7 @@ class TestRunListView(ListAPIView):
 
     queryset = TestRun.objects.all()
     serializer_class = TestRunSerializer
+    filter_fields = ("test", "successful")
 
 
 class ExecutorView(CreateAPIView, RetrieveUpdateDestroyAPIView):

@@ -16,6 +16,12 @@ logger = logging.getLogger(__name__)
 
 import os
 
+REST_FRAMEWORK = {
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
+    'PAGE_SIZE': 20,
+    'DEFAULT_FILTER_BACKENDS': ('rest_framework.filters.DjangoFilterBackend',)
+}
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,

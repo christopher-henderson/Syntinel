@@ -92,18 +92,23 @@ xmlHttp.send(null);
 > The above command returns JSON structured like this:
 
 ```json
-[
-  {
-    "id":1,
-    "name":"The greatest song in the world",
-    "script":"#!/usr/bin/env bash\ngit clone https://github.com/christopher-henderson/TestTheTester.git && cd TestTheTester/GoBeInGoodHands && go test . -v -cover",
-    "dockerfile":"FROM docker.io/centos\n\nMAINTAINER Christopher Henderson\n\nRUN yum install -y go git wget\nCOPY script.sh $HOME/script.sh\nCMD chmod +x script.sh && ./script.sh",
-    "environmentVariables":"a=b",
-    "health":100,
-    "project":null,
-    "interval": null
-  }
-]
+{
+  "count": 1,
+  "next": null,
+  "previous": null,
+  "results": [
+    {
+      "id":1,
+      "name":"The greatest song in the world",
+      "script":"#!/usr/bin/env bash\ngit clone https://github.com/christopher-henderson/TestTheTester.git && cd TestTheTester/GoBeInGoodHands && go test . -v -cover",
+      "dockerfile":"FROM docker.io/centos\n\nMAINTAINER Christopher Henderson\n\nRUN yum install -y go git wget\nCOPY script.sh $HOME/script.sh\nCMD chmod +x script.sh && ./script.sh",
+      "environmentVariables":"a=b",
+      "health":100,
+      "project":null,
+      "interval": null
+    }
+  ]
+}
 ```
 
 This endpoint retrieves all tests.
@@ -114,6 +119,55 @@ This endpoint retrieves all tests.
 
 ### Query Parameters
 @TODO
+
+## Get All Tests For a Given Project
+
+```shell
+curl "http://syntinel/api/v1/test/all?project=1"
+```
+
+```javascript
+var xmlHttp = new XMLHttpRequest();
+xmlHttp.open("GET", "http://192.168.1.2/api/v1/test/all?project=1");
+xmlHttp.onreadystatechange = function() {
+  if (xmlHttp.readyState === 4)  {
+    var tests = JSON.parse(xmlHttp.responseText);
+    console.log(tests);
+  }
+};
+xmlHttp.send(null);
+```
+
+> The above command returns JSON structured like this:
+
+```json
+{
+  "count": 1,
+  "next": null,
+  "previous": null,
+  "results": [
+    {
+      "id":1,
+      "name":"The greatest song in the world",
+      "script":"#!/usr/bin/env bash\ngit clone https://github.com/christopher-henderson/TestTheTester.git && cd TestTheTester/GoBeInGoodHands && go test . -v -cover",
+      "dockerfile":"FROM docker.io/centos\n\nMAINTAINER Christopher Henderson\n\nRUN yum install -y go git wget\nCOPY script.sh $HOME/script.sh\nCMD chmod +x script.sh && ./script.sh",
+      "environmentVariables":"a=b",
+      "health":100,
+      "project":"The World's Best Software Project",
+      "interval": null
+    }
+  ]
+}
+```
+
+This endpoint retrieves all tests.
+
+### HTTP Request
+
+`GET http://syntinel/api/v1/test/all`
+
+### Query Parameters
+test integer
 
 ## Get a Specific Test
 
@@ -284,13 +338,18 @@ xmlHttp.send(null);
 > The above command returns JSON structured like this:
 
 ```json
-[
-  {
-    "id": 1,
-    "tests": [1],
-    "name": "UltimateCode"
-  }
-]  
+{
+  "count": 1,
+  "next": null,
+  "previous": null,
+  "results": [
+    {
+      "id": 1,
+      "tests": [1],
+      "name": "UltimateCode"
+    }
+  ]
+}  
 ```
 
 This endpoint retrieves all projects.
@@ -370,6 +429,84 @@ xmlHttp.send(JSON.stringify(data));
 }
 ```
 
+## Get All Test Runs
+
+```shell
+curl -X POST -H 'Content-Type:application/json' http://192.168.1.2/api/v1/testrun/all
+```
+
+```javascript
+var xmlHttp = new XMLHttpRequest();
+xmlHttp.open("POST", "http://192.168.1.2/api/v1/testrun/all", false ); // false for synchronous request
+xmlHttp.setRequestHeader('Content-Type', "application/json");
+xmlHttp.onreadystatechange = function() {
+  if (xmlHttp.readyState === 4)  {
+    var testRun = JSON.parse(xmlHttp.responseText);
+    console.log(xmlHttp.responseText);
+  }
+};
+xmlHttp.send(null);
+```
+
+> The above command returns JSON structured like this:
+
+```json
+{
+  "count":1,
+  "next":null,
+  "previous":null,
+  "results":[
+    {
+      "id":1,
+      "log":"Sending build context to Docker daemon 3.072 kB\r\nStep 1 : FROM docker.io/centos\n ---> 67591570dd29\nStep 2 : MAINTAINER Christopher Henderson\n ---> Using cache\n ---> d33126dcfbfc\nStep 3 : RUN yum install -y go git wget\nCloning into 'TestTheTester'...\n ---> Using cache\n ---> b4da48a3d37c\nStep 4 : COPY script.sh $HOME/script.sh\n ---> Using cache\n ---> 40743fa214db\nStep 5 : CMD chmod +x script.sh && ./script.sh\n ---> Using cache\n ---> 1da95f92dcd2\nSuccessfully built 1da95f92dcd2\n=== RUN   TestPow\n--- PASS: TestPow (0.00s)\n=== RUN   TestSquare\n--- PASS: TestSquare (0.00s)\nPASS\ncoverage: 46.2% of statements\n",
+      "error":"",
+      "status":null,
+      "successful":true,
+      "test":1
+    }
+  ]
+}
+```
+
+## Get All Test Runs For a Given Test
+
+```shell
+curl -X POST -H 'Content-Type:application/json' http://192.168.1.2/api/v1/testrun/all?test=1
+```
+
+```javascript
+var xmlHttp = new XMLHttpRequest();
+xmlHttp.open("POST", "http://192.168.1.2/api/v1/testrun/all?test=1", false ); // false for synchronous request
+xmlHttp.setRequestHeader('Content-Type', "application/json");
+xmlHttp.onreadystatechange = function() {
+  if (xmlHttp.readyState === 4)  {
+    var testRun = JSON.parse(xmlHttp.responseText);
+    console.log(xmlHttp.responseText);
+  }
+};
+xmlHttp.send(null);
+```
+
+> The above command returns JSON structured like this:
+
+```json
+{
+  "count":1,
+  "next":null,
+  "previous":null,
+  "results":[
+    {
+      "id":1,
+      "log":"Sending build context to Docker daemon 3.072 kB\r\nStep 1 : FROM docker.io/centos\n ---> 67591570dd29\nStep 2 : MAINTAINER Christopher Henderson\n ---> Using cache\n ---> d33126dcfbfc\nStep 3 : RUN yum install -y go git wget\nCloning into 'TestTheTester'...\n ---> Using cache\n ---> b4da48a3d37c\nStep 4 : COPY script.sh $HOME/script.sh\n ---> Using cache\n ---> 40743fa214db\nStep 5 : CMD chmod +x script.sh && ./script.sh\n ---> Using cache\n ---> 1da95f92dcd2\nSuccessfully built 1da95f92dcd2\n=== RUN   TestPow\n--- PASS: TestPow (0.00s)\n=== RUN   TestSquare\n--- PASS: TestSquare (0.00s)\nPASS\ncoverage: 46.2% of statements\n",
+      "error":"",
+      "status":null,
+      "successful":true,
+      "test":1
+    }
+  ]
+}
+```
+
 # Executor
 
 ## Register an Executor
@@ -404,20 +541,25 @@ curl -X GET http://192.168.1.2/api/v1/executor/all/
 > The above command returns JSON structured like this:
 
 ```json
-[
-  {
-    "id":1,
-    "hostName":"localhost",
-    "port":"9090",
-    "Scheme":"http"
-  },
-  {
-    "id":2,
-    "hostName":"localhost",
-    "port":"9091",
-    "Scheme":"http"
-  }
-]
+{
+  "count": 2,
+  "next": null,
+  "previous": null,
+  "results": [
+    {
+      "id":1,
+      "hostName":"localhost",
+      "port":"9090",
+      "Scheme":"http"
+    },
+    {
+      "id":2,
+      "hostName":"localhost",
+      "port":"9091",
+      "Scheme":"http"
+    }
+  ]
+}
 ```
 
 ## Get a Specific Executor
