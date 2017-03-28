@@ -182,18 +182,23 @@ http://192.168.1.2/api/v1/test/ -d <span class="se">\</span>
 <blockquote>
 <p>The above command returns JSON structured like this:</p>
 </blockquote>
-<pre class="highlight json"><code><span class="p">[</span><span class="w">
-  </span><span class="p">{</span><span class="w">
-    </span><span class="nt">"id"</span><span class="p">:</span><span class="mi">1</span><span class="p">,</span><span class="w">
-    </span><span class="nt">"name"</span><span class="p">:</span><span class="s2">"The greatest song in the world"</span><span class="p">,</span><span class="w">
-    </span><span class="nt">"script"</span><span class="p">:</span><span class="s2">"#!/usr/bin/env bash\ngit clone https://github.com/christopher-henderson/TestTheTester.git &amp;&amp; cd TestTheTester/GoBeInGoodHands &amp;&amp; go test . -v -cover"</span><span class="p">,</span><span class="w">
-    </span><span class="nt">"dockerfile"</span><span class="p">:</span><span class="s2">"FROM docker.io/centos\n\nMAINTAINER Christopher Henderson\n\nRUN yum install -y go git wget\nCOPY script.sh $HOME/script.sh\nCMD chmod +x script.sh &amp;&amp; ./script.sh"</span><span class="p">,</span><span class="w">
-    </span><span class="nt">"environmentVariables"</span><span class="p">:</span><span class="s2">"a=b"</span><span class="p">,</span><span class="w">
-    </span><span class="nt">"health"</span><span class="p">:</span><span class="mi">100</span><span class="p">,</span><span class="w">
-    </span><span class="nt">"project"</span><span class="p">:</span><span class="kc">null</span><span class="p">,</span><span class="w">
-    </span><span class="nt">"interval"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="w">
-  </span><span class="p">}</span><span class="w">
-</span><span class="p">]</span><span class="w">
+<pre class="highlight json"><code><span class="p">{</span><span class="w">
+  </span><span class="nt">"count"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w">
+  </span><span class="nt">"next"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w">
+  </span><span class="nt">"previous"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w">
+  </span><span class="nt">"results"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+    </span><span class="p">{</span><span class="w">
+      </span><span class="nt">"id"</span><span class="p">:</span><span class="mi">1</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"name"</span><span class="p">:</span><span class="s2">"The greatest song in the world"</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"script"</span><span class="p">:</span><span class="s2">"#!/usr/bin/env bash\ngit clone https://github.com/christopher-henderson/TestTheTester.git &amp;&amp; cd TestTheTester/GoBeInGoodHands &amp;&amp; go test . -v -cover"</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"dockerfile"</span><span class="p">:</span><span class="s2">"FROM docker.io/centos\n\nMAINTAINER Christopher Henderson\n\nRUN yum install -y go git wget\nCOPY script.sh $HOME/script.sh\nCMD chmod +x script.sh &amp;&amp; ./script.sh"</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"environmentVariables"</span><span class="p">:</span><span class="s2">"a=b"</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"health"</span><span class="p">:</span><span class="mi">100</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"project"</span><span class="p">:</span><span class="kc">null</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"interval"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+  </span><span class="p">]</span><span class="w">
+</span><span class="p">}</span><span class="w">
 </span></code></pre>
 <p>This endpoint retrieves all tests.</p>
 
@@ -204,6 +209,49 @@ http://192.168.1.2/api/v1/test/ -d <span class="se">\</span>
 <h3 id="query-parameters">Query Parameters</h3>
 
 <p>@TODO</p>
+
+<h2 id="get-all-tests-for-a-given-project">Get All Tests For a Given Project</h2>
+<pre class="highlight shell"><code>curl <span class="s2">"http://syntinel/api/v1/test/all?project=1"</span>
+</code></pre><pre class="highlight javascript"><code><span class="kd">var</span> <span class="nx">xmlHttp</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">XMLHttpRequest</span><span class="p">();</span>
+<span class="nx">xmlHttp</span><span class="p">.</span><span class="nx">open</span><span class="p">(</span><span class="s2">"GET"</span><span class="p">,</span> <span class="s2">"http://192.168.1.2/api/v1/test/all?project=1"</span><span class="p">);</span>
+<span class="nx">xmlHttp</span><span class="p">.</span><span class="nx">onreadystatechange</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+  <span class="k">if</span> <span class="p">(</span><span class="nx">xmlHttp</span><span class="p">.</span><span class="nx">readyState</span> <span class="o">===</span> <span class="mi">4</span><span class="p">)</span>  <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">tests</span> <span class="o">=</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">parse</span><span class="p">(</span><span class="nx">xmlHttp</span><span class="p">.</span><span class="nx">responseText</span><span class="p">);</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">tests</span><span class="p">);</span>
+  <span class="p">}</span>
+<span class="p">};</span>
+<span class="nx">xmlHttp</span><span class="p">.</span><span class="nx">send</span><span class="p">(</span><span class="kc">null</span><span class="p">);</span>
+</code></pre>
+<blockquote>
+<p>The above command returns JSON structured like this:</p>
+</blockquote>
+<pre class="highlight json"><code><span class="p">{</span><span class="w">
+  </span><span class="nt">"count"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w">
+  </span><span class="nt">"next"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w">
+  </span><span class="nt">"previous"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w">
+  </span><span class="nt">"results"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+    </span><span class="p">{</span><span class="w">
+      </span><span class="nt">"id"</span><span class="p">:</span><span class="mi">1</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"name"</span><span class="p">:</span><span class="s2">"The greatest song in the world"</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"script"</span><span class="p">:</span><span class="s2">"#!/usr/bin/env bash\ngit clone https://github.com/christopher-henderson/TestTheTester.git &amp;&amp; cd TestTheTester/GoBeInGoodHands &amp;&amp; go test . -v -cover"</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"dockerfile"</span><span class="p">:</span><span class="s2">"FROM docker.io/centos\n\nMAINTAINER Christopher Henderson\n\nRUN yum install -y go git wget\nCOPY script.sh $HOME/script.sh\nCMD chmod +x script.sh &amp;&amp; ./script.sh"</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"environmentVariables"</span><span class="p">:</span><span class="s2">"a=b"</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"health"</span><span class="p">:</span><span class="mi">100</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"project"</span><span class="p">:</span><span class="s2">"The World's Best Software Project"</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"interval"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+  </span><span class="p">]</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
+<p>This endpoint retrieves all tests.</p>
+
+<h3 id="http-request">HTTP Request</h3>
+
+<p><code class="prettyprint">GET http://syntinel/api/v1/test/all</code></p>
+
+<h3 id="query-parameters">Query Parameters</h3>
+
+<p>test integer</p>
 
 <h2 id="get-a-specific-test">Get a Specific Test</h2>
 <pre class="highlight shell"><code>curl <span class="s2">"http://syntinel/api/v1/test/1"</span>
@@ -365,13 +413,18 @@ http://192.168.1.2/api/v1/test/ -d <span class="se">\</span>
 <blockquote>
 <p>The above command returns JSON structured like this:</p>
 </blockquote>
-<pre class="highlight json"><code><span class="p">[</span><span class="w">
-  </span><span class="p">{</span><span class="w">
-    </span><span class="nt">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w">
-    </span><span class="nt">"tests"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="w">
-    </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"UltimateCode"</span><span class="w">
-  </span><span class="p">}</span><span class="w">
-</span><span class="p">]</span><span class="w">  
+<pre class="highlight json"><code><span class="p">{</span><span class="w">
+  </span><span class="nt">"count"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w">
+  </span><span class="nt">"next"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w">
+  </span><span class="nt">"previous"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w">
+  </span><span class="nt">"results"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+    </span><span class="p">{</span><span class="w">
+      </span><span class="nt">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"tests"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="w">
+      </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"UltimateCode"</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+  </span><span class="p">]</span><span class="w">
+</span><span class="p">}</span><span class="w">  
 </span></code></pre>
 <p>This endpoint retrieves all projects.</p>
 
@@ -435,6 +488,70 @@ http://192.168.1.2/api/v1/test/ -d <span class="se">\</span>
   </span><span class="nt">"test"</span><span class="p">:</span><span class="mi">1</span><span class="w">
 </span><span class="p">}</span><span class="w">
 </span></code></pre>
+<h2 id="get-all-test-runs">Get All Test Runs</h2>
+<pre class="highlight shell"><code>curl -X POST -H <span class="s1">'Content-Type:application/json'</span> http://192.168.1.2/api/v1/testrun/all
+</code></pre><pre class="highlight javascript"><code><span class="kd">var</span> <span class="nx">xmlHttp</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">XMLHttpRequest</span><span class="p">();</span>
+<span class="nx">xmlHttp</span><span class="p">.</span><span class="nx">open</span><span class="p">(</span><span class="s2">"POST"</span><span class="p">,</span> <span class="s2">"http://192.168.1.2/api/v1/testrun/all"</span><span class="p">,</span> <span class="kc">false</span> <span class="p">);</span> <span class="c1">// false for synchronous request</span>
+<span class="nx">xmlHttp</span><span class="p">.</span><span class="nx">setRequestHeader</span><span class="p">(</span><span class="s1">'Content-Type'</span><span class="p">,</span> <span class="s2">"application/json"</span><span class="p">);</span>
+<span class="nx">xmlHttp</span><span class="p">.</span><span class="nx">onreadystatechange</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+  <span class="k">if</span> <span class="p">(</span><span class="nx">xmlHttp</span><span class="p">.</span><span class="nx">readyState</span> <span class="o">===</span> <span class="mi">4</span><span class="p">)</span>  <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">testRun</span> <span class="o">=</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">parse</span><span class="p">(</span><span class="nx">xmlHttp</span><span class="p">.</span><span class="nx">responseText</span><span class="p">);</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">xmlHttp</span><span class="p">.</span><span class="nx">responseText</span><span class="p">);</span>
+  <span class="p">}</span>
+<span class="p">};</span>
+<span class="nx">xmlHttp</span><span class="p">.</span><span class="nx">send</span><span class="p">(</span><span class="kc">null</span><span class="p">);</span>
+</code></pre>
+<blockquote>
+<p>The above command returns JSON structured like this:</p>
+</blockquote>
+<pre class="highlight json"><code><span class="p">{</span><span class="w">
+  </span><span class="nt">"count"</span><span class="p">:</span><span class="mi">1</span><span class="p">,</span><span class="w">
+  </span><span class="nt">"next"</span><span class="p">:</span><span class="kc">null</span><span class="p">,</span><span class="w">
+  </span><span class="nt">"previous"</span><span class="p">:</span><span class="kc">null</span><span class="p">,</span><span class="w">
+  </span><span class="nt">"results"</span><span class="p">:[</span><span class="w">
+    </span><span class="p">{</span><span class="w">
+      </span><span class="nt">"id"</span><span class="p">:</span><span class="mi">1</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"log"</span><span class="p">:</span><span class="s2">"Sending build context to Docker daemon 3.072 kB\r\nStep 1 : FROM docker.io/centos\n ---&gt; 67591570dd29\nStep 2 : MAINTAINER Christopher Henderson\n ---&gt; Using cache\n ---&gt; d33126dcfbfc\nStep 3 : RUN yum install -y go git wget\nCloning into 'TestTheTester'...\n ---&gt; Using cache\n ---&gt; b4da48a3d37c\nStep 4 : COPY script.sh $HOME/script.sh\n ---&gt; Using cache\n ---&gt; 40743fa214db\nStep 5 : CMD chmod +x script.sh &amp;&amp; ./script.sh\n ---&gt; Using cache\n ---&gt; 1da95f92dcd2\nSuccessfully built 1da95f92dcd2\n=== RUN   TestPow\n--- PASS: TestPow (0.00s)\n=== RUN   TestSquare\n--- PASS: TestSquare (0.00s)\nPASS\ncoverage: 46.2% of statements\n"</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"error"</span><span class="p">:</span><span class="s2">""</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"status"</span><span class="p">:</span><span class="kc">null</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"successful"</span><span class="p">:</span><span class="kc">true</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"test"</span><span class="p">:</span><span class="mi">1</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+  </span><span class="p">]</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
+<h2 id="get-all-test-runs-for-a-given-test">Get All Test Runs For a Given Test</h2>
+<pre class="highlight shell"><code>curl -X POST -H <span class="s1">'Content-Type:application/json'</span> http://192.168.1.2/api/v1/testrun/all?test<span class="o">=</span>1
+</code></pre><pre class="highlight javascript"><code><span class="kd">var</span> <span class="nx">xmlHttp</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">XMLHttpRequest</span><span class="p">();</span>
+<span class="nx">xmlHttp</span><span class="p">.</span><span class="nx">open</span><span class="p">(</span><span class="s2">"POST"</span><span class="p">,</span> <span class="s2">"http://192.168.1.2/api/v1/testrun/all?test=1"</span><span class="p">,</span> <span class="kc">false</span> <span class="p">);</span> <span class="c1">// false for synchronous request</span>
+<span class="nx">xmlHttp</span><span class="p">.</span><span class="nx">setRequestHeader</span><span class="p">(</span><span class="s1">'Content-Type'</span><span class="p">,</span> <span class="s2">"application/json"</span><span class="p">);</span>
+<span class="nx">xmlHttp</span><span class="p">.</span><span class="nx">onreadystatechange</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+  <span class="k">if</span> <span class="p">(</span><span class="nx">xmlHttp</span><span class="p">.</span><span class="nx">readyState</span> <span class="o">===</span> <span class="mi">4</span><span class="p">)</span>  <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">testRun</span> <span class="o">=</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">parse</span><span class="p">(</span><span class="nx">xmlHttp</span><span class="p">.</span><span class="nx">responseText</span><span class="p">);</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">xmlHttp</span><span class="p">.</span><span class="nx">responseText</span><span class="p">);</span>
+  <span class="p">}</span>
+<span class="p">};</span>
+<span class="nx">xmlHttp</span><span class="p">.</span><span class="nx">send</span><span class="p">(</span><span class="kc">null</span><span class="p">);</span>
+</code></pre>
+<blockquote>
+<p>The above command returns JSON structured like this:</p>
+</blockquote>
+<pre class="highlight json"><code><span class="p">{</span><span class="w">
+  </span><span class="nt">"count"</span><span class="p">:</span><span class="mi">1</span><span class="p">,</span><span class="w">
+  </span><span class="nt">"next"</span><span class="p">:</span><span class="kc">null</span><span class="p">,</span><span class="w">
+  </span><span class="nt">"previous"</span><span class="p">:</span><span class="kc">null</span><span class="p">,</span><span class="w">
+  </span><span class="nt">"results"</span><span class="p">:[</span><span class="w">
+    </span><span class="p">{</span><span class="w">
+      </span><span class="nt">"id"</span><span class="p">:</span><span class="mi">1</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"log"</span><span class="p">:</span><span class="s2">"Sending build context to Docker daemon 3.072 kB\r\nStep 1 : FROM docker.io/centos\n ---&gt; 67591570dd29\nStep 2 : MAINTAINER Christopher Henderson\n ---&gt; Using cache\n ---&gt; d33126dcfbfc\nStep 3 : RUN yum install -y go git wget\nCloning into 'TestTheTester'...\n ---&gt; Using cache\n ---&gt; b4da48a3d37c\nStep 4 : COPY script.sh $HOME/script.sh\n ---&gt; Using cache\n ---&gt; 40743fa214db\nStep 5 : CMD chmod +x script.sh &amp;&amp; ./script.sh\n ---&gt; Using cache\n ---&gt; 1da95f92dcd2\nSuccessfully built 1da95f92dcd2\n=== RUN   TestPow\n--- PASS: TestPow (0.00s)\n=== RUN   TestSquare\n--- PASS: TestSquare (0.00s)\nPASS\ncoverage: 46.2% of statements\n"</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"error"</span><span class="p">:</span><span class="s2">""</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"status"</span><span class="p">:</span><span class="kc">null</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"successful"</span><span class="p">:</span><span class="kc">true</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"test"</span><span class="p">:</span><span class="mi">1</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+  </span><span class="p">]</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
 <h1 id="executor">Executor</h1>
 
 <h2 id="register-an-executor">Register an Executor</h2>
@@ -462,20 +579,25 @@ Scheme: String. Optional. Default is &ldquo;http&rdquo;<br></p>
 <blockquote>
 <p>The above command returns JSON structured like this:</p>
 </blockquote>
-<pre class="highlight json"><code><span class="p">[</span><span class="w">
-  </span><span class="p">{</span><span class="w">
-    </span><span class="nt">"id"</span><span class="p">:</span><span class="mi">1</span><span class="p">,</span><span class="w">
-    </span><span class="nt">"hostName"</span><span class="p">:</span><span class="s2">"localhost"</span><span class="p">,</span><span class="w">
-    </span><span class="nt">"port"</span><span class="p">:</span><span class="s2">"9090"</span><span class="p">,</span><span class="w">
-    </span><span class="nt">"Scheme"</span><span class="p">:</span><span class="s2">"http"</span><span class="w">
-  </span><span class="p">},</span><span class="w">
-  </span><span class="p">{</span><span class="w">
-    </span><span class="nt">"id"</span><span class="p">:</span><span class="mi">2</span><span class="p">,</span><span class="w">
-    </span><span class="nt">"hostName"</span><span class="p">:</span><span class="s2">"localhost"</span><span class="p">,</span><span class="w">
-    </span><span class="nt">"port"</span><span class="p">:</span><span class="s2">"9091"</span><span class="p">,</span><span class="w">
-    </span><span class="nt">"Scheme"</span><span class="p">:</span><span class="s2">"http"</span><span class="w">
-  </span><span class="p">}</span><span class="w">
-</span><span class="p">]</span><span class="w">
+<pre class="highlight json"><code><span class="p">{</span><span class="w">
+  </span><span class="nt">"count"</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w">
+  </span><span class="nt">"next"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w">
+  </span><span class="nt">"previous"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w">
+  </span><span class="nt">"results"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+    </span><span class="p">{</span><span class="w">
+      </span><span class="nt">"id"</span><span class="p">:</span><span class="mi">1</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"hostName"</span><span class="p">:</span><span class="s2">"localhost"</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"port"</span><span class="p">:</span><span class="s2">"9090"</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"Scheme"</span><span class="p">:</span><span class="s2">"http"</span><span class="w">
+    </span><span class="p">},</span><span class="w">
+    </span><span class="p">{</span><span class="w">
+      </span><span class="nt">"id"</span><span class="p">:</span><span class="mi">2</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"hostName"</span><span class="p">:</span><span class="s2">"localhost"</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"port"</span><span class="p">:</span><span class="s2">"9091"</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"Scheme"</span><span class="p">:</span><span class="s2">"http"</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+  </span><span class="p">]</span><span class="w">
+</span><span class="p">}</span><span class="w">
 </span></code></pre>
 <h2 id="get-a-specific-executor">Get a Specific Executor</h2>
 <pre class="highlight shell"><code>curl -X GET http://192.168.1.2/api/v1/executor/1
