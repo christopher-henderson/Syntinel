@@ -50,7 +50,7 @@ def ws_disconnect(message):
 
 class LogCache(object):
 
-    MAX_CACHE = 0
+    MAX_CACHE = 100
 
     @staticmethod
     def getLogCache(id):
@@ -86,8 +86,6 @@ class LogCache(object):
         cache.set(self.getCacheName(self.id), self)
 
     def flush(self):
-        logger.debug("Flushing.")
-        logger.debug(self.test_run.log)
         self.test_run.log = "{SAVED}{CACHED}".format(
             SAVED=self.test_run.log,
             CACHED=cache.get(self.id))

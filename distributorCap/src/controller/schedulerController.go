@@ -3,7 +3,6 @@ package controller
 import (
 	"encoding/json"
 	"io"
-	"io/ioutil"
 	"log"
 	"net/http"
 
@@ -13,36 +12,22 @@ import (
 
 func ScheduleTest(w http.ResponseWriter, r *http.Request) {
 	log.Println("Attempting to Schedule Test")
-	body, err := ioutil.ReadAll(r.Body)
-	if err != nil {
-		log.Println("error")
-		io.WriteString(w, "There was a problem with your submission")
-	}
-	log.Println(string(body))
 	var t DAO.Job
-	err = json.Unmarshal(body, &t)
-	if err != nil {
+	if err := json.NewDecoder(r.Body).Decode(&t); err != nil {
 		log.Println("error")
 		io.WriteString(w, "There was a problem with your submission")
 	} else {
 		log.Println("Accepted, Attempting to schedule Test")
 		go Scheduler.ScheduleAndRunJob(t)
-		io.WriteString(w, "Accepted")
+
 	}
 }
 
 func Kill(w http.ResponseWriter, r *http.Request) {
 	log.Println("Attempting to Kill Running Test")
-	body, err := ioutil.ReadAll(r.Body)
-	if err != nil {
-		log.Println("error")
-		io.WriteString(w, "There was a problem with your submission")
-	}
-	log.Println(string(body))
 	var t DAO.Job
-	err = json.Unmarshal(body, &t)
-	if err != nil {
-		log.Println("error")
+	if err := json.NewDecoder(r.Body).Decode(&t); err != nil {
+		log.Println(err)
 		io.WriteString(w, "There was a problem with your submission")
 	} else {
 		log.Println("Accepted, Attempting to Kill Running Test")
@@ -54,17 +39,10 @@ func Kill(w http.ResponseWriter, r *http.Request) {
 
 func CancelTest(w http.ResponseWriter, r *http.Request) {
 	log.Println("Attempting to Cancel Test")
-	body, err := ioutil.ReadAll(r.Body)
-	if err != nil {
-		log.Println("error")
-		io.WriteString(w, "There was a problem with your submission")
-	}
-	log.Println(string(body))
 	var t DAO.Job
-	err = json.Unmarshal(body, &t)
-	if err != nil {
-		log.Println("error")
-		io.WriteString(w, "There was a problem with your submission")
+	if err := json.NewDecoder(r.Body).Decode(&t); err != nil {
+		log.Println(err)
+		io.WriteString(w, err.Error())
 	} else {
 		log.Println("Accepted, Attempting to Cancel Test")
 		go Scheduler.CancelJob(t)
