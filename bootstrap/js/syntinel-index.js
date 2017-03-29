@@ -12,7 +12,6 @@ function pageLoad() {
 		window.location="project.html?project="+project.id;
 	});
 
-
 	var populatePage = function() {
 		var tabAll = document.getElementById("projectsTab-all");
 		var tabPassing = document.getElementById("projectsTab-passing");

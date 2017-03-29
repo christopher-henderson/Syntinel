@@ -65,18 +65,18 @@
 				<!-- Page Heading -->
 				<div class="row">
 					<div class="col-lg-12">
-						<h1 class="page-header" id="header-test-name"><div class="">Test 1
+						<h1 class="page-header" id="header-test-name"><div class=""><!-- Test Name Header "Test 1"-->
 							<small>Syntinel Test</small>
 						</h1>
 						<ol class="breadcrumb">
 							<li>
 								<i class="fa fa-dashboard"></i>  <a href="index.html">Dashboard</a>
 							</li>
-							<li>
-								<i class="fa fa-dashboard"></i>  <a href="project.html">Project Alpha</a>
+							<li id="breadcrumb-project-name">
+								<i class="fa fa-dashboard"></i>  <!-- Project breadcrumb <a href="project.html">Project Alpha</a> -->
 							</li>
 							<li class="active" id="breadcrumb-test-name">
-								<i class="fa fa-file"></i> Test 1
+								<i class="fa fa-file"></i> <!-- Test name breadcrumb "Test 1"-->
 							</li>
 						</ol>
 					</div>
@@ -89,9 +89,7 @@
 						<h2>Settings</h2>
 						<div class="col-lg-3">
 							<label for="setting-project">Project:</label>
-							<select class="form-control" id="setting-project">
-								<option>Project Alpha</option>
-							</select>
+							<input type="text" disabled class="form-control" id="setting-project">
 						</div>
 						<div class="col-lg-4">
 							<label for="setting-testName">Name:</label>
@@ -155,34 +153,20 @@
 					<div class="row">
 						<h2>Run History</h2>
 						<div class="table-responsive">
-							<table class="table table-hover table-striped">
+							<table id="table-test-runs" class="table table-hover table-striped">
 								<thead>
 									<tr>
 										<th>Run ID</th>
-										<th>Date</th>
-										<th>Duration</th>
 										<th>Status</th>
 									</tr>
 								</thead>
-								<tbody>
+								<tbody id="table-test-runs-body">
+									<!--
 									<tr class="warning">
 										<td>403</td>
-										<td>2016-02-01 1630</td>
-										<td>128.64s elapsed</td>
 										<td>Running</td>
 									</tr>
-									<tr class="success">
-										<td>402</td>
-										<td>2016-02-01 1615</td>
-										<td>64.32s total</td>
-										<td>Succeeded</td>
-									</tr>
-									<tr class="danger">
-										<td>401</td>
-										<td>2016-02-01 1600</td>
-										<td>16.8s total</td>
-										<td>Failed</td>
-									</tr>
+									-->
 								</tbody>
 							</table>
 						</div>
