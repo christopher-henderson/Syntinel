@@ -70,8 +70,27 @@
 
 		<div id="page-wrapper">
 
-			<div class="container-fluid">
+			<!-- Modal -->
+			<div id="modal-add" class="modal fade" role="dialog">
+			  	<div class="modal-dialog">
+					<!-- Modal content-->
+					<div class="modal-content">
+						<div class="modal-header">
+							<button type="button" class="close" data-dismiss="modal">&times;</button>
+							<h4 id="modal-add-header" class="modal-title">Add Syntinel Test</h4>
+						</div>
+						<div class="modal-body">
+							<input class="form-control" placeholder="Test name">
+						</div>
+						<div class="modal-footer">
+							<button id="modal-add-test" type="button" class="btn btn-success">Create</button>
+							<button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+						</div>
+					</div>
+				</div>
+			</div>
 
+			<div class="container-fluid">
 				<!-- Page Heading -->
 				<div class="row">
 					<div class="col-lg-12">
@@ -95,7 +114,7 @@
 				<div class="row">                
 					<div class="col-lg-8">
 						<h2>Tests 
-							<button type="button" class="btn btn-success">Add Test</button>
+							<button id="button-test-add" type="button" class="btn btn-success">Add Test</button>
 						</h2>
 						<div class="table-responsive">
 							<table class="table table-hover table-striped">
@@ -143,6 +162,8 @@
 	<!-- Bootstrap Core JavaScript -->
 	<script src="js/bootstrap.min.js"></script>
 
+	<script src="js/syntinel-utils.js"></script>
+	<script src="js/syntinel-project.js" onload="this.onload=function(){};pageLoad()"></script>
 </body>
 
 </html>
