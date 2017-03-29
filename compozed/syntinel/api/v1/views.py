@@ -1,4 +1,5 @@
 import logging
+import json
 
 from django.core import cache
 from django.core import exceptions
@@ -132,6 +133,7 @@ class TestRunView(CreateAPIView, RetrieveUpdateDestroyAPIView):
         logger.debug("Finalizing test " + str(pk))
         logCache = LogCache.getLogCache(pk)
         logCache.finalize()
+        TestRun.objects.get(id=pk).test.update_health(request.data.get("successful"))
         return super(TestRunView, self).patch(request, pk)
 
 

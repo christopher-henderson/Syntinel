@@ -25,6 +25,7 @@ func Stream(ID int, stdout *bufio.Scanner) {
 		log.Fatalln(err)
 	}
 	go func() {
+		defer ws.Close()
 		for stdout.Scan() {
 
 			log.Println(fmt.Sprintf("STDOUT ID %v: %v", ID, string(stdout.Bytes())))

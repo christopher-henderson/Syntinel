@@ -1,3 +1,7 @@
+from __future__ import division
+
+import logging
+
 from os import path, stat, remove
 from shutil import copyfile, move
 
@@ -6,8 +10,12 @@ from django.db import models
 
 from syntinel.executor_bindings import ExecutorBindings
 
+logger = logging.getLogger("models")
+
 
 class Test(models.Model):
+
+    NUMBER_OF_TESTS_CONSIDERED_IN_HEALTH = 10
 
     name = models.CharField(max_length=2 ** 16)
     project = models.ForeignKey('Project', on_delete=models.CASCADE, null=True, related_name="tests")
@@ -19,10 +27,17 @@ class Test(models.Model):
     health = models.IntegerField(default=100)
     interval = models.IntegerField(null=True)
 
+    def update_health(self, successful):
+        test_runs = self.test_runs.order_by('id').reverse()[:self.NUMBER_OF_TESTS_CONSIDERED_IN_HEALTH]
+        total = 1 if successful else 0
+        total += sum(1 for t in test_runs if t.successful)
+        self.health = total / (len(test_runs)) * 100
+        self.save()
+
 
 class TestRun(models.Model):
 
-    test = models.ForeignKey('Test')
+    test = models.ForeignKey('Test', related_name="test_runs")
     log = models.CharField(max_length=2 ** 16, default="")
     error = models.CharField(max_length=2 ** 16, default="")
     status = models.IntegerField(null=True)
