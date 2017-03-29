@@ -22,7 +22,7 @@ function apiGet(url, params, callback) {
 	if(url.indexOf("/project/all") != -1) {
 		callback("[{\"id\": 1,\"tests\": [1],\"name\": \"UltimateCode\"}]");
 	} else if(url.indexOf("test/") != -1) {
-		callback("{\"id\":1,\"name\":\"The greatest song in the world\",\"script\":\"#!/usr/bin/env bash\ngit clone https://github.com/christopher-henderson/TestTheTester.git && cd TestTheTester/GoBeInGoodHands && go test . -v -cover\",\"dockerfile\":\"FROM docker.io/centos\n\nMAINTAINER Christopher Henderson\n\nRUN yum install -y go git wget\nCOPY script.sh $HOME/script.sh\nCMD chmod +x script.sh && ./script.sh\",\"environmentVariables\":[\"a=b\"],\"health\":100,\"suite\":null}");
+		callback("{\"id\":1,\"name\":\"The greatest song in the world\",\"script\":\"#!/usr/bin/env bash\ngit clone https://github.com/christopher-henderson/TestTheTester.git && cd TestTheTester/GoBeInGoodHands && go test . -v -cover\",\"dockerfile\":\"FROM docker.io/centos\n\nMAINTAINER Christopher Henderson\n\nRUN yum install -y go git wget\nCOPY script.sh $HOME/script.sh\nCMD chmod +x script.sh && ./script.sh\",\"environmentVariables\":[\"a=b\"],\"health\":" + getRandomIntInclusive(0,100) + ",\"suite\":null}");
 	} else {
 		var handler = function(request) {
 			callback(request.response);
@@ -44,3 +44,9 @@ String.prototype.replaceAll = function(search, replacement) {
   var target = this;
   return target.split(search).join(replacement);
 };
+
+function getRandomIntInclusive(min, max) {
+  min = Math.ceil(min);
+  max = Math.floor(max);
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}

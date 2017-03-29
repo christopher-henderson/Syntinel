@@ -13,11 +13,6 @@
 	<link href="css/sb-admin.css" rel="stylesheet"><!-- Morris Charts CSS -->
 	<link href="css/plugins/morris.css" rel="stylesheet"><!-- Custom Fonts -->
 	<link href="font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css"><!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
-	<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-	<!--[if lt IE 9]>
-		<script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-		<script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-	<![endif]-->
 </head>
 
 <body>
@@ -58,13 +53,34 @@
 
 
 		<div id="page-wrapper">
+
+			<!-- Modal -->
+			<div id="modal-create" class="modal fade" role="dialog">
+			  	<div class="modal-dialog">
+					<!-- Modal content-->
+					<div class="modal-content">
+						<div class="modal-header">
+							<button type="button" class="close" data-dismiss="modal">&times;</button>
+							<h4 id="modal-create-header" class="modal-title">Create Syntinel Project</h4>
+						</div>
+						<div class="modal-body">
+							<input class="form-control" placeholder="Project name">
+						</div>
+						<div class="modal-footer">
+							<button id="modal-create-project" type="button" class="btn btn-success">Create</button>
+							<button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+						</div>
+					</div>
+				</div>
+			</div>
+
 			<div class="container-fluid">
 				<!-- Page Heading -->
 				<div class="row">
 					<div class="col-lg-12">
 						<h1 class="page-header">
 							Syntinel <small>Project Overview</small>
-							<button type="button" class="btn btn-success">Create project</button>
+							<button id="button-project-create" type="button" class="btn btn-success">Create project</button>
 						</h1>
 					</div>
 				</div>
