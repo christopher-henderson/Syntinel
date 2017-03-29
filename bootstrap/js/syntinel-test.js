@@ -1,7 +1,8 @@
 function pageLoad() {
-	var id = getQueryVariable("idTest");
+	var projectID = getQueryVariable("project");
+	var testID = getQueryVariable("test");
 	var test;
-	if(typeof id !== "undefined") {
+	if(typeof testID !== "undefined") {
 		// TODO API call to get current test
 		test = "{\"id\":1,\"name\":\"The greatest song in the world\",\"script\":\"#!/usr/bin/env bash\ngit clone https://github.com/christopher-henderson/TestTheTester.git && cd TestTheTester/GoBeInGoodHands && go test . -v -cover\",\"dockerfile\":\"FROM docker.io/centos\n\nMAINTAINER Christopher Henderson\n\nRUN yum install -y go git wget\nCOPY script.sh $HOME/script.sh\nCMD chmod +x script.sh && ./script.sh\",\"environmentVariables\":[\"a=b\"],\"health\":100,\"suite\":null}";
 		test = escapeNewLineChars(test);
