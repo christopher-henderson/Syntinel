@@ -2,6 +2,12 @@ function pageLoad() {
 	var p = [];
 	var projectCount = 0;
 
+	var create = document.getElementById("button-project-create");
+	create.addEventListener('click', function() {
+		// Open the modal
+		$("#modal-create").modal();
+	});
+
 	var populatePage = function() {
 		var tabAll = document.getElementById("projectsTab-all");
 		var tabPassing = document.getElementById("projectsTab-passing");
@@ -25,7 +31,9 @@ function pageLoad() {
 			tab += "		<div aria-labelledby=\"project_" + project.id + "_#PROJECT_TAB#_tab\" class=\"panel-collapse collapse\" id=\"project_" + project.id + "_#PROJECT_TAB#_collapse\" role=\"tabpanel\">";
 			tab += "			<div class=\"container panel-body\">";
 			// Project details
-			tab += "				<h3>Project details</h3>";
+			tab += "				<h3>Project details";
+			tab += "				<button type=\"button\" class=\"btn btn-sm btn-info\">Open</button>";
+			tab += "				</h3>";
 			tab += "				<p>[" + project.id + "] " + project.name + "</p>";
 			tab += "				<h3>Tests</h3>";
 			// Test table
