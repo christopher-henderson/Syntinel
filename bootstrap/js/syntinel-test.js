@@ -64,7 +64,7 @@ function pageLoad() {
 		}
 	}
 
-	// Make all the calls
+	// Get the project
 	apiGet(SYNTINEL_URL + "/project/" + projectID, "", function(res) {
 		project = res;
 		project = escapeNewLineChars(project);
