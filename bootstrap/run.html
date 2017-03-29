@@ -64,22 +64,22 @@
 				<!-- Page Heading -->
 				<div class="row">
 					<div class="col-lg-12">
-						<h1 class="page-header">
-							Run #1
+						<h1 class="page-header" id="header-run-name">
+							<!-- Run header Run #1 -->
 							<small>Syntinel Test Run</small>
 						</h1>
 						<ol class="breadcrumb">
 							<li>
 								<i class="fa fa-dashboard"></i>  <a href="index.html">Dashboard</a>
 							</li>
-							<li>
-								<i class="fa fa-dashboard"></i>  <a href="project.html">Project Alpha</a>
+							<li id="breadcrumb-project-name">
+								<i class="fa fa-dashboard"></i>  <!-- Project breadcrumb <a href="project.html">Project Alpha</a> -->
 							</li>
-							<li>
-								<i class="fa fa-dashboard"></i>  <a href="test.html">Test 1</a>
+							<li id="breadcrumb-test-name">
+								<i class="fa fa-dashboard"></i>  <!-- Test breadcrumb <a href="test.html">Test 1</a> -->
 							</li>
-							<li class="active">
-								<i class="fa fa-file"></i> Run #1
+							<li id="breadcrumb-run-name" class="active">
+								<i class="fa fa-file"></i> <!-- Run breadcrumb Run #1 -->
 							</li>
 						</ol>
 					</div>
@@ -89,8 +89,8 @@
 				<!-- Docker top settings row -->
 				<div class="col-lg-8">
 					<div class="row">
-						<h2>
-							Run #1 | Ran at 2017-03-13 18:20:00 | Took 32.85 seconds | Succeeded
+						<h2 id="run-status-header">
+							<!-- Status Successfully ran at 2017-03-13 18:20:00 -->
 						</h2>
 					</div>
 				</div>
@@ -122,6 +122,8 @@
 	<!-- Bootstrap Core JavaScript -->
 	<script src="js/bootstrap.min.js"></script>
 
+	<script src="js/syntinel-utils.js"></script>
+	<script src="js/syntinel-run.js" onload="this.onload=function(){};pageLoad()"></script>
 </body>
 
 </html>
