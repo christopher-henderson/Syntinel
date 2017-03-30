@@ -1,5 +1,5 @@
 # Syntinel
-> Allstate Capstone Project | ASU SER402 Spring 2017: Team #1
+> Allstate Capstone Project | Arizona State University: SER401 (Fall 2017) & SER402 (Spring 2017): Team #1
 
 # Team members
 >
