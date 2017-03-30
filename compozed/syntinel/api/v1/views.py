@@ -137,7 +137,7 @@ class TestRunView(CreateAPIView, RetrieveUpdateDestroyAPIView):
         logCache.finalize()
         test_run = TestRun.objects.get(id=pk)
         test_run.completed = timezone.now()
-        test_run.duration = test_run.completed - test_run.started
+        test_run.duration = (test_run.completed - test_run.started).seconds
         test_run.test.update_health(request.data.get("successful"))
         test_run.save()
         return super(TestRunView, self).patch(request, pk)
