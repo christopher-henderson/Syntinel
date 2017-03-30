@@ -27,7 +27,7 @@ function pageLoad() {
 			var test = t[i];
 			var testRow = "";
 
-			testRow += "<tr class=\"" + (test.health >= 100 ? "success" : (test.health > 50 ? "warning" : "danger")) + "\">";
+			testRow += "<tr class=\"" + (test.health >= SYNTINEL_HEALTH.SUCCESS_MIN ? "success" : (test.health > SYNTINEL_HEALTH.WARN_MIN ? "warning" : "danger")) + "\">";
 			testRow += "	<td>" + test.id + "</td>";
 			testRow += "	<td>" + test.name + "</td>";
 			testRow += "	<td>" + test.health + "%</td>";

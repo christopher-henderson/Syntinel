@@ -1,4 +1,8 @@
 var SYNTINEL_URL = "http://syntinel.chenderson.org/api/v1";
+var SYNTINEL_HEALTH = {
+	SUCCESS_MIN : 87.5,
+	WARN_MIN : 75
+}
 
 function getQueryVariable(variable) {
 	var query = window.location.search.substring(1);

@@ -56,7 +56,7 @@ function pageLoad() {
 			for(var j = 0; j < p[i].tests.length; j++) {
 				var test = p[i].tests[j];
 				projectHealth += test.health;
-				var testHealth = (test.health >= 100 ? "success" : (test.health > 50 ? "warning" : "danger"));
+				var testHealth = (test.health >= SYNTINEL_HEALTH.SUCCESS_MIN ? "success" : (test.health > SYNTINEL_HEALTH.WARN_MIN ? "warning" : "danger"));
 				tab += "							<tr class=\"" + testHealth + "\">";
 				tab += "								<td>" + test.id + "</td>";
 				tab += "								<td>" + test.name + "</td>";
@@ -73,7 +73,7 @@ function pageLoad() {
 
 			// Change project health color
 			projectHealth = projectHealth / p[i].tests.length;
-			projectHealth = (projectHealth >= 100 ? "success" : (projectHealth > 50 ? "warning" : "danger"));
+			projectHealth = (projectHealth >= SYNTINEL_HEALTH.SUCCESS_MIN ? "success" : (projectHealth > SYNTINEL_HEALTH.WARN_MIN ? "warning" : "danger"));
 			tab = tab.replace("#PROJECT-HEALTH#", projectHealth);
 
 			// Add to main "All" tab
