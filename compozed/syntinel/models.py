@@ -44,7 +44,7 @@ class TestRun(models.Model):
     successful = models.NullBooleanField()
     started = models.DateTimeField(auto_now_add=True)
     completed = models.DateTimeField(null=True)
-    duration = models.TimeField(null=True)
+    duration = models.DateTimeField(null=True)
 
     def run(self):
         ExecutorBindings.run(
