@@ -4,6 +4,7 @@ import datetime
 
 from django.core import cache
 from django.core import exceptions
+from django.utils import timezone
 
 from django_filters.rest_framework import DjangoFilterBackend
 
@@ -135,7 +136,7 @@ class TestRunView(CreateAPIView, RetrieveUpdateDestroyAPIView):
         logCache = LogCache.getLogCache(pk)
         logCache.finalize()
         test_run = TestRun.objects.get(id=pk)
-        test_run.completed = datetime.datetime.now(datetime.timezone.utcoffset)
+        test_run.completed = datetime.now(test_run.started.tzinfo)
         test_run.duration = test_run.completed - test_run.started
         test_run.test.update_health(request.data.get("successful"))
         test_run.save()
