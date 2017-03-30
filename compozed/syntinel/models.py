@@ -42,6 +42,7 @@ class TestRun(models.Model):
     error = models.CharField(max_length=2 ** 16, default="")
     status = models.IntegerField(null=True)
     successful = models.NullBooleanField()
+    timestamp = models.DateTimeField(auto_now_add=True)
 
     def run(self):
         ExecutorBindings.run(
