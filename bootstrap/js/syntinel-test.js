@@ -27,14 +27,22 @@ function pageLoad() {
 		// Setting - Docker
 		document.getElementById("setting-testDocker").value = test.dockerfile;
 
+		// Setting - Run
+		if(!test.interval || test.interval == null)
+			document.getElementById("setting-run").value = "off";
+		else
+			document.getElementById("setting-run").value = "schedule";
+
+		settingsRunChanged();
+
 		// Setting - Environment Variables
 		var envs = test.environmentVariables;
 		var envStr = "";
 		for(var i = 0; i < envs.length; i++) {
 			var env = envs[i].split("=");
-			envStr += "<tr><td>" + env[0] + "</td><td>" + env[1] + "</td><td>";
+			envStr += "<tr id=\"" + env[0] + "\"><td>" + env[0] + "</td><td>" + env[1] + "</td><td>";
 			envStr += "<button type=\"button\" class=\"btn btn-xs btn-info\">Edit</button>";
-			envStr += "<button type=\"button\" class=\"btn btn-xs btn-danger\">Remove</button>";
+			envStr += " <button type=\"button\" class=\"btn btn-xs btn-danger\">Remove</button>";
 			envStr += "</td></tr>";
 		}
 		document.getElementById("setting-environmentVariables").innerHTML = envStr;
@@ -98,4 +106,12 @@ function pageLoad() {
 		var id = row.childNodes[1].innerHTML;
 		window.location = "run.html?project="+projectID+"&test="+testID+"&run="+id;
 	});
+}
+
+function settingsRunChanged() {
+	var runSelect = document.getElementById("setting-run");
+	if(runSelect.value == "schedule")
+		document.getElementById("setting-run-interval").hidden = false;
+	else
+		document.getElementById("setting-run-interval").hidden = true;
 }

@@ -89,6 +89,7 @@
 				<div class="col-lg-6">
 					<div class="row">
 						<h2>Settings</h2>
+						<h4>General</h4>
 						<div class="col-lg-3">
 							<label for="setting-project">Project:</label>
 							<input type="text" disabled class="form-control" id="setting-project">
@@ -117,8 +118,19 @@
 					<!-- /.row -->
 
 					<div class="row">
-						<div class="col-lg-4">
-							<label for="setting-testSchedule">Run interval (seconds):</label>
+					<h4>Scheduling</h4>
+						<div class="col-lg-5">
+							<div class="form-group">
+                                <label>Run</label>
+                                <select class="form-control" id="setting-run" onchange="settingsRunChanged()">
+                                    <option value="off">Not running</option>
+                                    <option value="single">Run - Once now (then stop)</option>
+                                    <option value="schedule">Run - Schedule</option>
+                                </select>
+                            </div>
+						</div>
+						<div class="col-lg-4" id="setting-run-interval">
+							<label for="setting-testSchedule">Interval (sec):</label>
 							<input type="number" value="0" class="form-control" id="setting-testSchedule">
 						</div>
 					</div>
