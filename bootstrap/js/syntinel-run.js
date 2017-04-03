@@ -23,7 +23,16 @@ function pageLoad() {
 			runStatus = "Failed to run";
 		}
 
-		document.getElementById("run-status-header").innerHTML = runStatus + " at " + run.timestamp;
+		var runStatusHeader = document.getElementById("run-status-header");
+		runStatusHeader.innerHTML = "<strong>" + runStatus + "</strong>" + " at " + run.timestamp;
+		runStatusHeader.className = "alert " + (runStatus == "Successfully ran" ? "alert-success" : (runStatus == "Still running" ? "alert-warning" : "alert-danger"));
+
+		if(run.log) {
+			var c = document.getElementById("run-console");
+			c.innerHTML += run.log + "\n";
+		}
+		
+		startWebsocket(run.id);
 	}
 
 	// Get the project
@@ -48,4 +57,17 @@ function pageLoad() {
 			});
 		});
 	});
+
+    function startWebsocket(id) {
+		var c = document.getElementById("run-console");
+		socket = new WebSocket("ws://" + document.domain + "/testRun/console/" + id);
+		socket.onmessage = function(e) {
+			c.innerHTML += e.data + "\n";
+		}
+		socket.onopen = function() {
+			console.log("Connection established - Showing Run #" + run.id + " console");
+		}
+		// Call onopen directly if socket is already open
+		if (socket.readyState == WebSocket.OPEN) socket.onopen();
+    }
 }
