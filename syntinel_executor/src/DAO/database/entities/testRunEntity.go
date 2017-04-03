@@ -6,6 +6,7 @@ import (
 	"log"
 	"os"
 	"strconv"
+	"strings"
 	"sync"
 	"syntinel_executor/ResultServer"
 	"syntinel_executor/utils"
@@ -133,12 +134,16 @@ func (t *TestRunEntity) buildDockerImage() *process.Process {
 
 func (t *TestRunEntity) runDockerImage() *process.Process {
 	defer t.deleteContainer()
+	envVars := strings.Split(t.EnvironmentVariables, ",")
 	args := []string{
-		DockerRun,     // Run image
-		DockerRunRM,   // Delete after completed.
-		DockerRunName, // Name the container.
-		t.ImageName(), // Name of the container.
-		t.ImageName()} // Name of the image to run
+		DockerRun,   // Run image
+		DockerRunRM} // Delete after completed.
+	for _, envVar := range envVars {
+		args = append(args, fmt.Sprintf("-e %v", envVar)) // -e a='b'
+	}
+	args = append(args, DockerRunName)
+	args = append(args, t.ImageName()) // Name of the container.
+	args = append(args, t.ImageName()) // Name of the image to run
 	return process.NewProcess(DockerCommand, args...)
 }
 
