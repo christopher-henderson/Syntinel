@@ -8,6 +8,7 @@ function pageLoad() {
 	});
 
 	var createProject = document.getElementById("modal-create-project").addEventListener('click', function() {
+		apiPost
 		var project = {};
 		window.location="project.html?project="+project.id;
 	});
@@ -43,7 +44,7 @@ function pageLoad() {
 			tab += "				<h3>Tests</h3>";
 			// Test table
 			tab += "				<div class=\"table-responsive\">";
-			tab += "					<table class=\"table table-bordered table-hover table-striped\">";
+			tab += "					<table id=\"table-project-" + project.id + "-#PROJECT_TAB#-tests\" class=\"table table-bordered table-hover table-striped\">";
 			tab += "						<thead>";
 			tab += "							<tr>";
 			tab += "								<th>ID</th>";
@@ -78,12 +79,33 @@ function pageLoad() {
 
 			// Add to main "All" tab
 			tabAll.innerHTML += tab.replaceAll("#PROJECT_TAB#", "all");
+			$('#table-project-' + project.id + '-all-tests').find('tr').click(function() {
+				var index = ($(this).index());
+				var table = document.getElementById("table-project-" + project.id + "-all-tests").getElementsByTagName("tbody")[0];
+				var row = table.getElementsByTagName("tr")[index];
+				var id = row.childNodes[1].innerHTML;
+				window.location = ("test.html?project="+ project.id +"&test=" + id);
+			});
 
 			// Add to other tabs
 			if(projectHealth == "success") {
 				tabPassing.innerHTML += tab.replaceAll("#PROJECT_TAB#", "passing");
+				$('#table-project-' + project.id + '-passing-tests').find('tr').click(function() {
+					var index = ($(this).index());
+					var table = document.getElementById("table-project-" + project.id + "-passing-tests").getElementsByTagName("tbody")[0];
+					var row = table.getElementsByTagName("tr")[index];
+					var id = row.childNodes[1].innerHTML;
+					window.location = ("test.html?project="+ project.id +"&test=" + id);
+				});
 			} else if(projectHealth == "warning" || projectHealth == "danger") {
 				tabFailing.innerHTML += tab.replaceAll("#PROJECT_TAB#", "failing");
+				$('#table-project-' + project.id + '-failing-tests').find('tr').click(function() {
+					var index = ($(this).index());
+					var table = document.getElementById("table-project-" + project.id + "-failing-tests").getElementsByTagName("tbody")[0];
+					var row = table.getElementsByTagName("tr")[index];
+					var id = row.childNodes[1].innerHTML;
+					window.location = ("test.html?project="+ project.id +"&test=" + id);
+				});
 			}
 		}
 	}
