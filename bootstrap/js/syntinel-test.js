@@ -1,8 +1,8 @@
-function pageLoad() {
-	var project = {};
-	var test = {};
-	var r = [];
+var project = {};
+var test = {};
+var r = [];
 
+function pageLoad() {
 	var projectID = getQueryVariable("project");
 	var testID = getQueryVariable("test");
 
@@ -40,12 +40,16 @@ function pageLoad() {
 		var envStr = "";
 		for(var i = 0; i < envs.length; i++) {
 			var env = envs[i].split("=");
-			envStr += "<tr id=\"" + env[0] + "\"><td>" + env[0] + "</td><td>" + env[1] + "</td><td>";
-			envStr += "<button type=\"button\" class=\"btn btn-xs btn-info\">Edit</button>";
-			envStr += " <button type=\"button\" class=\"btn btn-xs btn-danger\">Remove</button>";
-			envStr += "</td></tr>";
+			envStr += "<tr id=\"" + env[0] + "\"><td>" + env[0] + "</td><td>" + env[1] + "</td></tr>";
 		}
 		document.getElementById("setting-environmentVariables").innerHTML = envStr;
+
+		var buttonEnvAdd = document.getElementById("setting-env-button-edit").addEventListener('click', function() {
+			updateModalsEnv();
+
+			// Open the modal
+			$("#modal-env").modal();
+		});
 
 		// Run histories
 		var testRuns = document.getElementById("table-test-runs-body");
@@ -114,4 +118,67 @@ function settingsRunChanged() {
 		document.getElementById("setting-run-interval").hidden = false;
 	else
 		document.getElementById("setting-run-interval").hidden = true;
+}
+
+var modalTest = {};
+var modalEnvs = [];
+
+function updateModalsEnv() {
+	var modalBody = document.getElementById("modal-env-body");
+	modalBody.innerHTML = "";
+	modalEnvs = [];
+
+	var envs = test.environmentVariables;
+	for(var i = 0; i < envs.length + 1; i++) {
+		var env;
+		if(i < envs.length) {
+			env = envs[i].split("=");
+		} else {
+			env = ["",""];
+		}
+
+		modalEnvs[i] = env;
+
+		var str = "";
+		str += "<div class=\"row\">";
+		str += "	<div class=\"col-lg-5\">";
+		str += "		<input onchange=\"modalEnvInputChanged(" + i + ")\" id=\"modal-env-variable-index-" + i + "\" class=\"form-control\" placeholder=\"Variable\" value=\"" + env[0] + "\">";
+		str += "	</div>";
+		str += "	<div class=\"col-lg-5\">";
+		str += "		<input onchange=\"modalEnvInputChanged(" + i + ")\" id=\"modal-env-value-index-" + i + "\" class=\"form-control\" placeholder=\"Value\" value=\"" + env[1] + "\">";
+		str += "	</div>";
+		str += "</div>";
+
+		modalBody.innerHTML += str;
+	}
+}
+
+function modalEnvInputChanged(index) {
+	var envVariable = document.getElementById("modal-env-variable-index-" + index);
+	var envValue = document.getElementById("modal-env-value-index-" + index);
+
+	// Update the model
+	if(index == modalEnvs.length - 1) {
+		// Add
+		test.environmentVariables.push(envVariable.value + "=" + envValue.value);
+	} else {
+		if(envVariable.value.length <= 0 && envValue.value.length <= 0) {
+			// Remove
+			test.environmentVariables.splice(index, 1);
+		} else {
+			// Edit
+			test.environmentVariables[index] = envVariable.value + "=" + envValue.value;
+		}
+	}
+
+	// Update main page
+	var envs = test.environmentVariables;
+	var envStr = "";
+	for(var i = 0; i < envs.length; i++) {
+		var env = envs[i].split("=");
+		envStr += "<tr id=\"" + env[0] + "\"><td>" + env[0] + "</td><td>" + env[1] + "</td></tr>";
+	}
+	document.getElementById("setting-environmentVariables").innerHTML = envStr;
+
+	updateModalsEnv();
 }
