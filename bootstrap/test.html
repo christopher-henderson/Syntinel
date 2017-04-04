@@ -63,6 +63,25 @@
 
 		<div id="page-wrapper">
 
+			<!-- Modal -->
+			<div id="modal-env" class="modal fade" role="dialog">
+			  	<div class="modal-dialog">
+					<!-- Modal content-->
+					<div class="modal-content">
+						<div class="modal-header">
+							<h4 id="modal-env-header" class="modal-title">Syntinel Test - Enviornment Variables</h4>
+							<p>(Remove a column by clearing the variable - value pair)</p>
+						</div>
+						<div class="modal-body" id="modal-env-body">
+
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-success" data-dismiss="modal">Close</button>
+						</div>
+					</div>
+				</div>
+			</div>
+
 			<div class="container-fluid">
 				<!-- Page Heading -->
 				<div class="row">
@@ -138,7 +157,7 @@
 
 					<div class="row">
 						<h3>Environment Variables
-							<button type="button" class="btn btn-xs btn-success">Add Variable</button>
+							<button type="button" id="setting-env-button-edit" class="btn btn-xs btn-info">Edit</button>
 						</h3>
 						<div class="col-lg-10">
 							<div class="table-responsive">
@@ -147,7 +166,6 @@
 										<tr>
 											<th>Variable</th>
 											<th>Value</th>
-											<th>Options</th>
 										</tr>
 									</thead>
 									<tbody id="setting-environmentVariables">
