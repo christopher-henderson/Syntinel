@@ -49,7 +49,7 @@ function apiGet(url, params, callback) {
 	}
 }
 
-function apiPost(url, params, callback) {
+function apiPost(url, body, callback) {
 	var handler = function(request) {
 		callback(request.response);
 	};
@@ -58,7 +58,7 @@ function apiPost(url, params, callback) {
 	request.open("POST", url, true);
 	request.withCredentials = true;
 	request.setRequestHeader("Content-Type","application/json");
-	request.send();
+	request.send(JSON.stringify(body));
 	request.onreadystatechange = function() {
 		if(request.readyState >= 4)
 			handler(request);

@@ -8,9 +8,13 @@ function pageLoad() {
 	});
 
 	var createProject = document.getElementById("modal-create-project").addEventListener('click', function() {
-		apiPost
-		var project = {};
-		window.location="project.html?project="+project.id;
+		apiPost(SYNTINEL_URL + "/project/", {"name" : document.getElementById("modal-create-project-name").value}, function(res) {
+			var project = res;
+			project = escapeNewLineChars(project);
+			project = JSON.parse(project);
+
+			window.location= SYNTINEL_URL + "project.html?project="+project.id;
+		});
 	});
 
 	var populatePage = function() {
