@@ -9,6 +9,17 @@ function pageLoad() {
 
 	var createProject = document.getElementById("modal-create-project").addEventListener('click', function() {
 		apiPost(SYNTINEL_URL + "/project/", {"name" : document.getElementById("modal-create-project-name").value}, function(res) {
+			if(res.error && SYNTINEL_ERRORREDIRECT) {
+				if(res.responseText && res.responseText.length > 0) {
+					qs.reason = res.responseText;
+				}
+				if(res.status) {
+					qs.status = res.status;
+				}
+				window.location = buildUrl("error.html", qs);
+				return;
+			}
+
 			var project = res;
 			project = escapeNewLineChars(project);
 			project = JSON.parse(project);
@@ -116,6 +127,17 @@ function pageLoad() {
 
 	// Make all the calls
 	apiGet(SYNTINEL_URL + "/project/all", "", function(res) {
+		if(res.error && SYNTINEL_ERRORREDIRECT) {
+			if(res.responseText && res.responseText.length > 0) {
+				qs.reason = res.responseText;
+			}
+			if(res.status) {
+				qs.status = res.status;
+			}
+			window.location = buildUrl("error.html", qs);
+			return;
+		}
+
 		var projects = res;
 		projects = escapeNewLineChars(projects);
 		projects = JSON.parse(projects);
@@ -128,6 +150,17 @@ function pageLoad() {
 			var count = 0;
 			for(var j = 0; j < project.tests.length; j++) {
 				apiGet("/test/" + project.tests[i], "", function(res) {
+					if(res.error && SYNTINEL_ERRORREDIRECT) {
+						if(res.responseText && res.responseText.length > 0) {
+							qs.reason = res.responseText;
+						}
+						if(res.status) {
+							qs.status = res.status;
+						}
+						window.location = buildUrl("error.html", qs);
+						return;
+					}
+
 					tests.push(JSON.parse(escapeNewLineChars(res)));
 					count++;
 					if(count == project.tests.length) {

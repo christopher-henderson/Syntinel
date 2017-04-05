@@ -37,18 +37,66 @@ function pageLoad() {
 
 	// Get the project
 	apiGet(SYNTINEL_URL + "/project/" + projectID, "", function(res) {
+		if(res.error && SYNTINEL_ERRORREDIRECT) {
+			if(res.responseText && res.responseText.length > 0) {
+				qs.reason = res.responseText;
+			}
+			if(res.status) {
+				qs.status = res.status;
+			}
+			
+			qs.project = projectID;
+			qs.test = testID;
+			qs.run = runID;
+
+			window.location = buildUrl("error.html", qs);
+			return;
+		}
+
 		project = res;
 		project = escapeNewLineChars(project);
 		project = JSON.parse(project);
 
 		// Now get the test
 		apiGet(SYNTINEL_URL + "/test/" + testID, "", function(res) {
+			if(res.error && SYNTINEL_ERRORREDIRECT) {
+				if(res.responseText && res.responseText.length > 0) {
+					qs.reason = res.responseText;
+				}
+				if(res.status) {
+					qs.status = res.status;
+				}
+				
+				qs.project = projectID;
+				qs.test = testID;
+				qs.run = runID;
+
+				window.location = buildUrl("error.html", qs);
+				return;
+			}
+
 			test = res;
 			test = escapeNewLineChars(test);
 			test = JSON.parse(test);
 
 			// Get the test
 			apiGet(SYNTINEL_URL + "/testrun/" + runID, "", function(res) {
+				if(res.error && SYNTINEL_ERRORREDIRECT) {
+					if(res.responseText && res.responseText.length > 0) {
+						qs.reason = res.responseText;
+					}
+					if(res.status) {
+						qs.status = res.status;
+					}
+					
+					qs.project = projectID;
+					qs.test = testID;
+					qs.run = runID;
+
+					window.location = buildUrl("error.html", qs);
+					return;
+				}
+
 				run = res;
 				run = escapeNewLineChars(run);
 				run = JSON.parse(run);

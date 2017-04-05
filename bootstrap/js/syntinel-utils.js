@@ -3,6 +3,7 @@ var SYNTINEL_HEALTH = {
 	SUCCESS_MIN : 87.5,
 	WARN_MIN : 75
 }
+var SYNTINEL_ERRORREDIRECT = true;
 
 function getQueryVariable(variable) {
 	var query = window.location.search.substring(1);
@@ -33,11 +34,12 @@ function apiGet(url, params, callback) {
 	request.setRequestHeader("Content-Type","application/json");
 	request.send();
 	request.onreadystatechange = function() {
-		if(request.status === 200 && request.readyState == 4) {
+		if(request.status/100 == 2 && request.readyState == 4) { // Should be 200
 			handler(request);
 		} else if (request.readyState == 4) {
 			console.log("Response code " + request.status);
 			console.log(request.responseText);
+			callback({"error" : true, "status" : request.status, "responseText" : request.responseText});
 		}
 	};
 }
@@ -53,11 +55,12 @@ function apiPost(url, body, callback) {
 	request.setRequestHeader("Content-Type","application/json");
 	request.send(JSON.stringify(body));
 	request.onreadystatechange = function() {
-		if(request.status === 201 && request.readyState == 4) {
+		if(request.status/100 == 2 && request.readyState == 4) { // Should be 201
 			handler(request);
 		} else if (request.readyState == 4) {
 			console.log("Response code " + request.status);
 			console.log(request.responseText);
+			callback({"error" : true, "status" : request.status, "responseText" : request.responseText});
 		}
 	};
 }
@@ -73,11 +76,12 @@ function apiPatch(url, body, callback) {
 	request.setRequestHeader("Content-Type","application/json");
 	request.send(JSON.stringify(body));
 	request.onreadystatechange = function() {
-		if(request.status === 200 && request.readyState == 4) {
+		if(request.status/100 == 2 && request.readyState == 4) {
 			handler(request);
 		} else if (request.readyState == 4) {
 			console.log("Response code " + request.status);
 			console.log(request.responseText);
+			callback({"error" : true, "status" : request.status, "responseText" : request.responseText});
 		}
 	};
 }
@@ -93,11 +97,12 @@ function apiDelete(url, body, callback) {
 	request.setRequestHeader("Content-Type","application/json");
 	request.send(JSON.stringify(body));
 	request.onreadystatechange = function() {
-		if(request.status === 200 && request.readyState == 4) {
+		if(request.status/100 == 2 && request.readyState == 4) {
 			handler(request);
 		} else if (request.readyState == 4) {
 			console.log("Response code " + request.status);
 			console.log(request.responseText);
+			callback({"error" : true, "status" : request.status, "responseText" : request.responseText});
 		}
 	};
 }
@@ -111,4 +116,17 @@ function getRandomIntInclusive(min, max) {
   min = Math.ceil(min);
   max = Math.floor(max);
   return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+function buildUrl(url, parameters) {
+  var qs = "";
+  for(var key in parameters) {
+    var value = parameters[key];
+    qs += encodeURIComponent(key) + "=" + encodeURIComponent(value) + "&";
+  }
+  if (qs.length > 0){
+    qs = qs.substring(0, qs.length-1); //chop off last "&"
+    url = url + "?" + qs;
+  }
+  return url;
 }
