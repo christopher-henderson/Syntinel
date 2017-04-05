@@ -13,7 +13,7 @@ function pageLoad() {
 			project = escapeNewLineChars(project);
 			project = JSON.parse(project);
 
-			window.location= SYNTINEL_URL + "project.html?project="+project.id;
+			window.location = "project.html?project="+project.id;
 		});
 	});
 

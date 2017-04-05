@@ -10,8 +10,20 @@ function pageLoad() {
 	});
 
 	var createProject = document.getElementById("modal-add-test").addEventListener('click', function() {
-		var test = {};
-		window.location="test.html?project="+projectID+"&test="+test.id;
+		var postBody = {
+			"name" : document.getElementById("modal-add-test-name").value,
+			"environmentVariables" : "",
+			"dockerfile" : "",
+			"script" : ""
+		};
+		
+		apiPost(SYNTINEL_URL + "/test/", postBody, function(res) {
+			var test = res;
+			test = escapeNewLineChars(test);
+			test = JSON.parse(test);
+
+			window.location = "test.html?project="+projectID+"&test="+test.id;
+		});
 	});
 
 	var populatePage = function() {
