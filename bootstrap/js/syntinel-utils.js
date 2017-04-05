@@ -33,8 +33,12 @@ function apiGet(url, params, callback) {
 	request.setRequestHeader("Content-Type","application/json");
 	request.send();
 	request.onreadystatechange = function() {
-		if(request.readyState >= 4)
+		if(request.status === 200 && request.readyState == 4) {
 			handler(request);
+		} else if (request.readyState == 4) {
+			console.log("Response code " + request.status);
+			console.log(request.responseText);)
+		}
 	};
 }
 
@@ -49,8 +53,12 @@ function apiPost(url, body, callback) {
 	request.setRequestHeader("Content-Type","application/json");
 	request.send(JSON.stringify(body));
 	request.onreadystatechange = function() {
-		if(request.readyState >= 4)
+		if(request.status === 201 && request.readyState == 4) {
 			handler(request);
+		} else if (request.readyState == 4) {
+			console.log("Response code " + request.status);
+			console.log(request.responseText);)
+		}
 	};
 }
 

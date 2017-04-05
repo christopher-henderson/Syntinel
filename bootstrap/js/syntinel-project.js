@@ -14,9 +14,10 @@ function pageLoad() {
 			"name" : document.getElementById("modal-add-test-name").value,
 			"environmentVariables" : "",
 			"dockerfile" : "",
-			"script" : ""
+			"script" : "",
+			"interval": null
 		};
-		
+
 		apiPost(SYNTINEL_URL + "/test/", postBody, function(res) {
 			var test = res;
 			test = escapeNewLineChars(test);
