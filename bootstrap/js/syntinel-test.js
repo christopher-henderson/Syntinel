@@ -50,6 +50,20 @@ function pageLoad() {
 				postBody.interval = null;
 			} else if(run.value == "single") {
 				apiPost(SYNTINEL_URL + "/testrun/", {"test" : Number(test.id)}, function(res) {
+					if(res.error && SYNTINEL_ERRORREDIRECT) {
+						if(res.responseText && res.responseText.length > 0) {
+							qs.reason = res.responseText;
+						}
+						if(res.status) {
+							qs.status = res.status;
+						}
+						
+						qs.project = projectID;
+						qs.test = testID;
+
+						window.location = buildUrl("error.html", qs);
+						return;
+					}
 					window.location = "test.html?project="+projectID+"&test="+testID;
 				});
 			} else if(run.value == "schedule" && test.interval == null) {
@@ -58,6 +72,20 @@ function pageLoad() {
 
 			if(postBody.script || postBody.dockerfile || postBody.environmentVariables || postBody.hasOwnProperty("interval")) {
 				apiPatch(SYNTINEL_URL + "/test/" + testID, postBody, function(res) {
+					if(res.error && SYNTINEL_ERRORREDIRECT) {
+						if(res.responseText && res.responseText.length > 0) {
+							qs.reason = res.responseText;
+						}
+						if(res.status) {
+							qs.status = res.status;
+						}
+						
+						qs.project = projectID;
+						qs.test = testID;
+
+						window.location = buildUrl("error.html", qs);
+						return;
+					}
 					window.location = "test.html?project="+projectID+"&test="+testID;
 				});
 			}
@@ -65,7 +93,21 @@ function pageLoad() {
 
 		document.getElementById("setting-button-delete").addEventListener('click', function() {
 			apiDelete(SYNTINEL_URL + "/test/" + testID, {}, function(res) {
-					window.location = "project.html?project="+projectID;
+					if(res.error && SYNTINEL_ERRORREDIRECT) {
+						if(res.responseText && res.responseText.length > 0) {
+							qs.reason = res.responseText;
+						}
+						if(res.status) {
+							qs.status = res.status;
+						}
+						
+						qs.project = projectID;
+						qs.test = testID;
+
+						window.location = buildUrl("error.html", qs);
+						return;
+					}
+				window.location = "project.html?project="+projectID;
 			});
 		});
 
@@ -137,18 +179,63 @@ function pageLoad() {
 
 	// Get the project
 	apiGet(SYNTINEL_URL + "/project/" + projectID, "", function(res) {
+		if(res.error && SYNTINEL_ERRORREDIRECT) {
+			if(res.responseText && res.responseText.length > 0) {
+				qs.reason = res.responseText;
+			}
+			if(res.status) {
+				qs.status = res.status;
+			}
+			
+			qs.project = projectID;
+			qs.test = testID;
+
+			window.location = buildUrl("error.html", qs);
+			return;
+		}
+
 		project = res;
 		project = escapeNewLineChars(project);
 		project = JSON.parse(project);
 
 		// Now get the test
 		apiGet(SYNTINEL_URL + "/test/" + testID, "", function(res) {
+			if(res.error && SYNTINEL_ERRORREDIRECT) {
+				if(res.responseText && res.responseText.length > 0) {
+					qs.reason = res.responseText;
+				}
+				if(res.status) {
+					qs.status = res.status;
+				}
+				
+				qs.project = projectID;
+				qs.test = testID;
+
+				window.location = buildUrl("error.html", qs);
+				return;
+			}
+
 			test = res;
 			test = escapeNewLineChars(test);
 			test = JSON.parse(test);
 
 			// Get test runs
 			apiGet(SYNTINEL_URL + "/testrun/all?test=" + testID, "", function(res) {
+				if(res.error && SYNTINEL_ERRORREDIRECT) {
+					if(res.responseText && res.responseText.length > 0) {
+						qs.reason = res.responseText;
+					}
+					if(res.status) {
+						qs.status = res.status;
+					}
+					
+					qs.project = projectID;
+					qs.test = testID;
+
+					window.location = buildUrl("error.html", qs);
+					return;
+				}
+
 				var runs = res;
 				runs = escapeNewLineChars(runs);
 				runs = JSON.parse(runs);
