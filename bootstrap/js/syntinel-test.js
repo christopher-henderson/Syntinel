@@ -56,7 +56,7 @@ function pageLoad() {
 			}
 
 			if(postBody.script || postBody.dockerfile || postBody.environmentVariables || postBody.hasOwnProperty("interval")) {
-				apiPatch(SYNTINEL_URL + "/test/", postBody, function(res) {
+				apiPatch(SYNTINEL_URL + "/test/" + testID, postBody, function(res) {
 					window.location = "test.html?project="+projectID+"&test="+testID;
 				});
 			}
