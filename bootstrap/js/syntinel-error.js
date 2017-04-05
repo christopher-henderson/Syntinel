@@ -30,8 +30,8 @@ function pageLoad() {
 
 	body.innerHTML += "- <a href=\"index.html\">Reload the <strong>dashboard</strong> page</a><br>";
 
-	if(reason) {
+	if(reason && reason.length > 0) {
 		body.innerHTML += "<br><br><h4>Here's what else we know:</h4>";
-		body.innerHTML += "<p>" + decodeURI(reason) + "</p>";
+		body.innerHTML += "<p>" + decodeURI(reason).escape() + "</p>";
 	}
 }
