@@ -24,6 +24,7 @@ function escapeNewLineChars(valueToEscape) {
 }
 
 function apiGet(url, params, callback) {
+	console.log("Requesting " + url);
 	var handler = function(request) {
 		callback(request.response);
 	};
@@ -35,6 +36,7 @@ function apiGet(url, params, callback) {
 	request.send();
 	request.onreadystatechange = function() {
 		if(request.status/100 == 2 && request.readyState == 4) { // Should be 200
+			console.log(request);
 			handler(request);
 		} else if (request.readyState == 4) {
 			console.log("Response code " + request.status);
@@ -45,6 +47,7 @@ function apiGet(url, params, callback) {
 }
 
 function apiPost(url, body, callback) {
+	console.log("Requesting " + url);
 	var handler = function(request) {
 		callback(request.response);
 	};
@@ -56,6 +59,7 @@ function apiPost(url, body, callback) {
 	request.send(JSON.stringify(body));
 	request.onreadystatechange = function() {
 		if(request.status/100 == 2 && request.readyState == 4) { // Should be 201
+			console.log(request);
 			handler(request);
 		} else if (request.readyState == 4) {
 			console.log("Response code " + request.status);
@@ -66,6 +70,7 @@ function apiPost(url, body, callback) {
 }
 
 function apiPatch(url, body, callback) {
+	console.log("Requesting " + url);
 	var handler = function(request) {
 		callback(request.response);
 	};
@@ -77,6 +82,7 @@ function apiPatch(url, body, callback) {
 	request.send(JSON.stringify(body));
 	request.onreadystatechange = function() {
 		if(request.status/100 == 2 && request.readyState == 4) {
+			console.log(request);
 			handler(request);
 		} else if (request.readyState == 4) {
 			console.log("Response code " + request.status);
@@ -87,6 +93,7 @@ function apiPatch(url, body, callback) {
 }
 
 function apiDelete(url, body, callback) {
+	console.log("Requesting " + url);
 	var handler = function(request) {
 		callback(request.response);
 	};
@@ -98,6 +105,7 @@ function apiDelete(url, body, callback) {
 	request.send(JSON.stringify(body));
 	request.onreadystatechange = function() {
 		if(request.status/100 == 2 && request.readyState == 4) {
+			console.log(request);
 			handler(request);
 		} else if (request.readyState == 4) {
 			console.log("Response code " + request.status);
