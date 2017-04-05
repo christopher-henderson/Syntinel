@@ -37,7 +37,7 @@ function apiGet(url, params, callback) {
 			handler(request);
 		} else if (request.readyState == 4) {
 			console.log("Response code " + request.status);
-			console.log(request.responseText);)
+			console.log(request.responseText);
 		}
 	};
 }
@@ -57,7 +57,7 @@ function apiPost(url, body, callback) {
 			handler(request);
 		} else if (request.readyState == 4) {
 			console.log("Response code " + request.status);
-			console.log(request.responseText);)
+			console.log(request.responseText);
 		}
 	};
 }
