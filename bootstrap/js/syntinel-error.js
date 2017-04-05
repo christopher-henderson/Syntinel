@@ -31,7 +31,7 @@ function pageLoad() {
 	body.innerHTML += "- <a href=\"index.html\">Reload the <strong>dashboard</strong> page</a>";
 
 	if(reason) {
-		body.innerHTML += "<h3>Here's what else we know:</h3>";
+		body.innerHTML += "<br><br><h4>Here's what else we know:</h4>";
 		body.innerHTML += "<p>" + decodeURI(reason) + "</p>";
 	}
 }
