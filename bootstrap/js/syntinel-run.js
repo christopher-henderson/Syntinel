@@ -24,14 +24,14 @@ function pageLoad() {
 		}
 
 		var runStatusHeader = document.getElementById("run-status-header");
-		runStatusHeader.innerHTML = "<strong>" + runStatus + "</strong>" + " at " + run.timestamp;
+		runStatusHeader.innerHTML = "<strong>" + runStatus + "</strong>" + " at " + (run.timestamp ? run.timestamp : "unknown time");
 		runStatusHeader.className = "alert " + (runStatus == "Successfully ran" ? "alert-success" : (runStatus == "Still running" ? "alert-warning" : "alert-danger"));
 
 		if(run.log) {
 			var c = document.getElementById("run-console");
 			c.innerHTML += run.log + "\n";
 		}
-		
+
 		startWebsocket(run.id);
 	}
 
