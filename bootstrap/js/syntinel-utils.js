@@ -82,6 +82,26 @@ function apiPatch(url, body, callback) {
 	};
 }
 
+function apiDelete(url, body, callback) {
+	var handler = function(request) {
+		callback(request.response);
+	};
+
+	var request = new XMLHttpRequest();
+	request.open("DELETE", url, true);
+	request.withCredentials = true;
+	request.setRequestHeader("Content-Type","application/json");
+	request.send(JSON.stringify(body));
+	request.onreadystatechange = function() {
+		if(request.status === 200 && request.readyState == 4) {
+			handler(request);
+		} else if (request.readyState == 4) {
+			console.log("Response code " + request.status);
+			console.log(request.responseText);
+		}
+	};
+}
+
 String.prototype.replaceAll = function(search, replacement) {
   var target = this;
   return target.split(search).join(replacement);

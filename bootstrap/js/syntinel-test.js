@@ -62,6 +62,12 @@ function pageLoad() {
 			}
 		});
 
+		document.getElementById("setting-button-delete").addEventListener('click', function() {
+			apiDelete(SYNTINEL_URL + "/test/" + testID, {}, function(res) {
+					window.location = "project.html?project="+projectID;
+			});
+		});
+
 		// Setting - Name
 		document.getElementById("setting-project").value = projectID;
 
