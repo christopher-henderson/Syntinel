@@ -74,7 +74,9 @@
 				<div class="row">
 					<div class="col-lg-12">
 						<h1 class="page-header" id="header-test-name"><div class=""><!-- Test Name Header "Test 1"-->
-							<small>Syntinel Test</small>
+							<small>
+								Syntinel Test
+							</small>
 						</h1>
 						<ol class="breadcrumb">
 							<li>
@@ -96,7 +98,8 @@
 					<div class="row">
 						<h2>
 							Settings
-							<button type="button" id="setting-button-save" class="btn btn-s btn-success">Save</button>
+							<button type="button" id="setting-button-save" class="btn btn-s btn-success">Submit changes</button>
+							<button type="button" id="setting-button-delete" class="btn btn-s btn-danger">Delete test</button>
 						</h2>
 						<h4>General</h4>
 						<div class="col-lg-3">
@@ -117,11 +120,11 @@
 					<div class="row">
 						<div class="col-lg-10">
 							<label for="setting-testScript">Script:</label>
-							<textarea type="text" rows="6" class="form-control" id="setting-testScript"></textarea>
+							<textarea type="text" placeholder="Required - Input your script to run" rows="6" class="form-control" id="setting-testScript"></textarea>
 						</div>
 						<div class="col-lg-10">
 							<label for="setting-testDocker">Dockerfile:</label>
-							<textarea type="text" rows="6" class="form-control" id="setting-testDocker"></textarea>
+							<textarea type="text" placeholder="Required - Input your dockerfile" rows="6" class="form-control" id="setting-testDocker"></textarea>
 						</div>
 					</div>
 					<!-- /.row -->
