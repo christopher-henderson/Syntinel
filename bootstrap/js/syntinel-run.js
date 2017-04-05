@@ -10,9 +10,9 @@ function pageLoad() {
 	var populatePage = function() {
 		// Page header
 		document.getElementById("header-run-name").innerHTML = "Run #" + runID + " <small>Syntinel Test Run</small>";
-		document.getElementById("breadcrumb-project-name").innerHTML = "<i class=\"fa fa-file\"></i> <a href=\"project.html?project=" + projectID + "\">" + project.name + "</a>";
+		document.getElementById("breadcrumb-project-name").innerHTML = "<i class=\"fa fa-sitemap\"></i> <a href=\"project.html?project=" + projectID + "\">" + project.name + "</a>";
 		document.getElementById("breadcrumb-test-name").innerHTML = "<i class=\"fa fa-file\"></i> <a href=\"test.html?project=" + projectID + "&test=" + testID + "\">" + test.name + "</a>";
-		document.getElementById("breadcrumb-run-name").innerHTML = "<i class=\"fa fa-file\"></i> Run #" + runID;
+		document.getElementById("breadcrumb-run-name").innerHTML = "<i class=\"fa fa-cog\"></i> Run #" + runID;
 
 		var runStatus;
 		if(!run.successful || run.successful == null) {

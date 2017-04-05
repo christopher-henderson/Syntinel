@@ -9,7 +9,7 @@ function pageLoad() {
 	var populatePage = function() {
 		// Page header
 		document.getElementById("header-test-name").innerHTML = test.name + " <small>Syntinel Test</small>";
-		document.getElementById("breadcrumb-project-name").innerHTML = "<i class=\"fa fa-file\"></i> <a href=\"project.html?project=" + projectID + "\">" + project.name + "</a>";
+		document.getElementById("breadcrumb-project-name").innerHTML = "<i class=\"fa fa-sitemap\"></i> <a href=\"project.html?project=" + projectID + "\">" + project.name + "</a>";
 		document.getElementById("breadcrumb-test-name").innerHTML = "<i class=\"fa fa-file\"></i> " + test.name;
 
 		// Setting - Name

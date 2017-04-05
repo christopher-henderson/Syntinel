@@ -31,7 +31,7 @@ function pageLoad() {
 		pageHeader.innerHTML = project.name + " <small>Syntinel Project</small>";
 
 		var breadcrumbProject = document.getElementById("breadcrumb-project-name");
-		breadcrumbProject.innerHTML = "<i class=\"fa fa-file\"></i> " + project.name;
+		breadcrumbProject.innerHTML = "<i class=\"fa fa-sitemap\"></i> " + project.name;
 
 		var projectTests = document.getElementById("table-project-tests-body");
 		projectTests.innerHTML = "";
