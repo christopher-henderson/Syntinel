@@ -49,8 +49,9 @@ function pageLoad() {
 			if(run.value == "off" && test.interval != null) {
 				postBody.interval = null;
 			} else if(run.value == "single") {
-				// TODO - API endpoint for a single test run!
-				postBody.interval = 2147483647;
+				apiPost(SYNTINEL_URL + "/testrun/", {"test" : Number(test.id)}, function(res) {
+					window.location = "test.html?project="+projectID+"&test="+testID;
+				});
 			} else if(run.value == "schedule" && test.interval == null) {
 				postBody.interval = Number(document.getElementById("setting-run-interval").getElementsByTagName("input")[0].value);
 			}
