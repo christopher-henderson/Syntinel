@@ -10,8 +10,20 @@ function pageLoad() {
 	});
 
 	var createProject = document.getElementById("modal-add-test").addEventListener('click', function() {
-		var test = {};
-		window.location="test.html?project="+projectID+"&test="+test.id;
+		var postBody = {
+			"name" : document.getElementById("modal-add-test-name").value,
+			"environmentVariables" : "",
+			"dockerfile" : "",
+			"script" : ""
+		};
+		
+		apiPost(SYNTINEL_URL + "/test/", postBody, function(res) {
+			var test = res;
+			test = escapeNewLineChars(test);
+			test = JSON.parse(test);
+
+			window.location = "test.html?project="+projectID+"&test="+test.id;
+		});
 	});
 
 	var populatePage = function() {
@@ -19,7 +31,7 @@ function pageLoad() {
 		pageHeader.innerHTML = project.name + " <small>Syntinel Project</small>";
 
 		var breadcrumbProject = document.getElementById("breadcrumb-project-name");
-		breadcrumbProject.innerHTML = "<i class=\"fa fa-file\"></i> " + project.name;
+		breadcrumbProject.innerHTML = "<i class=\"fa fa-sitemap\"></i> " + project.name;
 
 		var projectTests = document.getElementById("table-project-tests-body");
 		projectTests.innerHTML = "";

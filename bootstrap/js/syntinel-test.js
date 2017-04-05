@@ -9,8 +9,56 @@ function pageLoad() {
 	var populatePage = function() {
 		// Page header
 		document.getElementById("header-test-name").innerHTML = test.name + " <small>Syntinel Test</small>";
-		document.getElementById("breadcrumb-project-name").innerHTML = "<i class=\"fa fa-file\"></i> <a href=\"project.html?project=" + projectID + "\">" + project.name + "</a>";
+		document.getElementById("breadcrumb-project-name").innerHTML = "<i class=\"fa fa-sitemap\"></i> <a href=\"project.html?project=" + projectID + "\">" + project.name + "</a>";
 		document.getElementById("breadcrumb-test-name").innerHTML = "<i class=\"fa fa-file\"></i> " + test.name;
+
+		// Save
+		document.getElementById("setting-button-save").addEventListener('click', function() {
+			var postBody = {};
+			var script = document.getElementById("setting-testScript");
+			if(script.value != test.script)
+				postBody.script = script.value;
+
+			var docker = document.getElementById("setting-testDocker");
+			if(docker.value != test.dockerfile)
+				postBody.dockerfile = docker.value;
+
+			var envs = document.getElementById("setting-environmentVariables").childNodes;
+			var envsChanged = false;
+			for(var i = 0; i < envs.length; i++) {
+				var env = envs[i];
+				env = env.childNodes[0].innerHTML + "=" + env.childNodes[1].innerHTML;
+
+				if(!postBody.environmentVariables)
+					postBody.environmentVariables = [];
+
+				postBody.environmentVariables.push(env[0] + "=" + env[1]);
+
+				if(env != test.environmentVariables) {
+					envsChanged = true;
+				}
+			}
+
+			if(envsChanged == false) {
+				delete postBody.environmentVariables;
+			}
+
+			var run = document.getElementById("setting-run");
+			if(run.value == "off" && test.interval != null) {
+				postBody.interval = null;
+			} else if(run.value == "single") {
+				// TODO - API endpoint for a single test run!
+				postBody.interval = 2147483647;
+			} else if(run.value == "schedule" && test.interval == null) {
+				postBody.interval = Number(document.getElementById("setting-run-interval").getElementsByTagName("input")[0].value);
+			}
+
+			if(postBody.script || postBody.dockerfile || postBody.environmentVariables || postBody.hasOwnProperty("interval")) {
+				apiPatch(SYNTINEL_URL + "/test/", postBody, function(res) {
+					window.location = "test.html?project="+projectID+"&test="+testID;
+				});
+			}
+		});
 
 		// Setting - Name
 		document.getElementById("setting-project").value = projectID;
@@ -120,7 +168,6 @@ function settingsRunChanged() {
 		document.getElementById("setting-run-interval").hidden = true;
 }
 
-var modalTest = {};
 var modalEnvs = [];
 
 function updateModalsEnv() {
