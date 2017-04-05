@@ -65,6 +65,22 @@ function apiPost(url, body, callback) {
 	};
 }
 
+function apiPatch(url, body, callback) {
+	var handler = function(request) {
+		callback(request.response);
+	};
+
+	var request = new XMLHttpRequest();
+	request.open("PATCH", url, true);
+	request.withCredentials = true;
+	request.setRequestHeader("Content-Type","application/json");
+	request.send(JSON.stringify(body));
+	request.onreadystatechange = function() {
+		if(request.readyState >= 4)
+			handler(request);
+	};
+}
+
 String.prototype.replaceAll = function(search, replacement) {
   var target = this;
   return target.split(search).join(replacement);
