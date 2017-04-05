@@ -10,7 +10,7 @@ function pageLoad() {
 		// Page header
 		document.getElementById("header-test-name").innerHTML = test.name + " <small>Syntinel Test</small>";
 		document.getElementById("breadcrumb-project-name").innerHTML = "<i class=\"fa fa-sitemap\"></i> <a href=\"project.html?project=" + projectID + "\">" + project.name + "</a>";
-		document.getElementById("breadcrumb-test-name").innerHTML = "<i class=\"fa fa-file\"></i> " + test.name;
+		document.getElementById("breadcrumb-test-name").innerHTML = "<i class=\"fa fa-file\"></i> " + test.name + " <button type=\"button\" id=\"setting-button-delete\" class=\"btn btn-xs btn-danger\">Delete test</button>";
 
 		// Save
 		document.getElementById("setting-button-save").addEventListener('click', function() {
@@ -45,12 +45,15 @@ function pageLoad() {
 				delete postBody.environmentVariables;
 			}
 
-			var run = document.getElementById("setting-run");
-			if(run.value == "off" && test.interval != null) {
+			var settingRun = document.getElementById("setting-run");
+			var settingRunInterval = document.getElementById("setting-run-interval").getElementsByTagName("input")[0].value;
+
+			if(settingRun.value == "off" && test.interval != null) {
 				postBody.interval = null;
-			} else if(run.value == "single") {
+			} else if(settingRun.value == "single") {
 				apiPost(SYNTINEL_URL + "/testrun/", {"test" : Number(test.id)}, function(res) {
-					if(res.error && SYNTINEL_ERRORREDIRECT) {
+					if(res.syntinelError && SYNTINEL_ERRORREDIRECT) {
+						var qs = {};
 						if(res.responseText && res.responseText.length > 0) {
 							qs.reason = res.responseText;
 						}
@@ -66,13 +69,15 @@ function pageLoad() {
 					}
 					window.location = "test.html?project="+projectID+"&test="+testID;
 				});
-			} else if(run.value == "schedule" && test.interval == null) {
-				postBody.interval = Number(document.getElementById("setting-run-interval").getElementsByTagName("input")[0].value);
+				postBody.interval = null;
+			} else if(settingRun.value == "schedule" && test.interval != settingRunInterval) {
+				postBody.interval = settingRunInterval;
 			}
 
 			if(postBody.script || postBody.dockerfile || postBody.environmentVariables || postBody.hasOwnProperty("interval")) {
 				apiPatch(SYNTINEL_URL + "/test/" + testID, postBody, function(res) {
-					if(res.error && SYNTINEL_ERRORREDIRECT) {
+					if(res.syntinelError && SYNTINEL_ERRORREDIRECT) {
+						var qs = {};
 						if(res.responseText && res.responseText.length > 0) {
 							qs.reason = res.responseText;
 						}
@@ -93,7 +98,8 @@ function pageLoad() {
 
 		document.getElementById("setting-button-delete").addEventListener('click', function() {
 			apiDelete(SYNTINEL_URL + "/test/" + testID, {}, function(res) {
-					if(res.error && SYNTINEL_ERRORREDIRECT) {
+					if(res.syntinelError && SYNTINEL_ERRORREDIRECT) {
+						var qs = {};
 						if(res.responseText && res.responseText.length > 0) {
 							qs.reason = res.responseText;
 						}
@@ -129,8 +135,10 @@ function pageLoad() {
 		// Setting - Run
 		if(!test.interval || test.interval == null)
 			document.getElementById("setting-run").value = "off";
-		else
+		else {
 			document.getElementById("setting-run").value = "schedule";
+			document.getElementById("setting-run-interval").getElementsByTagName("input")[0].value = test.interval;
+		}
 
 		settingsRunChanged();
 
@@ -160,7 +168,7 @@ function pageLoad() {
 			var runRow = "";
 
 			var runStatus;
-			if(!run.successful || run.successful == null) {
+			if(run.successful == null) {
 				runStatus = "Running";
 			} else if(run.successful == true) {
 				runStatus = "Successful";
@@ -175,11 +183,19 @@ function pageLoad() {
 
 			testRuns.innerHTML += runRow;
 		}
+
+		$('#table-test-runs').find('tr').click(function() {
+			var index = ($(this).index());
+			var row = document.getElementById("table-test-runs-body").childNodes[index];
+			var id = row.childNodes[1].innerHTML;
+			window.location = "run.html?project="+projectID+"&test="+testID+"&run="+id;
+		});
 	}
 
 	// Get the project
 	apiGet(SYNTINEL_URL + "/project/" + projectID, "", function(res) {
-		if(res.error && SYNTINEL_ERRORREDIRECT) {
+		if(res.syntinelError && SYNTINEL_ERRORREDIRECT) {
+			var qs = {};
 			if(res.responseText && res.responseText.length > 0) {
 				qs.reason = res.responseText;
 			}
@@ -200,7 +216,8 @@ function pageLoad() {
 
 		// Now get the test
 		apiGet(SYNTINEL_URL + "/test/" + testID, "", function(res) {
-			if(res.error && SYNTINEL_ERRORREDIRECT) {
+			if(res.syntinelError && SYNTINEL_ERRORREDIRECT) {
+				var qs = {};
 				if(res.responseText && res.responseText.length > 0) {
 					qs.reason = res.responseText;
 				}
@@ -221,7 +238,8 @@ function pageLoad() {
 
 			// Get test runs
 			apiGet(SYNTINEL_URL + "/testrun/all?test=" + testID, "", function(res) {
-				if(res.error && SYNTINEL_ERRORREDIRECT) {
+				if(res.syntinelError && SYNTINEL_ERRORREDIRECT) {
+					var qs = {};
 					if(res.responseText && res.responseText.length > 0) {
 						qs.reason = res.responseText;
 					}
@@ -238,7 +256,7 @@ function pageLoad() {
 
 				var runs = res;
 				runs = escapeNewLineChars(runs);
-				runs = JSON.parse(runs);
+				runs = JSON.parse(runs).results;
 
 				for(var i = 0; i < runs.length; i++) {
 					var run = runs[i];
@@ -248,13 +266,6 @@ function pageLoad() {
 				populatePage();
 			});
 		});
-	});
-
-	$('#table-test-runs').find('tr').click(function() {
-		var index = ($(this).index());
-		var row = document.getElementById("table-test-runs-body").childNodes[index];
-		var id = row.childNodes[1].innerHTML;
-		window.location = "run.html?project="+projectID+"&test="+testID+"&run="+id;
 	});
 }
 

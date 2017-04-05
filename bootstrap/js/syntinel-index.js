@@ -1,6 +1,5 @@
 function pageLoad() {
 	var p = [];
-	var projectCount = 0;
 
 	document.getElementById("button-project-create").addEventListener('click', function() {
 		// Open the modal
@@ -9,7 +8,8 @@ function pageLoad() {
 
 	var createProject = document.getElementById("modal-create-project").addEventListener('click', function() {
 		apiPost(SYNTINEL_URL + "/project/", {"name" : document.getElementById("modal-create-project-name").value}, function(res) {
-			if(res.error && SYNTINEL_ERRORREDIRECT) {
+			if(res.syntinelError && SYNTINEL_ERRORREDIRECT) {
+				var qs = {};
 				if(res.responseText && res.responseText.length > 0) {
 					qs.reason = res.responseText;
 				}
@@ -32,10 +32,6 @@ function pageLoad() {
 		var tabAll = document.getElementById("projectsTab-all");
 		var tabPassing = document.getElementById("projectsTab-passing");
 		var tabFailing = document.getElementById("projectsTab-failing");
-
-		if(p.length < projectCount) {
-			return;
-		}
 
 		for(var i = 0; i < p.length; i++) {
 			var project = p[i].project;
@@ -127,7 +123,8 @@ function pageLoad() {
 
 	// Make all the calls
 	apiGet(SYNTINEL_URL + "/project/all", "", function(res) {
-		if(res.error && SYNTINEL_ERRORREDIRECT) {
+		if(res.syntinelError && SYNTINEL_ERRORREDIRECT) {
+			var qs = {};
 			if(res.responseText && res.responseText.length > 0) {
 				qs.reason = res.responseText;
 			}
@@ -140,35 +137,53 @@ function pageLoad() {
 
 		var projects = res;
 		projects = escapeNewLineChars(projects);
-		projects = JSON.parse(projects);
-		projectCount = projects.length;
+		projects = JSON.parse(projects).results;
+
+		var projectLoaded = function() {
+			if(p.length >= projects.length) {
+				populatePage();
+			}
+		}
 
 		for(var i = 0; i < projects.length; i++) {
 			var project = projects[i];
 
 			var tests = [];
 			var count = 0;
-			for(var j = 0; j < project.tests.length; j++) {
-				apiGet("/test/" + project.tests[i], "", function(res) {
-					if(res.error && SYNTINEL_ERRORREDIRECT) {
-						if(res.responseText && res.responseText.length > 0) {
-							qs.reason = res.responseText;
-						}
-						if(res.status) {
-							qs.status = res.status;
-						}
-						window.location = buildUrl("error.html", qs);
-						return;
-					}
 
-					tests.push(JSON.parse(escapeNewLineChars(res)));
-					count++;
-					if(count == project.tests.length) {
-						p.push({"project" : project, "tests" : tests});
-						populatePage();
-					}
-				});
+			if(project.tests.length > 0) {
+				// Project has tests
+				for(var j = 0; j < project.tests.length; j++) {
+					apiGet(SYNTINEL_URL + "/test/" + project.tests[i], null, function(res) {
+						if(res.syntinelError && SYNTINEL_ERRORREDIRECT) {
+							var qs = {};
+							if(res.responseText && res.responseText.length > 0) {
+								qs.reason = res.responseText;
+							}
+							if(res.status) {
+								qs.status = res.status;
+							}
+							window.location = buildUrl("error.html", qs);
+							return;
+						}
+
+						tests.push(JSON.parse(escapeNewLineChars(res)));
+						count++;
+						if(count == project.tests.length) {
+							p.push({"project" : project, "tests" : tests});
+							projectLoaded();
+						}
+					});
+				}
+			} else {
+				// No tests
+				p.push({"project" : project, "tests" : tests});
+				projectLoaded();
 			}
 		}
 	});
+}
+
+function projectsLoaded() {
+
 }

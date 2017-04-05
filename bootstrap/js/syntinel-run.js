@@ -15,7 +15,7 @@ function pageLoad() {
 		document.getElementById("breadcrumb-run-name").innerHTML = "<i class=\"fa fa-cog\"></i> Run #" + runID;
 
 		var runStatus;
-		if(!run.successful || run.successful == null) {
+		if(run.successful == null) {
 			runStatus = "Still running";
 		} else if(run.successful == true) {
 			runStatus = "Successfully ran";
@@ -37,7 +37,8 @@ function pageLoad() {
 
 	// Get the project
 	apiGet(SYNTINEL_URL + "/project/" + projectID, "", function(res) {
-		if(res.error && SYNTINEL_ERRORREDIRECT) {
+		if(res.syntinelError && SYNTINEL_ERRORREDIRECT) {
+			var qs = {};
 			if(res.responseText && res.responseText.length > 0) {
 				qs.reason = res.responseText;
 			}
@@ -59,7 +60,8 @@ function pageLoad() {
 
 		// Now get the test
 		apiGet(SYNTINEL_URL + "/test/" + testID, "", function(res) {
-			if(res.error && SYNTINEL_ERRORREDIRECT) {
+			if(res.syntinelError && SYNTINEL_ERRORREDIRECT) {
+				var qs = {};
 				if(res.responseText && res.responseText.length > 0) {
 					qs.reason = res.responseText;
 				}
@@ -81,7 +83,8 @@ function pageLoad() {
 
 			// Get the test
 			apiGet(SYNTINEL_URL + "/testrun/" + runID, "", function(res) {
-				if(res.error && SYNTINEL_ERRORREDIRECT) {
+				if(res.syntinelError && SYNTINEL_ERRORREDIRECT) {
+					var qs = {};
 					if(res.responseText && res.responseText.length > 0) {
 						qs.reason = res.responseText;
 					}

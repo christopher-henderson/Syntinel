@@ -24,6 +24,7 @@ function escapeNewLineChars(valueToEscape) {
 }
 
 function apiGet(url, params, callback) {
+	console.log("Requesting " + url);
 	var handler = function(request) {
 		callback(request.response);
 	};
@@ -34,17 +35,18 @@ function apiGet(url, params, callback) {
 	request.setRequestHeader("Content-Type","application/json");
 	request.send();
 	request.onreadystatechange = function() {
-		if(request.status/100 == 2 && request.readyState == 4) { // Should be 200
+		if((request.status >= 200 && request.status < 300) && request.readyState == 4) { // Should be 200
 			handler(request);
 		} else if (request.readyState == 4) {
 			console.log("Response code " + request.status);
 			console.log(request.responseText);
-			callback({"error" : true, "status" : request.status, "responseText" : request.responseText});
+			callback({"syntinelError" : true, "status" : request.status, "responseText" : request.responseText});
 		}
 	};
 }
 
 function apiPost(url, body, callback) {
+	console.log("Requesting " + url);
 	var handler = function(request) {
 		callback(request.response);
 	};
@@ -55,17 +57,18 @@ function apiPost(url, body, callback) {
 	request.setRequestHeader("Content-Type","application/json");
 	request.send(JSON.stringify(body));
 	request.onreadystatechange = function() {
-		if(request.status/100 == 2 && request.readyState == 4) { // Should be 201
+		if((request.status >= 200 && request.status < 300) && request.readyState == 4) { // Should be 201
 			handler(request);
 		} else if (request.readyState == 4) {
 			console.log("Response code " + request.status);
 			console.log(request.responseText);
-			callback({"error" : true, "status" : request.status, "responseText" : request.responseText});
+			callback({"syntinelError" : true, "status" : request.status, "responseText" : request.responseText});
 		}
 	};
 }
 
 function apiPatch(url, body, callback) {
+	console.log("Requesting " + url);
 	var handler = function(request) {
 		callback(request.response);
 	};
@@ -76,17 +79,18 @@ function apiPatch(url, body, callback) {
 	request.setRequestHeader("Content-Type","application/json");
 	request.send(JSON.stringify(body));
 	request.onreadystatechange = function() {
-		if(request.status/100 == 2 && request.readyState == 4) {
+		if((request.status >= 200 && request.status < 300) && request.readyState == 4) {
 			handler(request);
 		} else if (request.readyState == 4) {
 			console.log("Response code " + request.status);
 			console.log(request.responseText);
-			callback({"error" : true, "status" : request.status, "responseText" : request.responseText});
+			callback({"syntinelError" : true, "status" : request.status, "responseText" : request.responseText});
 		}
 	};
 }
 
 function apiDelete(url, body, callback) {
+	console.log("Requesting " + url);
 	var handler = function(request) {
 		callback(request.response);
 	};
@@ -97,12 +101,12 @@ function apiDelete(url, body, callback) {
 	request.setRequestHeader("Content-Type","application/json");
 	request.send(JSON.stringify(body));
 	request.onreadystatechange = function() {
-		if(request.status/100 == 2 && request.readyState == 4) {
+		if((request.status >= 200 && request.status < 300) && request.readyState == 4) {
 			handler(request);
 		} else if (request.readyState == 4) {
 			console.log("Response code " + request.status);
 			console.log(request.responseText);
-			callback({"error" : true, "status" : request.status, "responseText" : request.responseText});
+			callback({"syntinelError" : true, "status" : request.status, "responseText" : request.responseText});
 		}
 	};
 }
@@ -110,6 +114,17 @@ function apiDelete(url, body, callback) {
 String.prototype.replaceAll = function(search, replacement) {
   var target = this;
   return target.split(search).join(replacement);
+};
+
+String.prototype.escape = function() {
+    var tagsToReplace = {
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;'
+    };
+    return this.replace(/[&<>]/g, function(tag) {
+        return tagsToReplace[tag] || tag;
+    });
 };
 
 function getRandomIntInclusive(min, max) {
