@@ -10,6 +10,7 @@ function pageLoad() {
 	var createProject = document.getElementById("modal-create-project").addEventListener('click', function() {
 		apiPost(SYNTINEL_URL + "/project/", {"name" : document.getElementById("modal-create-project-name").value}, function(res) {
 			if(res.error && SYNTINEL_ERRORREDIRECT) {
+				var qs = {};
 				if(res.responseText && res.responseText.length > 0) {
 					qs.reason = res.responseText;
 				}
@@ -128,6 +129,7 @@ function pageLoad() {
 	// Make all the calls
 	apiGet(SYNTINEL_URL + "/project/all", "", function(res) {
 		if(res.error && SYNTINEL_ERRORREDIRECT) {
+			var qs = {};
 			if(res.responseText && res.responseText.length > 0) {
 				qs.reason = res.responseText;
 			}
@@ -151,6 +153,7 @@ function pageLoad() {
 			for(var j = 0; j < project.tests.length; j++) {
 				apiGet("/test/" + project.tests[i], "", function(res) {
 					if(res.error && SYNTINEL_ERRORREDIRECT) {
+						var qs = {};
 						if(res.responseText && res.responseText.length > 0) {
 							qs.reason = res.responseText;
 						}

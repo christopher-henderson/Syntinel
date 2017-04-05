@@ -20,13 +20,14 @@ function pageLoad() {
 
 		apiPost(SYNTINEL_URL + "/test/", postBody, function(res) {
 			if(res.error && SYNTINEL_ERRORREDIRECT) {
+				var qs = {};
 				if(res.responseText && res.responseText.length > 0) {
 					qs.reason = res.responseText;
 				}
 				if(res.status) {
 					qs.status = res.status;
 				}
-				
+
 				qs.project = projectID;
 
 				window.location = buildUrl("error.html", qs);
@@ -67,6 +68,7 @@ function pageLoad() {
 	// Make all the calls
 	apiGet(SYNTINEL_URL + "/project/" + projectID, "", function(res) {
 		if(res.error && SYNTINEL_ERRORREDIRECT) {
+			var qs = {};
 			if(res.responseText && res.responseText.length > 0) {
 				qs.reason = res.responseText;
 			}
@@ -88,6 +90,7 @@ function pageLoad() {
 		for(var j = 0; j < project.tests.length; j++) {
 				apiGet("/test/" + projectID, "", function(res) {
 				if(res.error && SYNTINEL_ERRORREDIRECT) {
+					var qs = {};
 					if(res.responseText && res.responseText.length > 0) {
 						qs.reason = res.responseText;
 					}
