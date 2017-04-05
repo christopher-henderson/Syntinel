@@ -180,27 +180,29 @@ function updateModalsEnv() {
 	modalEnvs = [];
 
 	var envs = test.environmentVariables;
-	for(var i = 0; i < envs.length + 1; i++) {
-		var env;
-		if(i < envs.length) {
-			env = envs[i].split("=");
-		} else {
-			env = ["",""];
+	if(envs.hasOwnProperty("length")) {
+		for(var i = 0; i < envs.length + 1; i++) {
+			var env;
+			if(i < envs.length) {
+				env = envs[i].split("=");
+			} else {
+				env = ["",""];
+			}
+
+			modalEnvs[i] = env;
+
+			var str = "";
+			str += "<div class=\"row\">";
+			str += "	<div class=\"col-lg-5\">";
+			str += "		<input onchange=\"modalEnvInputChanged(" + i + ")\" id=\"modal-env-variable-index-" + i + "\" class=\"form-control\" placeholder=\"Variable\" value=\"" + env[0] + "\">";
+			str += "	</div>";
+			str += "	<div class=\"col-lg-5\">";
+			str += "		<input onchange=\"modalEnvInputChanged(" + i + ")\" id=\"modal-env-value-index-" + i + "\" class=\"form-control\" placeholder=\"Value\" value=\"" + env[1] + "\">";
+			str += "	</div>";
+			str += "</div>";
+
+			modalBody.innerHTML += str;
 		}
-
-		modalEnvs[i] = env;
-
-		var str = "";
-		str += "<div class=\"row\">";
-		str += "	<div class=\"col-lg-5\">";
-		str += "		<input onchange=\"modalEnvInputChanged(" + i + ")\" id=\"modal-env-variable-index-" + i + "\" class=\"form-control\" placeholder=\"Variable\" value=\"" + env[0] + "\">";
-		str += "	</div>";
-		str += "	<div class=\"col-lg-5\">";
-		str += "		<input onchange=\"modalEnvInputChanged(" + i + ")\" id=\"modal-env-value-index-" + i + "\" class=\"form-control\" placeholder=\"Value\" value=\"" + env[1] + "\">";
-		str += "	</div>";
-		str += "</div>";
-
-		modalBody.innerHTML += str;
 	}
 }
 
