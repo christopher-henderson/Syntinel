@@ -12,9 +12,9 @@ function pageLoad() {
 	var createProject = document.getElementById("modal-add-test").addEventListener('click', function() {
 		var postBody = {
 			"name" : document.getElementById("modal-add-test-name").value,
-			"environmentVariables" : "",
-			"dockerfile" : "",
-			"script" : "",
+			"environmentVariables" : "Required",
+			"dockerfile" : "Required",
+			"script" : "Required",
 			"interval": null
 		};
 
