@@ -25,17 +25,19 @@ function pageLoad() {
 
 			var envs = document.getElementById("setting-environmentVariables").childNodes;
 			var envsChanged = false;
-			for(var i = 0; i < envs.length; i++) {
-				var env = envs[i];
-				env = env.childNodes[0].innerHTML + "=" + env.childNodes[1].innerHTML;
+			if (envs !== undefined) {
+				for(var i = 0; i < envs.length; i++) {
+					var env = envs[i];
+					env = env.childNodes[0].innerHTML + "=" + env.childNodes[1].innerHTML;
 
-				if(!postBody.environmentVariables)
-					postBody.environmentVariables = [];
+					if(!postBody.environmentVariables)
+						postBody.environmentVariables = [];
 
-				postBody.environmentVariables.push(env[0] + "=" + env[1]);
+					postBody.environmentVariables.push(env[0] + "=" + env[1]);
 
-				if(env != test.environmentVariables) {
-					envsChanged = true;
+					if(env != test.environmentVariables) {
+						envsChanged = true;
+					}
 				}
 			}
 
@@ -86,9 +88,11 @@ function pageLoad() {
 		// Setting - Environment Variables
 		var envs = test.environmentVariables;
 		var envStr = "";
-		for(var i = 0; i < envs.length; i++) {
-			var env = envs[i].split("=");
-			envStr += "<tr id=\"" + env[0] + "\"><td>" + env[0] + "</td><td>" + env[1] + "</td></tr>";
+		if (envs !== null) {
+			for(var i = 0; i < envs.length; i++) {
+				var env = envs[i].split("=");
+				envStr += "<tr id=\"" + env[0] + "\"><td>" + env[0] + "</td><td>" + env[1] + "</td></tr>";
+			}
 		}
 		document.getElementById("setting-environmentVariables").innerHTML = envStr;
 
