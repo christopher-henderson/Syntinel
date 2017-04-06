@@ -31,9 +31,9 @@ function pageLoad() {
 					env = env.childNodes[0].innerHTML + "=" + env.childNodes[1].innerHTML;
 
 					if(!postBody.environmentVariables)
-						postBody.environmentVariables = env[0] + "=" + env[1];
+						postBody.environmentVariables = env;
 					else
-						postBody.environmentVariables += ", " + env[0] + "=" + env[1];
+						postBody.environmentVariables += ", " + env;
 
 					if(env != test.environmentVariables) {
 						envsChanged = true;
@@ -145,17 +145,9 @@ function pageLoad() {
 		// Setting - Environment Variables
 		var envs = test.environmentVariables;
 		if(typeof envs === "string") {
-			envs = envs.split(",");
-			for(var i = 0; i < envs.length; i++) {
-				var env = envs[i].trim();
-
-				if(env.length <= 0) {
-					envs.splice(i, 1);
-				} else {
-					env[i] = env;
-				}
-			}
+			envs = getEnvironmentVariablesArray(envs);
 		}
+
 		var envStr = "";
 		if (envs !== null) {
 			for(var i = 0; i < envs.length; i++) {
@@ -302,16 +294,7 @@ function updateModalsEnv() {
 
 	var envs = test.environmentVariables;
 	if(typeof envs === "string") {
-		envs = envs.split(",");
-		for(var i = 0; i < envs.length; i++) {
-			var env = envs[i].trim();
-
-			if(env.length <= 0) {
-				envs.splice(i, 1);
-			} else {
-				env[i] = env;
-			}
-		}
+		envs = getEnvironmentVariablesArray(envs);
 	}
 
 	if(envs.hasOwnProperty("length")) {
@@ -361,16 +344,7 @@ function modalEnvInputChanged(index) {
 	// Update main page
 	var envs = test.environmentVariables;
 	if(typeof envs === "string") {
-		envs = envs.split(",");
-		for(var i = 0; i < envs.length; i++) {
-			var env = envs[i].trim();
-
-			if(env.length <= 0) {
-				envs.splice(i, 1);
-			} else {
-				env[i] = env;
-			}
-		}
+		envs = getEnvironmentVariablesArray(envs);
 	}
 	var envStr = "";
 	for(var i = 0; i < envs.length; i++) {
@@ -380,4 +354,8 @@ function modalEnvInputChanged(index) {
 	document.getElementById("setting-environmentVariables").innerHTML = envStr;
 
 	updateModalsEnv();
+}
+
+function getEnvironmentVariablesArray(str) {
+	return /[^,^\n]+/ig.match(str);
 }
