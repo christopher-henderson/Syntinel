@@ -154,7 +154,7 @@ function pageLoad() {
 			if(tests.length > 0) {
 				// Project has tests
 				for(var j = 0; j < project.tests.length; j++) {
-					apiGet("/test/" + project.tests[i], "", function(res) {
+					apiGet(SYNTINEL_URL + "/test/" + project.tests[i], null, function(res) {
 						if(res.error && SYNTINEL_ERRORREDIRECT) {
 							var qs = {};
 							if(res.responseText && res.responseText.length > 0) {

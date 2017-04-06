@@ -90,7 +90,7 @@ function pageLoad() {
 		var count = 0;
 		if(project.tests.length > 0) {
 			for(var j = 0; j < project.tests.length; j++) {
-					apiGet("/test/" + projectID, "", function(res) {
+					apiGet(SYNTINEL_URL + "/test/" + projectID, null, function(res) {
 					if(res.error && SYNTINEL_ERRORREDIRECT) {
 						var qs = {};
 						if(res.responseText && res.responseText.length > 0) {
