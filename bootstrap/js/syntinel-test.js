@@ -31,9 +31,9 @@ function pageLoad() {
 					env = env.childNodes[0].innerHTML + "=" + env.childNodes[1].innerHTML;
 
 					if(!postBody.environmentVariables)
-						postBody.environmentVariables = [];
-
-					postBody.environmentVariables.push(env[0] + "=" + env[1]);
+						postBody.environmentVariables = env[0] + "=" + env[1];
+					else
+						postBody.environmentVariables += ", " + env[0] + "=" + env[1];
 
 					if(env != test.environmentVariables) {
 						envsChanged = true;
