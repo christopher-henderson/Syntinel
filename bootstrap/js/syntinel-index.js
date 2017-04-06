@@ -140,7 +140,7 @@ function pageLoad() {
 		projects = JSON.parse(projects).results;
 
 		var projectLoaded = function() {
-			if(p.length == projects.length - 1) {
+			if(p.length >= projects.length) {
 				populatePage();
 			}
 		}
