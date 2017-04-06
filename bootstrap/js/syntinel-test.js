@@ -45,10 +45,11 @@ function pageLoad() {
 				delete postBody.environmentVariables;
 			}
 
-			var run = document.getElementById("setting-run");
-			if(run.value == "off" && test.interval != null) {
+			var settingRun = document.getElementById("setting-run");
+			var settingRunInterval = Number(document.getElementById("setting-run-interval").getElementsByTagName("input")[0].value);
+			if(settingRun.value == "off" && test.interval != null) {
 				postBody.interval = null;
-			} else if(run.value == "single") {
+			} else if(settingRun.value == "single") {
 				apiPost(SYNTINEL_URL + "/testrun/", {"test" : Number(test.id)}, function(res) {
 					if(res.syntinelError && SYNTINEL_ERRORREDIRECT) {
 						var qs = {};
@@ -67,8 +68,8 @@ function pageLoad() {
 					}
 					window.location = "test.html?project="+projectID+"&test="+testID;
 				});
-			} else if(run.value == "schedule" && test.interval == null) {
-				postBody.interval = Number(document.getElementById("setting-run-interval").getElementsByTagName("input")[0].value);
+			} else if(settingRun.value == "schedule" && test.inerval != settingRunInterval) {
+				postBody.interval = settingRunInterval;
 			}
 
 			if(postBody.script || postBody.dockerfile || postBody.environmentVariables || postBody.hasOwnProperty("interval")) {
