@@ -134,7 +134,7 @@ function pageLoad() {
 			document.getElementById("setting-run").value = "off";
 		else {
 			document.getElementById("setting-run").value = "schedule";
-			document.getElementById("setting-run-interval").value = test.interval;
+			document.getElementById("setting-run-interval").getElementsByTagName("input")[0].value = test.interval;
 		}
 
 		settingsRunChanged();
