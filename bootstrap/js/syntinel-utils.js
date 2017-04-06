@@ -170,5 +170,5 @@ function getTimestamp(date) {
     mm='0'+mm;
   } 
   
-  return (YYYY+""+MM+""+DD+""+hh+""+mm);
+  return (YYYY+"-"+MM+"-"+DD+" @ "+hh+""+mm);
 }
