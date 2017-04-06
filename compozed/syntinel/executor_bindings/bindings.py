@@ -27,7 +27,7 @@ class ExecutorBindings(object):
     def schedule(test):
         data = {
             "TestID": test.id,
-            "Interval": test.interval
+            "Interval": int(test.interval)
             }
         url = "http://{URL}/schedule".format(URL=settings.LOAD_BALANCER)
         response = requests.post(
