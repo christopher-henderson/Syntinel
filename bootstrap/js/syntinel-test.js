@@ -144,6 +144,18 @@ function pageLoad() {
 
 		// Setting - Environment Variables
 		var envs = test.environmentVariables;
+		if(typeof envs === "string") {
+			envs = envs.split(",");
+			for(var i = 0; i < envs.length; i++) {
+				var env = envs[i].trim();
+
+				if(env.length <= 0) {
+					envs.splice(i, 1);
+				} else {
+					env[i] = env;
+				}
+			}
+		}
 		var envStr = "";
 		if (envs !== null) {
 			for(var i = 0; i < envs.length; i++) {
@@ -286,6 +298,19 @@ function updateModalsEnv() {
 	modalEnvs = [];
 
 	var envs = test.environmentVariables;
+	if(typeof envs === "string") {
+		envs = envs.split(",");
+		for(var i = 0; i < envs.length; i++) {
+			var env = envs[i].trim();
+
+			if(env.length <= 0) {
+				envs.splice(i, 1);
+			} else {
+				env[i] = env;
+			}
+		}
+	}
+
 	if(envs.hasOwnProperty("length")) {
 		for(var i = 0; i < envs.length + 1; i++) {
 			var env;
@@ -332,6 +357,18 @@ function modalEnvInputChanged(index) {
 
 	// Update main page
 	var envs = test.environmentVariables;
+	if(typeof envs === "string") {
+		envs = envs.split(",");
+		for(var i = 0; i < envs.length; i++) {
+			var env = envs[i].trim();
+
+			if(env.length <= 0) {
+				envs.splice(i, 1);
+			} else {
+				env[i] = env;
+			}
+		}
+	}
 	var envStr = "";
 	for(var i = 0; i < envs.length; i++) {
 		var env = envs[i].split("=");
