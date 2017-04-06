@@ -142,7 +142,11 @@ function pageLoad() {
 
 		var projects = res;
 		projects = escapeNewLineChars(projects);
+		console.log("Test 1");
+		console.log(projects);
 		projects = JSON.parse(projects).results;
+		console.log("Test 2");
+		console.log(projects);
 		projectCount = projects.length;
 
 		for(var i = 0; i < projects.length; i++) {
