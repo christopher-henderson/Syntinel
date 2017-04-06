@@ -178,6 +178,13 @@ function pageLoad() {
 
 			testRuns.innerHTML += runRow;
 		}
+
+		$('#table-test-runs').find('tr').click(function() {
+			var index = ($(this).index());
+			var row = document.getElementById("table-test-runs-body").childNodes[index];
+			var id = row.childNodes[1].innerHTML;
+			window.location = "run.html?project="+projectID+"&test="+testID+"&run="+id;
+		});
 	}
 
 	// Get the project
@@ -254,13 +261,6 @@ function pageLoad() {
 				populatePage();
 			});
 		});
-	});
-
-	$('#table-test-runs').find('tr').click(function() {
-		var index = ($(this).index());
-		var row = document.getElementById("table-test-runs-body").childNodes[index];
-		var id = row.childNodes[1].innerHTML;
-		window.location = "run.html?project="+projectID+"&test="+testID+"&run="+id;
 	});
 }
 
