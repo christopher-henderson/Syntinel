@@ -15,7 +15,7 @@ function pageLoad() {
 		document.getElementById("breadcrumb-run-name").innerHTML = "<i class=\"fa fa-cog\"></i> Run #" + runID;
 
 		var runStatus;
-		if(!run.successful || run.successful == null) {
+		if(run.successful == null) {
 			runStatus = "Still running";
 		} else if(run.successful == true) {
 			runStatus = "Successfully ran";

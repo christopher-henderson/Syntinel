@@ -165,7 +165,7 @@ function pageLoad() {
 			var runRow = "";
 
 			var runStatus;
-			if(!run.successful || run.successful == null) {
+			if(run.successful == null) {
 				runStatus = "Running";
 			} else if(run.successful == true) {
 				runStatus = "Successful";
