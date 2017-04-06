@@ -244,7 +244,7 @@ function pageLoad() {
 
 				var runs = res;
 				runs = escapeNewLineChars(runs);
-				runs = JSON.parse(runs);
+				runs = JSON.parse(runs).results;
 
 				for(var i = 0; i < runs.length; i++) {
 					var run = runs[i];

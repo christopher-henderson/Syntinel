@@ -142,7 +142,7 @@ function pageLoad() {
 
 		var projects = res;
 		projects = escapeNewLineChars(projects);
-		projects = JSON.parse(projects);
+		projects = JSON.parse(projects).results;
 		projectCount = projects.length;
 
 		for(var i = 0; i < projects.length; i++) {
@@ -164,7 +164,7 @@ function pageLoad() {
 						return;
 					}
 
-					tests.push(JSON.parse(escapeNewLineChars(res)));
+					tests.push(JSON.parse(escapeNewLineChars(res)).results);
 					count++;
 					if(count == project.tests.length) {
 						p.push({"project" : project, "tests" : tests});
