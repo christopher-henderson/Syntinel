@@ -147,32 +147,41 @@ function pageLoad() {
 
 		for(var i = 0; i < projects.length; i++) {
 			var project = projects[i];
-			console.log(project);
 
 			var tests = [];
 			var count = 0;
-			for(var j = 0; j < project.tests.length; j++) {
-				apiGet("/test/" + project.tests[i], "", function(res) {
-					if(res.error && SYNTINEL_ERRORREDIRECT) {
-						var qs = {};
-						if(res.responseText && res.responseText.length > 0) {
-							qs.reason = res.responseText;
-						}
-						if(res.status) {
-							qs.status = res.status;
-						}
-						window.location = buildUrl("error.html", qs);
-						return;
-					}
 
-					tests.push(JSON.parse(escapeNewLineChars(res)));
-					count++;
-					console.log("Count: " + count);
-					if(count == project.tests.length) {
-						p.push({"project" : project, "tests" : tests});
-						populatePage();
-					}
-				});
+			if(tests.length > 0) {
+				// Project has tests
+				for(var j = 0; j < project.tests.length; j++) {
+					apiGet("/test/" + project.tests[i], "", function(res) {
+						if(res.error && SYNTINEL_ERRORREDIRECT) {
+							var qs = {};
+							if(res.responseText && res.responseText.length > 0) {
+								qs.reason = res.responseText;
+							}
+							if(res.status) {
+								qs.status = res.status;
+							}
+							window.location = buildUrl("error.html", qs);
+							return;
+						}
+
+						tests.push(JSON.parse(escapeNewLineChars(res)));
+						count++;
+						if(count == project.tests.length) {
+							p.push({"project" : project, "tests" : tests});
+							populatePage();
+						}
+					});
+				}
+			} else {
+				// No tests
+				count++;
+				if(count == project.tests.length) {
+					p.push({"project" : project, "tests" : tests});
+					populatePage();
+				}
 			}
 		}
 	});
