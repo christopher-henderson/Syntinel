@@ -120,7 +120,7 @@ function pageLoad() {
 		if(!project) {
 			document.getElementById("setting-project").value = projectID;
 		} else {
-			document.getElementById("setting-project").value = project.name + "(" + project.id + ")";
+			document.getElementById("setting-project").value = project.name + " (" + project.id + ")";
 		}
 
 		// Setting - Name

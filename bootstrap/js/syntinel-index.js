@@ -53,6 +53,7 @@ function pageLoad() {
 			tab += "				</h3>";
 			tab += "				<p>ID: " + project.id + "</p>";
 			tab += "				<p>Name: " + project.name + "</p>";
+			tab += "				<p>Test count: " + p[i].tests.length + "</p>";
 			tab += "				<h3>Tests</h3>";
 			// Test table
 			tab += "				<div class=\"table-responsive\">";
