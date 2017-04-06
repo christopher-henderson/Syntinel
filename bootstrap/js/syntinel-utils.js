@@ -156,6 +156,7 @@ function getTimestamp(date) {
   var DD = date.getDate();
   var hh = date.getHours();
   var mm = date.getMinutes();
+  var ss = date.getSeconds();
   
   if(DD < 10) {
     DD='0'+DD;
@@ -169,6 +170,9 @@ function getTimestamp(date) {
   if(mm < 10) {
     mm='0'+mm;
   } 
+  if(ss < 10) {
+  	ss='0'+ss;
+  }
   
-  return (YYYY+"-"+MM+"-"+DD+" at "+hh+""+mm);
+  return (YYYY+"-"+MM+"-"+DD+" at "+hh+":"+mm+":"+ss);
 }
