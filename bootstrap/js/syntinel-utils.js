@@ -145,3 +145,30 @@ function buildUrl(url, parameters) {
   }
   return url;
 }
+
+function getTimestamp(date) {
+  if(!date || typeof date != "object") {
+    date = new Date();
+  }
+  
+  var YYYY = date.getFullYear();
+  var MM = date.getMonth()+1;
+  var DD = date.getDate();
+  var hh = date.getHours();
+  var mm = date.getMinutes();
+  
+  if(DD < 10) {
+    DD='0'+DD;
+  } 
+  if(MM < 10) {
+    MM='0'+MM;
+  } 
+  if(hh < 10) {
+    hh='0'+hh;
+  } 
+  if(mm < 10) {
+    mm='0'+mm;
+  } 
+  
+  return (YYYY+""+MM+""+DD+""+hh+""+mm);
+}

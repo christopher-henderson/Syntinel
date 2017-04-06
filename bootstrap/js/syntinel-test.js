@@ -179,6 +179,7 @@ function pageLoad() {
 			runRow += "<tr class=\"" + (runStatus == "Successful" ? "success" : (runStatus == "Running" ? "warning" : "danger")) + "\">";
 			runRow += "	<td>" + run.id + "</td>";
 			runRow += "	<td>" + runStatus + "</td>";
+			runRow += " <td>" + getTimestamp(run.timestamp) + "</td>";
 			runRow += "</tr>";
 
 			testRuns.innerHTML += runRow;
