@@ -145,6 +145,7 @@ function pageLoad() {
 			}
 		}
 
+		var projectTests
 		for(var i = 0; i < projects.length; i++) {
 			var project = projects[i];
 
@@ -182,4 +183,8 @@ function pageLoad() {
 			}
 		}
 	});
+}
+
+function projectsLoaded() {
+
 }

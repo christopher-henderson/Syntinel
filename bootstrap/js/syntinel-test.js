@@ -132,8 +132,10 @@ function pageLoad() {
 		// Setting - Run
 		if(!test.interval || test.interval == null)
 			document.getElementById("setting-run").value = "off";
-		else
+		else {
 			document.getElementById("setting-run").value = "schedule";
+			document.getElementById("setting-run-interval").value = test.interval;
+		}
 
 		settingsRunChanged();
 
