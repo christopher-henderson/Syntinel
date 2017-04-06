@@ -2,6 +2,7 @@ var project = {};
 var test = {};
 var r = [];
 
+var envVariableChanged = false;
 function pageLoad() {
 	var projectID = getQueryVariable("project");
 	var testID = getQueryVariable("test");
@@ -24,26 +25,24 @@ function pageLoad() {
 				postBody.dockerfile = docker.value;
 
 			var envs = document.getElementById("setting-environmentVariables").childNodes;
-			var envsChanged = false;
-			if (envs !== undefined) {
-				for(var i = 0; i < envs.length; i++) {
-					var env = envs[i];
-					env = env.childNodes[0].innerHTML + "=" + env.childNodes[1].innerHTML;
+			if(envs !== undefined) {
+				if(envs.length > 0) {
+					for(var i = 0; i < envs.length; i++) {
+						var env = envs[i];
+						env = env.childNodes[0].innerHTML + "=" + env.childNodes[1].innerHTML;
 
-					if(!postBody.environmentVariables)
-						postBody.environmentVariables = [];
-
-					postBody.environmentVariables.push(env[0] + "=" + env[1]);
-
-					if(env != test.environmentVariables) {
-						envsChanged = true;
+						if(!postBody.environmentVariables)
+							postBody.environmentVariables = env;
+						else
+							postBody.environmentVariables += "," + env;
 					}
+				} else {
+					postBody.environmentVariables = null;
 				}
 			}
 
-			if(envsChanged == false) {
+			if(!envVariableChanged)
 				delete postBody.environmentVariables;
-			}
 
 			var settingRun = document.getElementById("setting-run");
 			var settingRunInterval = document.getElementById("setting-run-interval").getElementsByTagName("input")[0].value;
@@ -74,7 +73,7 @@ function pageLoad() {
 				postBody.interval = settingRunInterval;
 			}
 
-			if(postBody.script || postBody.dockerfile || postBody.environmentVariables || postBody.hasOwnProperty("interval")) {
+			if(postBody.hasOwnProperty("script") || postBody.hasOwnProperty("dockerfile") || postBody.hasOwnProperty("environmentVariables") || postBody.hasOwnProperty("interval")) {
 				apiPatch(SYNTINEL_URL + "/test/" + testID, postBody, function(res) {
 					if(res.syntinelError && SYNTINEL_ERRORREDIRECT) {
 						var qs = {};
@@ -117,8 +116,12 @@ function pageLoad() {
 			});
 		});
 
-		// Setting - Name
-		document.getElementById("setting-project").value = projectID;
+		// Setting - Project ID / Name
+		if(!project) {
+			document.getElementById("setting-project").value = projectID;
+		} else {
+			document.getElementById("setting-project").value = project.name + " (" + project.id + ")";
+		}
 
 		// Setting - Name
 		document.getElementById("setting-testName").value = test.name;
@@ -179,7 +182,7 @@ function pageLoad() {
 			runRow += "<tr class=\"" + (runStatus == "Successful" ? "success" : (runStatus == "Running" ? "warning" : "danger")) + "\">";
 			runRow += "	<td>" + run.id + "</td>";
 			runRow += "	<td>" + runStatus + "</td>";
-			runRow += " <td>" + getTimestamp(run.timestamp) + "</td>";
+			runRow += " <td>" + (run.timestamp ? getTimestamp(new Date(run.timestamp)) : "unknown time") + "</td>";
 			runRow += "</tr>";
 
 			testRuns.innerHTML += runRow;
@@ -236,6 +239,11 @@ function pageLoad() {
 			test = res;
 			test = escapeNewLineChars(test);
 			test = JSON.parse(test);
+			if(test.environmentVariables == null || !test.hasOwnProperty("environmentVariables") || test.environmentVariables == "") {
+				test.environmentVariables = [];
+			} else {
+				test.environmentVariables = getEnvironmentVariablesArray(test.environmentVariables);
+			}
 
 			// Get test runs
 			apiGet(SYNTINEL_URL + "/testrun/all?test=" + testID, "", function(res) {
@@ -286,6 +294,7 @@ function updateModalsEnv() {
 	modalEnvs = [];
 
 	var envs = test.environmentVariables;
+
 	if(envs.hasOwnProperty("length")) {
 		for(var i = 0; i < envs.length + 1; i++) {
 			var env;
@@ -313,6 +322,8 @@ function updateModalsEnv() {
 }
 
 function modalEnvInputChanged(index) {
+	envVariableChanged = true;
+
 	var envVariable = document.getElementById("modal-env-variable-index-" + index);
 	var envValue = document.getElementById("modal-env-value-index-" + index);
 
@@ -340,4 +351,10 @@ function modalEnvInputChanged(index) {
 	document.getElementById("setting-environmentVariables").innerHTML = envStr;
 
 	updateModalsEnv();
+}
+
+var regexEnvVar = new RegExp('[^,^\n]+', 'ig');
+
+function getEnvironmentVariablesArray(str) {
+	return str.match(regexEnvVar);
 }

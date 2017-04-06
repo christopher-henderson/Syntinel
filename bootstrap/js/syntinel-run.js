@@ -24,7 +24,7 @@ function pageLoad() {
 		}
 
 		var runStatusHeader = document.getElementById("run-status-header");
-		runStatusHeader.innerHTML = "<strong>" + runStatus + "</strong>" + " at " + (run.timestamp ? getTimestamp(run.timestamp) : "unknown time");
+		runStatusHeader.innerHTML = "<strong>" + runStatus + "</strong>" + " at " + (run.timestamp ? getTimestamp(new Date(run.timestamp)) : "unknown time");
 		runStatusHeader.className = "alert " + (runStatus == "Successfully ran" ? "alert-success" : (runStatus == "Still running" ? "alert-warning" : "alert-danger"));
 
 		if(run.log) {

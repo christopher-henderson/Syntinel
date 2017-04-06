@@ -1,5 +1,5 @@
 function pageLoad() {
-	var status = getQueryVariable("error");
+	var status = getQueryVariable("status");
 	var project = getQueryVariable("project");
 	var test = getQueryVariable("test");
 	var run = getQueryVariable("run");
