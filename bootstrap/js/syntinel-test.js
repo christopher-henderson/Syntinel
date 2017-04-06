@@ -73,7 +73,7 @@ function pageLoad() {
 				postBody.interval = settingRunInterval;
 			}
 
-			if(postBody.script || postBody.dockerfile || postBody.environmentVariables || postBody.hasOwnProperty("interval")) {
+			if(postBody.hasOwnProperty("script") || postBody.hasOwnProperty("dockerfile") || postBody.hasOwnProperty("environmentVariables") || postBody.hasOwnProperty("interval")) {
 				apiPatch(SYNTINEL_URL + "/test/" + testID, postBody, function(res) {
 					if(res.syntinelError && SYNTINEL_ERRORREDIRECT) {
 						var qs = {};
