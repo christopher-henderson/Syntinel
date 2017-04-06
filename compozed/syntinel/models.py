@@ -25,7 +25,7 @@ class Test(models.Model):
     # Integer so that we can have granularity of test health.
     # Similar to Jenkin's "red, yellow, green"
     health = models.IntegerField(default=100)
-    interval = models.IntegerField(null=True)
+    interval = models.PositiveIntegerField(null=True)
 
     def update_health(self, successful):
         test_runs = self.test_runs.order_by('id').reverse()[:self.NUMBER_OF_TESTS_CONSIDERED_IN_HEALTH]
