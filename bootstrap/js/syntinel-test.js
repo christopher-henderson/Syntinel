@@ -69,7 +69,7 @@ function pageLoad() {
 					window.location = "test.html?project="+projectID+"&test="+testID;
 				});
 				postBody.interval = null;
-			} else if(settingRun.value == "schedule" && test.inerval != settingRunInterval) {
+			} else if(settingRun.value == "schedule" && Number(test.interval) != settingRunInterval) {
 				postBody.interval = settingRunInterval;
 			}
 
