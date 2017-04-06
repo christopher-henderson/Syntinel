@@ -86,12 +86,6 @@ function pageLoad() {
 		project = escapeNewLineChars(project);
 		project = JSON.parse(project);
 
-		var testLoaded = function() {
-			if(t.length == project.tests.length - 1) {
-				populatePage();
-			}
-		}
-
 		var count = 0;
 		if(project.tests.length > 0) {
 			for(var j = 0; j < project.tests.length; j++) {
@@ -114,12 +108,12 @@ function pageLoad() {
 					t.push(JSON.parse(escapeNewLineChars(res)));
 					count++;
 					if(count == project.tests.length) {
-						testLoaded();
+						populatePage();
 					}
 				});
 			}
 		} else {
-			testLoaded();
+			populatePage();
 		}
 	});
 
