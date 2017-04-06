@@ -1,6 +1,5 @@
 function pageLoad() {
 	var p = [];
-	var projectCount = 0;
 
 	document.getElementById("button-project-create").addEventListener('click', function() {
 		// Open the modal
@@ -33,10 +32,6 @@ function pageLoad() {
 		var tabAll = document.getElementById("projectsTab-all");
 		var tabPassing = document.getElementById("projectsTab-passing");
 		var tabFailing = document.getElementById("projectsTab-failing");
-
-		if(p.length < projectCount) {
-			return;
-		}
 
 		for(var i = 0; i < p.length; i++) {
 			var project = p[i].project;
@@ -143,7 +138,12 @@ function pageLoad() {
 		var projects = res;
 		projects = escapeNewLineChars(projects);
 		projects = JSON.parse(projects).results;
-		projectCount = projects.length;
+
+		var projectLoaded = function() {
+			if(p.length == projects.length - 1) {
+				populatePage();
+			}
+		}
 
 		for(var i = 0; i < projects.length; i++) {
 			var project = projects[i];
@@ -171,17 +171,14 @@ function pageLoad() {
 						count++;
 						if(count == project.tests.length) {
 							p.push({"project" : project, "tests" : tests});
-							populatePage();
+							projectLoaded();
 						}
 					});
 				}
 			} else {
 				// No tests
-				count++;
-				if(count == project.tests.length) {
-					p.push({"project" : project, "tests" : tests});
-					populatePage();
-				}
+				p.push({"project" : project, "tests" : tests});
+				projectLoaded();
 			}
 		}
 	});
