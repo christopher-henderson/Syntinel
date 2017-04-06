@@ -69,9 +69,11 @@ function pageLoad() {
 					window.location = "test.html?project="+projectID+"&test="+testID;
 				});
 				postBody.interval = null;
-			} else if(settingRun.value == "schedule" && Number(test.interval) != settingRunInterval) {
+			} else if(settingRun.value == "schedule" && test.interval != settingRunInterval) {
 				postBody.interval = settingRunInterval;
 			}
+
+			console.log(postBody);
 
 			if(postBody.script || postBody.dockerfile || postBody.environmentVariables || postBody.hasOwnProperty("interval")) {
 				apiPatch(SYNTINEL_URL + "/test/" + testID, postBody, function(res) {
