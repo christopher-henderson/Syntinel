@@ -36,20 +36,7 @@
 				</button>
 				<a class="navbar-brand" href="index.html">Allstate - Syntinel</a>
 			</div>
-			<!-- Top Menu Items -->
-			<ul class="nav navbar-right top-nav">
-				<li class="dropdown">
-					<!--
-					<a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-user"></i> David Henderson <b class="caret"></b></a>
-					<ul class="dropdown-menu">
-						<li>
-							<a href="#"><i class="fa fa-fw fa-user"></i> Team</a>
-							<a href="#"><i class="fa fa-fw fa-power-off"></i> Log Out</a>
-						</li>
-					</ul>
-					-->
-				</li>
-			</ul>
+
 			<!-- Sidebar Menu Items - These collapse to the responsive navigation menu on small screens -->
 			<div class="collapse navbar-collapse navbar-ex1-collapse">
 				<ul class="nav navbar-nav side-nav">
@@ -63,12 +50,33 @@
 
 		<div id="page-wrapper">
 
+			<!-- Modal -->
+			<div id="modal-env" class="modal fade" role="dialog">
+			  	<div class="modal-dialog">
+					<!-- Modal content-->
+					<div class="modal-content">
+						<div class="modal-header">
+							<h4 id="modal-env-header" class="modal-title">Syntinel Test - Enviornment Variables</h4>
+							<p>(Remove a column by clearing the variable - value pair)</p>
+						</div>
+						<div class="modal-body" id="modal-env-body">
+
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-success" data-dismiss="modal">Close</button>
+						</div>
+					</div>
+				</div>
+			</div>
+
 			<div class="container-fluid">
 				<!-- Page Heading -->
 				<div class="row">
 					<div class="col-lg-12">
 						<h1 class="page-header" id="header-test-name"><div class=""><!-- Test Name Header "Test 1"-->
-							<small>Syntinel Test</small>
+							<small>
+								Syntinel Test
+							</small>
 						</h1>
 						<ol class="breadcrumb">
 							<li>
@@ -88,7 +96,11 @@
 				<!-- Docker top settings row -->
 				<div class="col-lg-6">
 					<div class="row">
-						<h2>Settings</h2>
+						<h2>
+							Settings
+							<button type="button" id="setting-button-save" class="btn btn-s btn-success">Submit changes</button>
+						</h2>
+						<h4>General</h4>
 						<div class="col-lg-3">
 							<label for="setting-project">Project:</label>
 							<input type="text" disabled class="form-control" id="setting-project">
@@ -107,18 +119,29 @@
 					<div class="row">
 						<div class="col-lg-10">
 							<label for="setting-testScript">Script:</label>
-							<textarea type="text" rows="6" class="form-control" id="setting-testScript"></textarea>
+							<textarea type="text" placeholder="Required - Input your script to run" rows="6" class="form-control" id="setting-testScript"></textarea>
 						</div>
 						<div class="col-lg-10">
 							<label for="setting-testDocker">Dockerfile:</label>
-							<textarea type="text" rows="6" class="form-control" id="setting-testDocker"></textarea>
+							<textarea type="text" placeholder="Required - Input your dockerfile" rows="6" class="form-control" id="setting-testDocker"></textarea>
 						</div>
 					</div>
 					<!-- /.row -->
 
 					<div class="row">
-						<div class="col-lg-4">
-							<label for="setting-testSchedule">Run interval (seconds):</label>
+					<h4>Scheduling</h4>
+						<div class="col-lg-5">
+							<div class="form-group">
+                                <label>Run</label>
+                                <select class="form-control" id="setting-run" onchange="settingsRunChanged()">
+                                    <option value="off">Not running</option>
+                                    <option value="single">Run - Once now (then stop)</option>
+                                    <option value="schedule">Run - Schedule</option>
+                                </select>
+                            </div>
+						</div>
+						<div class="col-lg-4" id="setting-run-interval">
+							<label for="setting-testSchedule">Interval (sec):</label>
 							<input type="number" value="0" class="form-control" id="setting-testSchedule">
 						</div>
 					</div>
@@ -126,7 +149,7 @@
 
 					<div class="row">
 						<h3>Environment Variables
-							<button type="button" class="btn btn-xs btn-success">Add Variable</button>
+							<button type="button" id="setting-env-button-edit" class="btn btn-xs btn-info">Edit</button>
 						</h3>
 						<div class="col-lg-10">
 							<div class="table-responsive">
@@ -135,7 +158,6 @@
 										<tr>
 											<th>Variable</th>
 											<th>Value</th>
-											<th>Options</th>
 										</tr>
 									</thead>
 									<tbody id="setting-environmentVariables">
@@ -161,6 +183,7 @@
 									<tr>
 										<th>Run ID</th>
 										<th>Status</th>
+										<th>Timestamp</th>
 									</tr>
 								</thead>
 								<tbody id="table-test-runs-body">

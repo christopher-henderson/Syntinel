@@ -3,6 +3,7 @@ var SYNTINEL_HEALTH = {
 	SUCCESS_MIN : 87.5,
 	WARN_MIN : 75
 }
+var SYNTINEL_ERRORREDIRECT = true;
 
 function getQueryVariable(variable) {
 	var query = window.location.search.substring(1);
@@ -23,30 +24,91 @@ function escapeNewLineChars(valueToEscape) {
 }
 
 function apiGet(url, params, callback) {
-	// Hard coded testing
-	if(url.indexOf("/project/all") != -1) {
-		callback("[{\"id\": 1,\"tests\": [1],\"name\": \"UltimateCode\"}]");
-	} else if(url.indexOf("/project/1") != -1) {
-		callback("{\"id\": 1,\"tests\": [1],\"name\": \"UltimateCode\"}");
-	} else if(url.indexOf("/test/") != -1) {
-		callback("{\"id\":1,\"name\":\"The greatest song in the world\",\"script\":\"#!/usr/bin/env bash\ngit clone https://github.com/christopher-henderson/TestTheTester.git && cd TestTheTester/GoBeInGoodHands && go test . -v -cover\",\"dockerfile\":\"FROM docker.io/centos\n\nMAINTAINER Christopher Henderson\n\nRUN yum install -y go git wget\nCOPY script.sh $HOME/script.sh\nCMD chmod +x script.sh && ./script.sh\",\"environmentVariables\":[\"a=b\"],\"health\":" + getRandomIntInclusive(0,100) + ",\"suite\":null}");
-	} else if(url.indexOf("/testrun/") != -1) {
-		callback("[{\"id\":1,\"log\":\"Sending build context to Docker daemon 3.072 kB\r\nStep 1 : FROM docker.io/centos\n ---> 67591570dd29\nStep 2 : MAINTAINER Christopher Henderson\n ---> Using cache\n ---> d33126dcfbfc\nStep 3 : RUN yum install -y go git wget\nCloning into 'TestTheTester'...\n ---> Using cache\n ---> b4da48a3d37c\nStep 4 : COPY script.sh $HOME/script.sh\n ---> Using cache\n ---> 40743fa214db\nStep 5 : CMD chmod +x script.sh && ./script.sh\n ---> Using cache\n ---> 1da95f92dcd2\nSuccessfully built 1da95f92dcd2\n=== RUN   TestPow\n--- PASS: TestPow (0.00s)\n=== RUN   TestSquare\n--- PASS: TestSquare (0.00s)\nPASS\ncoverage: 46.2% of statements\n\",\"error\":\"\",\"status\":null,\"successful\":true,\"test\":1}]");
-	}  else {
-		var handler = function(request) {
-			callback(request.response);
-		};
+	console.log("Requesting " + url);
+	var handler = function(request) {
+		callback(request.response);
+	};
 
-		var request = new XMLHttpRequest();
-		request.open("GET", url, true);
-		request.withCredentials = true;
-		request.setRequestHeader("Content-Type","application/json");
-		request.send();
-		request.onreadystatechange = function() {
-			if(request.readyState >= 4)
-				handler(request);
-		};
-	}
+	var request = new XMLHttpRequest();
+	request.open("GET", url, true);
+	request.withCredentials = true;
+	request.setRequestHeader("Content-Type","application/json");
+	request.send();
+	request.onreadystatechange = function() {
+		if((request.status >= 200 && request.status < 300) && request.readyState == 4) { // Should be 200
+			handler(request);
+		} else if (request.readyState == 4) {
+			console.log("Response code " + request.status);
+			console.log(request.responseText);
+			callback({"syntinelError" : true, "status" : request.status, "responseText" : request.responseText});
+		}
+	};
+}
+
+function apiPost(url, body, callback) {
+	console.log("Requesting " + url);
+	var handler = function(request) {
+		callback(request.response);
+	};
+
+	var request = new XMLHttpRequest();
+	request.open("POST", url, true);
+	request.withCredentials = true;
+	request.setRequestHeader("Content-Type","application/json");
+	request.send(JSON.stringify(body));
+	request.onreadystatechange = function() {
+		if((request.status >= 200 && request.status < 300) && request.readyState == 4) { // Should be 201
+			handler(request);
+		} else if (request.readyState == 4) {
+			console.log("Response code " + request.status);
+			console.log(request.responseText);
+			callback({"syntinelError" : true, "status" : request.status, "responseText" : request.responseText});
+		}
+	};
+}
+
+function apiPatch(url, body, callback) {
+	console.log("Requesting " + url);
+	var handler = function(request) {
+		callback(request.response);
+	};
+
+	var request = new XMLHttpRequest();
+	request.open("PATCH", url, true);
+	request.withCredentials = true;
+	request.setRequestHeader("Content-Type","application/json");
+	request.send(JSON.stringify(body));
+	request.onreadystatechange = function() {
+		if((request.status >= 200 && request.status < 300) && request.readyState == 4) {
+			handler(request);
+		} else if (request.readyState == 4) {
+			console.log("Response code " + request.status);
+			console.log(request.responseText);
+			callback({"syntinelError" : true, "status" : request.status, "responseText" : request.responseText});
+		}
+	};
+}
+
+function apiDelete(url, body, callback) {
+	console.log("Requesting " + url);
+	var handler = function(request) {
+		callback(request.response);
+	};
+
+	var request = new XMLHttpRequest();
+	request.open("DELETE", url, true);
+	request.withCredentials = true;
+	request.setRequestHeader("Content-Type","application/json");
+	request.send(JSON.stringify(body));
+	request.onreadystatechange = function() {
+		if((request.status >= 200 && request.status < 300) && request.readyState == 4) {
+			handler(request);
+		} else if (request.readyState == 4) {
+			console.log("Response code " + request.status);
+			console.log(request.responseText);
+			callback({"syntinelError" : true, "status" : request.status, "responseText" : request.responseText});
+		}
+	};
 }
 
 String.prototype.replaceAll = function(search, replacement) {
@@ -54,8 +116,63 @@ String.prototype.replaceAll = function(search, replacement) {
   return target.split(search).join(replacement);
 };
 
+String.prototype.escape = function() {
+    var tagsToReplace = {
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;'
+    };
+    return this.replace(/[&<>]/g, function(tag) {
+        return tagsToReplace[tag] || tag;
+    });
+};
+
 function getRandomIntInclusive(min, max) {
   min = Math.ceil(min);
   max = Math.floor(max);
   return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+function buildUrl(url, parameters) {
+  var qs = "";
+  for(var key in parameters) {
+    var value = parameters[key];
+    qs += encodeURIComponent(key) + "=" + encodeURIComponent(value) + "&";
+  }
+  if (qs.length > 0){
+    qs = qs.substring(0, qs.length-1); //chop off last "&"
+    url = url + "?" + qs;
+  }
+  return url;
+}
+
+function getTimestamp(date) {
+  if(!date || typeof date != "object") {
+    date = new Date();
+  }
+  
+  var YYYY = date.getFullYear();
+  var MM = date.getMonth()+1;
+  var DD = date.getDate();
+  var hh = date.getHours();
+  var mm = date.getMinutes();
+  var ss = date.getSeconds();
+  
+  if(DD < 10) {
+    DD='0'+DD;
+  } 
+  if(MM < 10) {
+    MM='0'+MM;
+  } 
+  if(hh < 10) {
+    hh='0'+hh;
+  } 
+  if(mm < 10) {
+    mm='0'+mm;
+  } 
+  if(ss < 10) {
+  	ss='0'+ss;
+  }
+  
+  return (YYYY+"-"+MM+"-"+DD+" at "+hh+":"+mm+":"+ss);
 }

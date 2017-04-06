@@ -9,7 +9,7 @@
 	<meta name="description" content="">
 	<meta name="author" content="">
 
-	<title>Syntinel - Test Run</title>
+	<title>Syntinel - Error</title>
 
 	<!-- Bootstrap Core CSS -->
 	<link href="css/bootstrap.min.css" rel="stylesheet">
@@ -53,48 +53,22 @@
 				<!-- Page Heading -->
 				<div class="row">
 					<div class="col-lg-12">
-						<h1 class="page-header" id="header-run-name">
-							<!-- Run header Run #1 -->
-							<small>Syntinel Test Run</small>
+						<h1 class="page-header" id="header-test-name"><div class="">Syntinel
 						</h1>
-						<ol class="breadcrumb">
-							<li>
-								<i class="fa fa-dashboard"></i>  <a href="index.html">Dashboard</a>
-							</li>
-							<li id="breadcrumb-project-name">
-								<i class="fa fa-dashboard"></i>  <!-- Project breadcrumb <a href="project.html">Project Alpha</a> -->
-							</li>
-							<li id="breadcrumb-test-name">
-								<i class="fa fa-dashboard"></i>  <!-- Test breadcrumb <a href="test.html">Test 1</a> -->
-							</li>
-							<li id="breadcrumb-run-name" class="active">
-								<i class="fa fa-file"></i> <!-- Run breadcrumb Run #1 -->
-							</li>
-						</ol>
 					</div>
 				</div>
 				<!-- /.row -->
 
-				<!-- Docker top settings row -->
-				<div class="col-lg-8">
-					<div class="row">
-						<div class="alert alert-warning" id="run-status-header">
-		                    Loading...
-		                </div>
+				<div class="row">
+					<div id="error-header" class="col-lg-12">
+						<h3>Uh oh! Something went wrong:</h3>
 					</div>
 				</div>
-
-				<!-- Results/health -->
-				<div class="col-lg-8">
-					<div class="row">
-						<h3>Log</h3>
-						<div>
-							<textarea disabled type="text" rows="14" class="form-control" id="run-console"></textarea>
-						</div>
+				<div class="row">
+					<div class="col-lg-12" id="error-body">
+						
 					</div>
-					<!-- /.row -->
 				</div>
-
 			</div>
 			<!-- /.container-fluid -->
 
@@ -111,7 +85,7 @@
 	<script src="js/bootstrap.min.js"></script>
 
 	<script src="js/syntinel-utils.js"></script>
-	<script src="js/syntinel-run.js" onload="this.onload=function(){};pageLoad()"></script>
+	<script src="js/syntinel-error.js" onload="this.onload=function(){};pageLoad()"></script>
 </body>
 
 </html>
