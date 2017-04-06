@@ -51,7 +51,8 @@ function pageLoad() {
 			tab += "				<h3>Project details";
 			tab += "				<button type=\"button\" onclick=\"window.location=\'project.html?project=" + project.id + "\'\" class=\"btn btn-sm btn-info\">Open</button>";
 			tab += "				</h3>";
-			tab += "				<p>[" + project.id + "] " + project.name + "</p>";
+			tab += "				<p>ID: " + project.id + "</p>";
+			tab += "				<p>Name: " + project.name + "</p>";
 			tab += "				<h3>Tests</h3>";
 			// Test table
 			tab += "				<div class=\"table-responsive\">";

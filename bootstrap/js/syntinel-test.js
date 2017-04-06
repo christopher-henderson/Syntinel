@@ -116,8 +116,12 @@ function pageLoad() {
 			});
 		});
 
-		// Setting - Name
-		document.getElementById("setting-project").value = projectID;
+		// Setting - Project ID / Name
+		if(!project) {
+			document.getElementById("setting-project").value = projectID;
+		} else {
+			document.getElementById("setting-project").value = project.name + "(" + project.id + ")";
+		}
 
 		// Setting - Name
 		document.getElementById("setting-testName").value = test.name;
