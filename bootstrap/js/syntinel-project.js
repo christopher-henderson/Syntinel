@@ -86,30 +86,40 @@ function pageLoad() {
 		project = escapeNewLineChars(project);
 		project = JSON.parse(project);
 
+		var testLoaded = function() {
+			if(t.length == project.tests.length - 1) {
+				populatePage();
+			}
+		}
+
 		var count = 0;
-		for(var j = 0; j < project.tests.length; j++) {
-				apiGet("/test/" + projectID, "", function(res) {
-				if(res.error && SYNTINEL_ERRORREDIRECT) {
-					var qs = {};
-					if(res.responseText && res.responseText.length > 0) {
-						qs.reason = res.responseText;
-					}
-					if(res.status) {
-						qs.status = res.status;
-					}
-					
-					qs.project = projectID;
+		if(project.tests.length > 0) {
+			for(var j = 0; j < project.tests.length; j++) {
+					apiGet("/test/" + projectID, "", function(res) {
+					if(res.error && SYNTINEL_ERRORREDIRECT) {
+						var qs = {};
+						if(res.responseText && res.responseText.length > 0) {
+							qs.reason = res.responseText;
+						}
+						if(res.status) {
+							qs.status = res.status;
+						}
+						
+						qs.project = projectID;
 
-					window.location = buildUrl("error.html", qs);
-					return;
-				}
+						window.location = buildUrl("error.html", qs);
+						return;
+					}
 
-				t.push(JSON.parse(escapeNewLineChars(res)));
-				count++;
-				if(count == project.tests.length) {
-					populatePage();
-				}
-			});
+					t.push(JSON.parse(escapeNewLineChars(res)));
+					count++;
+					if(count == project.tests.length) {
+						testLoaded();
+					}
+				});
+			}
+		} else {
+			testLoaded();
 		}
 	});
 
