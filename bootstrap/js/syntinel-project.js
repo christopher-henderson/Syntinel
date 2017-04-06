@@ -48,7 +48,7 @@ function pageLoad() {
 		pageHeader.innerHTML = project.name + " <small>Syntinel Project</small>";
 
 		var breadcrumbProject = document.getElementById("breadcrumb-project-name");
-		breadcrumbProject.innerHTML = "<i class=\"fa fa-sitemap\"></i> " + project.name;
+		breadcrumbProject.innerHTML = "<i class=\"fa fa-sitemap\"></i> " + project.name + " <button id=\"button-project-delete\" type=\"button\" class=\"btn btn-xs btn-danger\">Delete Project</button>";
 
 		var projectTests = document.getElementById("table-project-tests-body");
 		projectTests.innerHTML = "";
@@ -64,6 +64,28 @@ function pageLoad() {
 
 			projectTests.innerHTML += testRow;
 		}
+
+		document.getElementById("button-project-delete").addEventListener('click', function() {
+			apiDelete(SYNTINEL_URL + "/project/" + projectID, {}, function(res) {
+					if(res.error && SYNTINEL_ERRORREDIRECT) {
+						var qs = {};
+						if(res.responseText && res.responseText.length > 0) {
+							qs.reason = res.responseText;
+						}
+						if(res.status) {
+							qs.status = res.status;
+						}
+						
+						qs.project = projectID;
+						qs.test = testID;
+
+						window.location = buildUrl("error.html", qs);
+						return;
+					}
+				window.location = "index.html";
+			});
+		});
+
 
 		$('#table-project-tests').find('tr').click(function() {
 			var index = ($(this).index());
