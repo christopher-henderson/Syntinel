@@ -33,7 +33,7 @@ function pageLoad() {
 					if(!postBody.environmentVariables)
 						postBody.environmentVariables = env;
 					else
-						postBody.environmentVariables += ", " + env;
+						postBody.environmentVariables += "," + env;
 
 					if(env != test.environmentVariables) {
 						envsChanged = true;
