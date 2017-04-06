@@ -14,7 +14,6 @@ function pageLoad() {
 
 		// Save
 		document.getElementById("setting-button-save").addEventListener('click', function() {
-			console.log("Click");
 			var postBody = {};
 			var script = document.getElementById("setting-testScript");
 			if(script.value != test.script)
@@ -49,15 +48,9 @@ function pageLoad() {
 			var settingRun = document.getElementById("setting-run");
 			var settingRunInterval = document.getElementById("setting-run-interval").getElementsByTagName("input")[0].value;
 
-			console.log(test);
-			console.log(settingRun);
-			console.log(settingRunInterval);
-			
 			if(settingRun.value == "off" && test.interval != null) {
-				console.log("Off");
 				postBody.interval = null;
 			} else if(settingRun.value == "single") {
-				console.log("Single");
 				apiPost(SYNTINEL_URL + "/testrun/", {"test" : Number(test.id)}, function(res) {
 					if(res.syntinelError && SYNTINEL_ERRORREDIRECT) {
 						var qs = {};
@@ -78,11 +71,8 @@ function pageLoad() {
 				});
 				postBody.interval = null;
 			} else if(settingRun.value == "schedule" && test.interval != settingRunInterval) {
-				console.log("Schedule");
 				postBody.interval = settingRunInterval;
 			}
-
-			console.log(postBody);
 
 			if(postBody.script || postBody.dockerfile || postBody.environmentVariables || postBody.hasOwnProperty("interval")) {
 				apiPatch(SYNTINEL_URL + "/test/" + testID, postBody, function(res) {
