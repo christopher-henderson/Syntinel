@@ -14,7 +14,7 @@ func ScheduleTest(w http.ResponseWriter, r *http.Request) {
 	log.Println("Attempting to Schedule Test")
 	var t DAO.Job
 	if err := json.NewDecoder(r.Body).Decode(&t); err != nil {
-		log.Println("error")
+		log.Println(err)
 		io.WriteString(w, "There was a problem with your submission")
 	} else {
 		log.Println("Accepted, Attempting to schedule Test")
