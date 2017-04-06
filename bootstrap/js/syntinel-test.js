@@ -2,6 +2,7 @@ var project = {};
 var test = {};
 var r = [];
 
+var envVariableChanged = false;
 function pageLoad() {
 	var projectID = getQueryVariable("project");
 	var testID = getQueryVariable("test");
@@ -24,7 +25,6 @@ function pageLoad() {
 				postBody.dockerfile = docker.value;
 
 			var envs = document.getElementById("setting-environmentVariables").childNodes;
-			var envsChanged = false;
 			if(envs !== undefined) {
 				if(envs.length > 0) {
 					for(var i = 0; i < envs.length; i++) {
@@ -35,20 +35,14 @@ function pageLoad() {
 							postBody.environmentVariables = env;
 						else
 							postBody.environmentVariables += "," + env;
-
-						if(env != test.environmentVariables) {
-							envsChanged = true;
-						}
 					}
-				} else if(envs.length == 0 && test.environmentVariables.length != 0) {
+				} else {
 					postBody.environmentVariables = null;
-					envsChanged = true;
 				}
 			}
 
-			if(envsChanged == false) {
+			if(!envVariableChanged)
 				delete postBody.environmentVariables;
-			}
 
 			var settingRun = document.getElementById("setting-run");
 			var settingRunInterval = document.getElementById("setting-run-interval").getElementsByTagName("input")[0].value;
@@ -324,6 +318,8 @@ function updateModalsEnv() {
 }
 
 function modalEnvInputChanged(index) {
+	envVariableChanged = true;
+
 	var envVariable = document.getElementById("modal-env-variable-index-" + index);
 	var envValue = document.getElementById("modal-env-value-index-" + index);
 
