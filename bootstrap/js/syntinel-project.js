@@ -15,6 +15,7 @@ function pageLoad() {
 			"environmentVariables" : null,
 			"dockerfile" : "Required",
 			"script" : "Required",
+			"project" : Number(projectID),
 			"interval": null
 		};
 
