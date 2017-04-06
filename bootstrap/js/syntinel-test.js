@@ -248,6 +248,9 @@ function pageLoad() {
 			test = res;
 			test = escapeNewLineChars(test);
 			test = JSON.parse(test);
+			if(test.environmentVariables == null || !test.hasOwnProperty("environmentVariables")) {
+				test.environmentVariables = "";
+			}
 
 			// Get test runs
 			apiGet(SYNTINEL_URL + "/testrun/all?test=" + testID, "", function(res) {
