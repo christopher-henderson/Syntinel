@@ -164,7 +164,7 @@ function pageLoad() {
 						return;
 					}
 
-					tests.push(JSON.parse(escapeNewLineChars(res)).results);
+					tests.push(JSON.parse(escapeNewLineChars(res)));
 					count++;
 					if(count == project.tests.length) {
 						p.push({"project" : project, "tests" : tests});

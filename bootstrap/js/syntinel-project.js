@@ -84,7 +84,7 @@ function pageLoad() {
 
 		project = res;
 		project = escapeNewLineChars(project);
-		project = JSON.parse(project).results;
+		project = JSON.parse(project);
 
 		var count = 0;
 		for(var j = 0; j < project.tests.length; j++) {
