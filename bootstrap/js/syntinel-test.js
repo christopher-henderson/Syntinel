@@ -25,19 +25,24 @@ function pageLoad() {
 
 			var envs = document.getElementById("setting-environmentVariables").childNodes;
 			var envsChanged = false;
-			if (envs !== undefined) {
-				for(var i = 0; i < envs.length; i++) {
-					var env = envs[i];
-					env = env.childNodes[0].innerHTML + "=" + env.childNodes[1].innerHTML;
+			if(envs !== undefined) {
+				if(envs.length > 0) {
+					for(var i = 0; i < envs.length; i++) {
+						var env = envs[i];
+						env = env.childNodes[0].innerHTML + "=" + env.childNodes[1].innerHTML;
 
-					if(!postBody.environmentVariables)
-						postBody.environmentVariables = env;
-					else
-						postBody.environmentVariables += "," + env;
+						if(!postBody.environmentVariables)
+							postBody.environmentVariables = env;
+						else
+							postBody.environmentVariables += "," + env;
 
-					if(env != test.environmentVariables) {
-						envsChanged = true;
+						if(env != test.environmentVariables) {
+							envsChanged = true;
+						}
 					}
+				} else if(envs.length == 0 && test.environmentVariables.length != 0) {
+					postBody.environmentVariables = null;
+					envsChanged = true;
 				}
 			}
 
