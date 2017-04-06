@@ -145,14 +145,13 @@ function pageLoad() {
 			}
 		}
 
-		var projectTests
 		for(var i = 0; i < projects.length; i++) {
 			var project = projects[i];
 
 			var tests = [];
 			var count = 0;
 
-			if(tests.length > 0) {
+			if(project.tests.length > 0) {
 				// Project has tests
 				for(var j = 0; j < project.tests.length; j++) {
 					apiGet(SYNTINEL_URL + "/test/" + project.tests[i], null, function(res) {
