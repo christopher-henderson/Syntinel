@@ -356,6 +356,8 @@ function modalEnvInputChanged(index) {
 	updateModalsEnv();
 }
 
+var regexEnvVar = new RegExp('[^,^\n]+', 'ig');
+
 function getEnvironmentVariablesArray(str) {
-	return /[^,^\n]+/ig.match(str);
+	return regexEnvVar.exec(str);
 }
