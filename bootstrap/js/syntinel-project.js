@@ -20,7 +20,7 @@ function pageLoad() {
 		};
 
 		apiPost(SYNTINEL_URL + "/test/", postBody, function(res) {
-			if(res.error && SYNTINEL_ERRORREDIRECT) {
+			if(res.syntinelError && SYNTINEL_ERRORREDIRECT) {
 				var qs = {};
 				if(res.responseText && res.responseText.length > 0) {
 					qs.reason = res.responseText;
@@ -67,7 +67,7 @@ function pageLoad() {
 
 		document.getElementById("button-project-delete").addEventListener('click', function() {
 			apiDelete(SYNTINEL_URL + "/project/" + projectID, {}, function(res) {
-					if(res.error && SYNTINEL_ERRORREDIRECT) {
+					if(res.syntinelError && SYNTINEL_ERRORREDIRECT) {
 						var qs = {};
 						if(res.responseText && res.responseText.length > 0) {
 							qs.reason = res.responseText;
@@ -77,7 +77,6 @@ function pageLoad() {
 						}
 						
 						qs.project = projectID;
-						qs.test = testID;
 
 						window.location = buildUrl("error.html", qs);
 						return;
@@ -97,7 +96,7 @@ function pageLoad() {
 
 	// Make all the calls
 	apiGet(SYNTINEL_URL + "/project/" + projectID, "", function(res) {
-		if(res.error && SYNTINEL_ERRORREDIRECT) {
+		if(res.syntinelError && SYNTINEL_ERRORREDIRECT) {
 			var qs = {};
 			if(res.responseText && res.responseText.length > 0) {
 				qs.reason = res.responseText;
@@ -120,7 +119,7 @@ function pageLoad() {
 		if(project.tests.length > 0) {
 			for(var j = 0; j < project.tests.length; j++) {
 					apiGet(SYNTINEL_URL + "/test/" + project.tests[j], null, function(res) {
-					if(res.error && SYNTINEL_ERRORREDIRECT) {
+					if(res.syntinelError && SYNTINEL_ERRORREDIRECT) {
 						var qs = {};
 						if(res.responseText && res.responseText.length > 0) {
 							qs.reason = res.responseText;

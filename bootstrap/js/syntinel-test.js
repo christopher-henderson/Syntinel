@@ -50,7 +50,7 @@ function pageLoad() {
 				postBody.interval = null;
 			} else if(run.value == "single") {
 				apiPost(SYNTINEL_URL + "/testrun/", {"test" : Number(test.id)}, function(res) {
-					if(res.error && SYNTINEL_ERRORREDIRECT) {
+					if(res.syntinelError && SYNTINEL_ERRORREDIRECT) {
 						var qs = {};
 						if(res.responseText && res.responseText.length > 0) {
 							qs.reason = res.responseText;
@@ -73,7 +73,7 @@ function pageLoad() {
 
 			if(postBody.script || postBody.dockerfile || postBody.environmentVariables || postBody.hasOwnProperty("interval")) {
 				apiPatch(SYNTINEL_URL + "/test/" + testID, postBody, function(res) {
-					if(res.error && SYNTINEL_ERRORREDIRECT) {
+					if(res.syntinelError && SYNTINEL_ERRORREDIRECT) {
 						var qs = {};
 						if(res.responseText && res.responseText.length > 0) {
 							qs.reason = res.responseText;
@@ -95,7 +95,7 @@ function pageLoad() {
 
 		document.getElementById("setting-button-delete").addEventListener('click', function() {
 			apiDelete(SYNTINEL_URL + "/test/" + testID, {}, function(res) {
-					if(res.error && SYNTINEL_ERRORREDIRECT) {
+					if(res.syntinelError && SYNTINEL_ERRORREDIRECT) {
 						var qs = {};
 						if(res.responseText && res.responseText.length > 0) {
 							qs.reason = res.responseText;
@@ -191,7 +191,7 @@ function pageLoad() {
 
 	// Get the project
 	apiGet(SYNTINEL_URL + "/project/" + projectID, "", function(res) {
-		if(res.error && SYNTINEL_ERRORREDIRECT) {
+		if(res.syntinelError && SYNTINEL_ERRORREDIRECT) {
 			var qs = {};
 			if(res.responseText && res.responseText.length > 0) {
 				qs.reason = res.responseText;
@@ -213,7 +213,7 @@ function pageLoad() {
 
 		// Now get the test
 		apiGet(SYNTINEL_URL + "/test/" + testID, "", function(res) {
-			if(res.error && SYNTINEL_ERRORREDIRECT) {
+			if(res.syntinelError && SYNTINEL_ERRORREDIRECT) {
 				var qs = {};
 				if(res.responseText && res.responseText.length > 0) {
 					qs.reason = res.responseText;
@@ -235,7 +235,7 @@ function pageLoad() {
 
 			// Get test runs
 			apiGet(SYNTINEL_URL + "/testrun/all?test=" + testID, "", function(res) {
-				if(res.error && SYNTINEL_ERRORREDIRECT) {
+				if(res.syntinelError && SYNTINEL_ERRORREDIRECT) {
 					var qs = {};
 					if(res.responseText && res.responseText.length > 0) {
 						qs.reason = res.responseText;
