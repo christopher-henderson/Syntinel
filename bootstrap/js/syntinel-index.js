@@ -80,6 +80,7 @@ function projectLoaded() {
 				projectLoaded();
 			});
 		} else {
+			TI = 0;
 			PI++;
 			projectLoaded();
 		}
@@ -117,7 +118,7 @@ function populatePage() {
 		tab += "				<h3>Tests</h3>";
 		// Test table
 		tab += "				<div class=\"table-responsive\">";
-		tab += "					<table id=\"table-project-" + project.id + "-#PROJECT_TAB#-tests\" class=\"table table-bordered table-hover table-striped\">";
+		tab += "					<table id=\"table-project-" + project.id + "-#PROJECT_TAB#-tests\" class=\"table table-bordered table-hover table-striped syntinel-test-table\">";
 		tab += "						<thead>";
 		tab += "							<tr>";
 		tab += "								<th>ID</th>";
@@ -131,7 +132,7 @@ function populatePage() {
 			var test = p[i].tests[j];
 			projectHealth += test.health;
 			var testHealth = (test.health >= SYNTINEL_HEALTH.SUCCESS_MIN ? "success" : (test.health > SYNTINEL_HEALTH.WARN_MIN ? "warning" : "danger"));
-			tab += "							<tr class=\"" + testHealth + "\">";
+			tab += "							<tr project=" + project.id + " class=\"" + testHealth + " syntinel-test-row\">";
 			tab += "								<td>" + test.id + "</td>";
 			tab += "								<td>" + test.name + "</td>";
 			tab += "								<td>" + test.health + "%</td>";
@@ -152,33 +153,32 @@ function populatePage() {
 
 		// Add to main "All" tab
 		tabAll.innerHTML += tab.replaceAll("#PROJECT_TAB#", "all");
-		$('#table-project-' + project.id + '-all-tests').find('tr').click(function() {
-			var index = ($(this).index());
-			var table = document.getElementById("table-project-" + project.id + "-all-tests").getElementsByTagName("tbody")[0];
-			var row = table.getElementsByTagName("tr")[index];
-			var id = row.childNodes[1].innerHTML;
-			window.location = ("test.html?project="+ project.id +"&test=" + id);
-		});
 
 		// Add to other tabs
 		if(projectHealth == "success") {
 			tabPassing.innerHTML += tab.replaceAll("#PROJECT_TAB#", "passing");
-			$('#table-project-' + project.id + '-passing-tests').find('tr').click(function() {
-				var index = ($(this).index());
-				var table = document.getElementById("table-project-" + project.id + "-passing-tests").getElementsByTagName("tbody")[0];
-				var row = table.getElementsByTagName("tr")[index];
-				var id = row.childNodes[1].innerHTML;
-				window.location = ("test.html?project="+ project.id +"&test=" + id);
-			});
 		} else if(projectHealth == "warning" || projectHealth == "danger") {
 			tabFailing.innerHTML += tab.replaceAll("#PROJECT_TAB#", "failing");
-			$('#table-project-' + project.id + '-failing-tests').find('tr').click(function() {
-				var index = ($(this).index());
-				var table = document.getElementById("table-project-" + project.id + "-failing-tests").getElementsByTagName("tbody")[0];
-				var row = table.getElementsByTagName("tr")[index];
-				var id = row.childNodes[1].innerHTML;
-				window.location = ("test.html?project="+ project.id +"&test=" + id);
-			});
+		}
+
+	}
+
+	var testTables = document.getElementsByClassName("syntinel-test-table");
+	for(var i = 0; i < testTables.length; i++) {
+		var table = testTables[i];
+		var rows = table.getElementsByTagName("tr");
+
+		for(var j = 0; j < rows.length; j++) {
+			var row = rows[j];
+			var handler = function(table, row) {
+				return function() {
+					var testID = row.childNodes[1].innerHTML;
+					var projectID = table.id.split("-")[2];
+					window.location = ("test.html?project="+ projectID +"&test=" + testID);
+				}
+			};
+
+			row.onclick = handler(table, row);
 		}
 	}
 }
