@@ -166,7 +166,7 @@ function populatePage() {
 	var testTables = document.getElementsByClassName("syntinel-test-table");
 	for(var i = 0; i < testTables.length; i++) {
 		var table = testTables[i];
-		var rows = table.getElementsByTagName("tr");
+		var rows = table.getElementsByTagName("tbody")[0].getElementsByTagName("tr");
 
 		for(var j = 0; j < rows.length; j++) {
 			var row = rows[j];
