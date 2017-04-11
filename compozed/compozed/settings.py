@@ -16,6 +16,8 @@ logger = logging.getLogger(__name__)
 
 import os
 
+USE_X_FORWARDED_HOST = True
+
 REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
     'PAGE_SIZE': 20,
@@ -74,7 +76,7 @@ SECRET_KEY = 'yxykq#(-66g=3a-g+em1)n=!p87gq=c%wx(23e@urm%z76qz21'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["syntinel.chenderson.org", "syntinel", "localhost"]
+ALLOWED_HOSTS = ["*"]
 
 DATABASES = {
     'default': {

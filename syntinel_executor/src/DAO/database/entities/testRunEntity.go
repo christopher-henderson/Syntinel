@@ -135,6 +135,9 @@ func (t *TestRunEntity) buildDockerImage() *process.Process {
 func (t *TestRunEntity) runDockerImage() *process.Process {
 	defer t.deleteContainer()
 	envVars := strings.Split(t.EnvironmentVariables, ",")
+	for i, envVar := range envVars {
+		envVars[i] = strings.Trim(envVar, " ")
+	}
 	args := []string{
 		DockerRun,   // Run image
 		DockerRunRM} // Delete after completed.
