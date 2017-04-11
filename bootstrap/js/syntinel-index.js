@@ -33,8 +33,10 @@ function pageLoad() {
 		var tabPassing = document.getElementById("projectsTab-passing");
 		var tabFailing = document.getElementById("projectsTab-failing");
 
+		console.log("36: " + JSON.stringify(p));
 		for(var i = 0; i < p.length; i++) {
 			var project = p[i].project;
+			console.log(console.log ("P[" + i + "]: " + JSON.stringify(project));
 			var projectHealth = 0;
 
 			var tab = "";
@@ -169,9 +171,12 @@ function pageLoad() {
 							return;
 						}
 
+						console.log(res);
+
 						tests.push(JSON.parse(escapeNewLineChars(res)));
 						count++;
 						if(count == project.tests.length) {
+							console.log(JSON.stringify(project));
 							p.push({"project" : project, "tests" : tests});
 							projectLoaded();
 						}
