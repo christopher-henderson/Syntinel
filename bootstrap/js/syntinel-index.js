@@ -94,6 +94,7 @@ function populatePage() {
 	var tabPassing = document.getElementById("projectsTab-passing");
 	var tabFailing = document.getElementById("projectsTab-failing");
 
+	p.sort(function(a,b) {return (a.project.id > b.project.id) ? 1 : ((b.project.id > a.project.id) ? -1 : 0);} );
 	for(var i = 0; i < p.length; i++) {
 		var project = p[i].project;
 		var projectHealth = 0;
