@@ -13,8 +13,15 @@ function pageLoad() {
 		var postBody = {
 			"name" : document.getElementById("modal-add-test-name").value,
 			"environmentVariables" : null,
-			"dockerfile" : "Required",
-			"script" : "Required",
+			"dockerfile" : 
+				"# Defaults (Fill in as necessary)\n" +
+				"FROM docker.io/centos\n" +
+				"MAINTAINER Allstate Engineer\n" +
+				"RUN yum install -y go git wget\n" +
+				"# These must be the last two lines in your Dockerfile:\n" +
+				"COPY script.sh $HOME/script.sh\n" +
+				"CMD chmod +x script.sh && ./script.sh",
+			"script" : "# Required - Input script here",
 			"project" : Number(projectID),
 			"interval": null
 		};
