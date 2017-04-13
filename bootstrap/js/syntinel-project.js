@@ -59,6 +59,9 @@ function pageLoad() {
 
 		var projectTests = document.getElementById("table-project-tests-body");
 		projectTests.innerHTML = "";
+
+		// Sort tests
+		t.sort(function(a,b) {return (a.id > b.id) ? 1 : ((b.id > a.id) ? -1 : 0);} );
 		for(var i = 0; i < t.length; i++) {
 			var test = t[i];
 			var testRow = "";

@@ -128,6 +128,8 @@ function populatePage() {
 		tab += "						</thead>";
 		tab += "						<tbody>";
 		// Tests
+		// Sort tests
+		p[i].tests.sort(function(a,b) {return (a.id > b.id) ? 1 : ((b.id > a.id) ? -1 : 0);} );
 		for(var j = 0; j < p[i].tests.length; j++) {
 			var test = p[i].tests[j];
 			projectHealth += test.health;
