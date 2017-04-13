@@ -75,38 +75,43 @@
 				</div>
 				<!-- /.row -->
 
-				<!-- DROPDOWN PANELS -->
-				<div role="tabpanel">
-					<!-- Nav tabs -->
-					<ul class="nav nav-tabs" role="tablist">
-						<li class="active" role="presentation">
-							<a aria-controls="projectsTab-all" data-toggle="tab" href="#projectsTab-all" role="tab">All</a>
-						</li>
+				<div id="syntinel-index-loading" style="display: none">
+					<img src='./img/loading.gif' alt='Loading' style='width:384px;height:384px;'>
+				</div>
+				<div id="syntinel-index-content" style="display: none">
+					<!-- DROPDOWN PANELS -->
+					<div role="tabpanel">
+						<!-- Nav tabs -->
+						<ul class="nav nav-tabs" role="tablist">
+							<li class="active" role="presentation">
+								<a aria-controls="projectsTab-all" data-toggle="tab" href="#projectsTab-all" role="tab">All</a>
+							</li>
 
-						<li role="presentation">
-							<a aria-controls="projectsTab-passing" data-toggle="tab" href="#projectsTab-passing" role="tab">Passing</a>
-						</li>
+							<li role="presentation">
+								<a aria-controls="projectsTab-passing" data-toggle="tab" href="#projectsTab-passing" role="tab">Passing</a>
+							</li>
 
-						<li role="presentation">
-							<a aria-controls="projectsTab-failing" data-toggle="tab" href="#projectsTab-failing" role="tab">Failing</a>
-						</li>
-					</ul>
-					<!-- Tab panes -->
-					<div class="tab-content">
-						<!-- All Tab -->
-						<div class="tab-pane active" id="projectsTab-all" role="tabpanel">
+							<li role="presentation">
+								<a aria-controls="projectsTab-failing" data-toggle="tab" href="#projectsTab-failing" role="tab">Failing</a>
+							</li>
+						</ul>
+						<!-- Tab panes -->
+						<div class="tab-content">
+							<!-- All Tab -->
+							<div class="tab-pane active" id="projectsTab-all" role="tabpanel">
+							</div>
+							<!-- /All Tab -->
+
+							<!-- Success Tab -->
+							<div class="tab-pane" id="projectsTab-passing" role="tabpanel">
+							</div>
+							<!-- /Success tab -->
+
+							<!-- Danger Tab -->
+							<div class="tab-pane" id="projectsTab-failing" role="tabpanel">
+							</div>
+							<!-- /Danger Tab -->
 						</div>
-						<!-- /All Tab -->
-
-						<!-- Success Tab -->
-						<div class="tab-pane" id="projectsTab-passing" role="tabpanel">
-						</div>
-						<!-- /Success tab -->
-
-						<!-- Danger Tab -->
-						<div class="tab-pane" id="projectsTab-failing" role="tabpanel">
-						</div>
-						<!-- /Danger Tab -->
 					</div>
 				</div>
 			</div>

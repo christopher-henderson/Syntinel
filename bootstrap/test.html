@@ -93,111 +93,116 @@
 				</div>
 				<!-- /.row -->
 
-				<!-- Docker top settings row -->
-				<div class="col-lg-6">
-					<div class="row">
-						<h2>
-							Settings
-							<button type="button" id="setting-button-save" class="btn btn-s btn-success">Submit changes</button>
-						</h2>
-						<h4>General</h4>
-						<div class="col-lg-3">
-							<label for="setting-project">Project:</label>
-							<input type="text" disabled class="form-control" id="setting-project">
+				<div id="syntinel-test-loading" style="display: none">
+					<img src='./img/loading.gif' alt='Loading' style='width:384px;height:384px;'>
+				</div>
+				<div id="syntinel-test-content" style="display: none">
+					<!-- Docker top settings row -->
+					<div class="col-lg-6">
+						<div class="row">
+							<h2>
+								Settings
+								<button type="button" id="setting-button-save" class="btn btn-s btn-success">Submit changes</button>
+							</h2>
+							<h4>General</h4>
+							<div class="col-lg-3">
+								<label for="setting-project">Project:</label>
+								<input type="text" disabled class="form-control" id="setting-project">
+							</div>
+							<div class="col-lg-4">
+								<label for="setting-testName">Name:</label>
+								<input type="text" class="form-control" id="setting-testName">
+							</div>
+							<div class="col-lg-3">
+								<label for="setting-testID">ID:</label>
+								<input type="text" disabled class="form-control" id="setting-testID">
+							</div>
 						</div>
-						<div class="col-lg-4">
-							<label for="setting-testName">Name:</label>
-							<input type="text" class="form-control" id="setting-testName">
-						</div>
-						<div class="col-lg-3">
-							<label for="setting-testID">ID:</label>
-							<input type="text" disabled class="form-control" id="setting-testID">
-						</div>
-					</div>
-					<!-- /.row -->
+						<!-- /.row -->
 
-					<div class="row">
-						<div class="col-lg-10">
-							<label for="setting-testScript">Script:</label>
-							<textarea type="text" placeholder="Required - Input your script to run" rows="6" class="form-control" id="setting-testScript"></textarea>
+						<div class="row">
+							<div class="col-lg-10">
+								<label for="setting-testScript">Script:</label>
+								<textarea type="text" placeholder="Required - Input your script to run" rows="6" class="form-control" id="setting-testScript"></textarea>
+							</div>
+							<div class="col-lg-10">
+								<label for="setting-testDocker">Dockerfile:</label>
+								<textarea type="text" placeholder="Required - Input your dockerfile" rows="6" class="form-control" id="setting-testDocker"></textarea>
+							</div>
 						</div>
-						<div class="col-lg-10">
-							<label for="setting-testDocker">Dockerfile:</label>
-							<textarea type="text" placeholder="Required - Input your dockerfile" rows="6" class="form-control" id="setting-testDocker"></textarea>
-						</div>
-					</div>
-					<!-- /.row -->
+						<!-- /.row -->
 
-					<div class="row">
-					<h4>Scheduling</h4>
-						<div class="col-lg-5">
-							<div class="form-group">
-                                <label>Run</label>
-                                <select class="form-control" id="setting-run" onchange="settingsRunChanged()">
-                                    <option value="off">Not running</option>
-                                    <option value="single">Run - Once now (then stop)</option>
-                                    <option value="schedule">Run - Schedule</option>
-                                </select>
-                            </div>
+						<div class="row">
+						<h4>Scheduling</h4>
+							<div class="col-lg-5">
+								<div class="form-group">
+	                                <label>Run</label>
+	                                <select class="form-control" id="setting-run" onchange="settingsRunChanged()">
+	                                    <option value="off">Not running</option>
+	                                    <option value="single">Run - Once now (then stop)</option>
+	                                    <option value="schedule">Run - Schedule</option>
+	                                </select>
+	                            </div>
+							</div>
+							<div class="col-lg-4" id="setting-run-interval">
+								<label for="setting-testSchedule">Interval (sec):</label>
+								<input type="number" value="0" class="form-control" id="setting-testSchedule">
+							</div>
 						</div>
-						<div class="col-lg-4" id="setting-run-interval">
-							<label for="setting-testSchedule">Interval (sec):</label>
-							<input type="number" value="0" class="form-control" id="setting-testSchedule">
-						</div>
-					</div>
-					<!-- /.row -->
+						<!-- /.row -->
 
-					<div class="row">
-						<h3>Environment Variables
-							<button type="button" id="setting-env-button-edit" class="btn btn-xs btn-info">Edit</button>
-						</h3>
-						<div class="col-lg-10">
+						<div class="row">
+							<h3>Environment Variables
+								<button type="button" id="setting-env-button-edit" class="btn btn-xs btn-info">Edit</button>
+							</h3>
+							<div class="col-lg-10">
+								<div class="table-responsive">
+									<table class="table table-hover table-striped">
+										<thead>
+											<tr>
+												<th>Variable</th>
+												<th>Value</th>
+											</tr>
+										</thead>
+										<tbody id="setting-environmentVariables">
+											<!-- Env. table rows, populated through JS -->
+										</tbody>
+									</table>
+								</div>
+							</div>
+						</div>
+						<!-- /.row -->
+					</div>
+					<!-- /Settings column -->
+
+					<!-- Results/health -->
+					<div class="col-lg-6">
+						<!-- /.row -->
+						<div class="row">
+							<h2>Run History</h2>
+							<p>(Click a row to open a run)</p>
 							<div class="table-responsive">
-								<table class="table table-hover table-striped">
+								<table id="table-test-runs" class="table table-hover table-striped">
 									<thead>
 										<tr>
-											<th>Variable</th>
-											<th>Value</th>
+											<th>Run ID</th>
+											<th>Status</th>
+											<th>Timestamp</th>
 										</tr>
 									</thead>
-									<tbody id="setting-environmentVariables">
-										<!-- Env. table rows, populated through JS -->
+									<tbody id="table-test-runs-body">
+										<!--
+										<tr class="warning">
+											<td>403</td>
+											<td>Running</td>
+										</tr>
+										-->
 									</tbody>
 								</table>
 							</div>
 						</div>
+						<!-- /.row -->
 					</div>
-					<!-- /.row -->
-				</div>
-				<!-- /Settings column -->
-
-				<!-- Results/health -->
-				<div class="col-lg-6">
-					<!-- /.row -->
-					<div class="row">
-						<h2>Run History</h2>
-						<p>(Click a row to open a run)</p>
-						<div class="table-responsive">
-							<table id="table-test-runs" class="table table-hover table-striped">
-								<thead>
-									<tr>
-										<th>Run ID</th>
-										<th>Status</th>
-										<th>Timestamp</th>
-									</tr>
-								</thead>
-								<tbody id="table-test-runs-body">
-									<!--
-									<tr class="warning">
-										<td>403</td>
-										<td>Running</td>
-									</tr>
-									-->
-								</tbody>
-							</table>
-						</div>
-					</div>
-					<!-- /.row -->
 				</div>
 
 			</div>

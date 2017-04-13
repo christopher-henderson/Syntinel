@@ -75,26 +75,30 @@
 				</div>
 				<!-- /.row -->
 
-				<!-- Docker top settings row -->
-				<div class="col-lg-8">
-					<div class="row">
-						<div class="alert alert-warning" id="run-status-header">
-		                    Loading...
-		                </div>
-					</div>
+				<div id="syntinel-run-loading" style="display: none">
+					<img src='./img/loading.gif' alt='Loading' style='width:384px;height:384px;'>
 				</div>
-
-				<!-- Results/health -->
-				<div class="col-lg-8">
-					<div class="row">
-						<h3>Log</h3>
-						<div>
-							<textarea disabled type="text" rows="24" class="form-control" id="run-console"></textarea>
+				<div id="syntinel-run-content" style="display: none">
+					<!-- Docker top settings row -->
+					<div class="col-lg-8">
+						<div class="row">
+							<div class="alert alert-warning" id="run-status-header">
+			                    Loading...
+			                </div>
 						</div>
 					</div>
-					<!-- /.row -->
-				</div>
 
+					<!-- Results/health -->
+					<div class="col-lg-8">
+						<div class="row">
+							<h3>Log</h3>
+							<div>
+								<textarea disabled type="text" rows="24" class="form-control" id="run-console"></textarea>
+							</div>
+						</div>
+						<!-- /.row -->
+					</div>
+				</div>
 			</div>
 			<!-- /.container-fluid -->
 

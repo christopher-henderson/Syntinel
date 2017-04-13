@@ -1,4 +1,6 @@
 function pageLoad() {
+	document.getElementById("syntinel-run-loading").style.display = "inline";
+
 	var project = {};
 	var test = {};
 	var run = {};
@@ -33,6 +35,9 @@ function pageLoad() {
 		}
 
 		startWebsocket(run.id);
+
+		document.getElementById("syntinel-run-content").style.display = "inline";
+		document.getElementById("syntinel-run-loading").style.display = "none";
 	}
 
 	// Get the project

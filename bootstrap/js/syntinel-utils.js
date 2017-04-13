@@ -3,7 +3,7 @@ var SYNTINEL_HEALTH = {
 	SUCCESS_MIN : 87.5,
 	WARN_MIN : 75
 }
-var SYNTINEL_ERRORREDIRECT = true;
+var SYNTINEL_ERRORREDIRECT = false;
 
 function getQueryVariable(variable) {
 	var query = window.location.search.substring(1);

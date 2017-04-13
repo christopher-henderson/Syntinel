@@ -4,6 +4,8 @@ var TI = 0;
 var p = [];
 
 function pageLoad() {
+	document.getElementById("syntinel-index-loading").style.display = "inline";
+
 	document.getElementById("button-project-create").addEventListener('click', function() {
 		// Open the modal
 		$("#modal-create").modal();
@@ -184,4 +186,7 @@ function populatePage() {
 			row.onclick = handler(table, row);
 		}
 	}
+
+	document.getElementById("syntinel-index-content").style.display = "inline";
+	document.getElementById("syntinel-index-loading").style.display = "none";
 }

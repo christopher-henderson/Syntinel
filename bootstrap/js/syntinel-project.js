@@ -1,4 +1,6 @@
 function pageLoad() {
+	document.getElementById("syntinel-project-loading").style.display = "inline";
+
 	var project = {};
 	var t = [];
 
@@ -102,6 +104,9 @@ function pageLoad() {
 			var id = row.childNodes[1].innerHTML;
 			window.location = "test.html?project="+projectID+"&test="+id;
 		});
+
+		document.getElementById("syntinel-project-content").style.display = "inline";
+		document.getElementById("syntinel-project-loading").style.display = "none";
 	}
 
 	// Make all the calls

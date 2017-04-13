@@ -4,6 +4,8 @@ var r = [];
 
 var envVariableChanged = false;
 function pageLoad() {
+	document.getElementById("syntinel-test-loading").style.display = "inline";
+
 	var projectID = getQueryVariable("project");
 	var testID = getQueryVariable("test");
 
@@ -195,6 +197,9 @@ function pageLoad() {
 			var id = row.childNodes[1].innerHTML;
 			window.location = "run.html?project="+projectID+"&test="+testID+"&run="+id;
 		});
+
+		document.getElementById("syntinel-test-content").style.display = "inline";
+		document.getElementById("syntinel-test-loading").style.display = "none";
 	}
 
 	// Get the project
