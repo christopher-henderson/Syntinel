@@ -168,7 +168,7 @@ function pageLoad() {
 		// Run histories
 		var testRuns = document.getElementById("table-test-runs-body");
 		testRuns.innerHTML = "";
-		r.sort(function(a,b) {return (a.id > b.id) ? 1 : ((b.id > a.id) ? -1 : 0);} );
+		r.sort(function(a,b) {return (a.id < b.id) ? 1 : ((b.id < a.id) ? -1 : 0);} );
 		for(var i = 0; i < r.length; i++) {
 			var run = r[i];
 			var runRow = "";
